@@ -1,0 +1,6 @@
+@WPRProject_1A_2_HostAddress = http://localhost:5257
+
+GET {{WPRProject_1A_2_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
