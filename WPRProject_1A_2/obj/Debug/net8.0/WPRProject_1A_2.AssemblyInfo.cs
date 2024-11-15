@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WPRProject_1A_2")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6706cb41d90b605e1465d88da862a1570948e016")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c77c3d56da7969775669c5c50535827f12ba912d")]
 [assembly: System.Reflection.AssemblyProductAttribute("WPRProject_1A_2")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WPRProject_1A_2")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
