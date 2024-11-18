@@ -1,9 +1,12 @@
+//using WPRProject_1A_2.EmailSysteem;
+
 namespace WPRProject_1A_2;
 
 public class Program
 {
     public static void Main(string[] args)
     {
+        //EmailSender.SendEmail();
         var builder = WebApplication.CreateBuilder(args);
         
         // Add services to the container.
