@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WPRProject_1A_2.Voertuigmodellen;
 
 public class Voertuig
 {
     [Key]
-    public int Id { set; get; }
+    public int VoertuigId { set; get; }
 
 
     public enum TypeVoertuigEnum { Auto, Camper, Caravan }
@@ -20,12 +21,25 @@ public class Voertuig
         set { kenteken = value; }
         get { return kenteken; }
     }
-    private List<Reservering> reserveringen { get; set; }
+    
+    
+    public int ReserveringId { set; get; }
+    [ForeignKey("ReserveringId")]
     public List<Reservering> Reserveringen
     {
         set { reserveringen = value; }
         get { return reserveringen; }
     }
+    private List<Reservering> reserveringen { get; set; }
+    
+    public int SchadeclaimId { set; get; }
+    [ForeignKey("SchadeclaimId")]
+    public List<Schadeclaim> Schadeclaims
+    {
+        set { schadeclaims = value; }
+        get { return schadeclaims; }
+    }
+    private List<Schadeclaim> schadeclaims { get; set; }
     
     public required string Merk { set; get; }
     public required string Model { set; get; }
@@ -44,21 +58,12 @@ public class Voertuig
 
     public void ReserveringToevoegen(Reservering reservering)
     {
-        Reserveringen.Add(reservering);
+        reserveringen.Add(reservering);
     }
 
-    public void SchadeClaimToevoegen()
+    public void SchadeClaimToevoegen(Schadeclaim schadeclaim)
     {
-        //Aanpassen
-    }
-
-    public List<Voertuig> VoertuigFilter()
-    {
-        List<Voertuig> voertuigen = new List<Voertuig>();
-        //
-        // Nog aanpassen!!!!!!!
-        //
-        return voertuigen;
+        schadeclaims.Add(schadeclaim);
     }
 
 
