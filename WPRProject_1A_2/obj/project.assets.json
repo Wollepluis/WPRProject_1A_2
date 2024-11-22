@@ -3679,20 +3679,20 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\xande\\.nuget\\packages\\": {}
+    "C:\\Users\\Mark\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\xande\\RiderProjects\\WPRProject_1A_2\\WPRProject_1A_2\\WPRProject_1A_2.csproj",
+      "projectUniqueName": "C:\\Users\\Mark\\RiderProjects\\WPRProject_1A_2\\WPRProject_1A_2\\WPRProject_1A_2.csproj",
       "projectName": "WPRProject_1A_2",
-      "projectPath": "C:\\Users\\xande\\RiderProjects\\WPRProject_1A_2\\WPRProject_1A_2\\WPRProject_1A_2.csproj",
-      "packagesPath": "C:\\Users\\xande\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\xande\\RiderProjects\\WPRProject_1A_2\\WPRProject_1A_2\\obj\\",
+      "projectPath": "C:\\Users\\Mark\\RiderProjects\\WPRProject_1A_2\\WPRProject_1A_2\\WPRProject_1A_2.csproj",
+      "packagesPath": "C:\\Users\\Mark\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Mark\\RiderProjects\\WPRProject_1A_2\\WPRProject_1A_2\\obj\\",
       "projectStyle": "PackageReference",
       "UsingMicrosoftNETSdk": false,
       "configFilePaths": [
-        "C:\\Users\\xande\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Mark\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -3768,7 +3768,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

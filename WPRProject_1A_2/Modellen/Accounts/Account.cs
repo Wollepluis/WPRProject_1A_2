@@ -6,7 +6,9 @@ public class Account
 {
     [Key]
     public int Id { get; set; }
+    [MaxLength(30)]
     public string Email { get; set; }
+    [StringLength(30, MinimumLength = 8)]
     public string Wachtwoord { get; set; }
 
     public Account(string email, string wachtwoord)
