@@ -1,6 +1,6 @@
 ﻿namespace WPRProject_1A_2.Modellen.Abonnementen;
 
-public abstract class Abonnement
+public class Abonnement
 {
     public int Id { get; set; }
     public int Maxvoertuigen  { get; set; }
