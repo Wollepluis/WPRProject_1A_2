@@ -1,4 +1,5 @@
-﻿using WPRProject_1A_2.Modellen.Accounts;
+﻿using WPRProject_1A_2.Modellen.Abonnement;
+using WPRProject_1A_2.Modellen.Accounts;
 
 namespace WPRProject_1A_2.Modellen.Abonnementen;
 
@@ -9,10 +10,10 @@ public class Bedrijf
     public required string Domeinnaam { get; set; }
     public required Adres Adres { get; set; }
     public required int KvkNummer { get; set; }
-    public Abonnement? Abonnement { get; set; }
+    public Abonnement.Abonnement? Abonnement { get; set; }
     public required List<Account> Accounts { get; set; }
 
-    public Bedrijf(int id, string bedrijfsnaam, string domeinnaam, Adres adres, int kVkNummer, Abonnement abonnement, List<Account> accounts)
+    public Bedrijf(int id, string bedrijfsnaam, string domeinnaam, Adres adres, int kVkNummer, Abonnement.Abonnement abonnement, List<Account> accounts)
     {
         Id = id;
         Bedrijfsnaam = bedrijfsnaam;
@@ -22,6 +23,4 @@ public class Bedrijf
         Abonnement = abonnement;
         Accounts = accounts;
     }
-    
-    
 }
