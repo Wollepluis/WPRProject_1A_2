@@ -1,4 +1,4 @@
-﻿namespace WPRProject_1A_2.Betaling;
+﻿namespace WPRProject_1A_2.Modellen.Betaling;
 
 public class Factuur
 {
