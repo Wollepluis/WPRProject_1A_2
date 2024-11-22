@@ -13,7 +13,6 @@
         "packagesPath": "C:\\Users\\Morri\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Morri\\RiderProjects\\WPRProject_1A_2\\WPRProject_1A_2\\obj\\",
         "projectStyle": "PackageReference",
-        "UsingMicrosoftNETSdk": false,
         "configFilePaths": [
           "C:\\Users\\Morri\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
