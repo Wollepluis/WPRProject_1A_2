@@ -27,9 +27,17 @@
 *.runtimeconfig.json
 *.FileListAbsolute.txt
 
+# Ignore NuGet-related files
+project.assets.json
+project.packagespec.json
+*.nuget.g.props
+*.nuget.g.targets
+*.nuget.dgspec.json
+
 # Rider-specific files
 *.cache
 *.info
+*.editorconfig
 
 # Ignore IDE and environment-specific config files
 .idea/
