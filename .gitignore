@@ -27,6 +27,10 @@
 *.runtimeconfig.json
 *.FileListAbsolute.txt
 
+# Rider-specific files
+*.cache
+*.info
+
 # Ignore IDE and environment-specific config files
 .idea/
 applicationhost.config
