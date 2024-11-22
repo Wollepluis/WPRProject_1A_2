@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WPRProject_1A_2.Voertuigmodellen;
+namespace WPRProject_1A_2.Modellen.Voertuigmodellen;
 
 public class Reparatie
 {

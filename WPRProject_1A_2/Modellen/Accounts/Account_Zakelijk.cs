@@ -1,4 +1,4 @@
-﻿namespace WPRProject_1A_2.Accounts;
+﻿namespace WPRProject_1A_2.Modellen.Accounts;
 
 public class Account_Zakelijk : Account
 {

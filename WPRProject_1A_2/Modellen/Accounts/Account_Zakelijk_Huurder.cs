@@ -1,6 +1,6 @@
-﻿using WPRProject_1A_2.Voertuigmodellen;
+﻿using WPRProject_1A_2.Modellen.Voertuigmodellen;
 
-namespace WPRProject_1A_2.Accounts;
+namespace WPRProject_1A_2.Modellen.Accounts;
 
 public class Account_Zakelijk_Huurder : Account_Zakelijk
 {

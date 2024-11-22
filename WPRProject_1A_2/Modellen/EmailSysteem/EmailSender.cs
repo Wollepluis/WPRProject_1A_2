@@ -1,8 +1,7 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
 
-namespace WPRProject_1A_2.EmailSysteem;
+namespace WPRProject_1A_2.Modellen.EmailSysteem;
 
 public static class EmailSender
 {
