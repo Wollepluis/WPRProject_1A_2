@@ -1,16 +1,20 @@
-﻿namespace WPRProject_1A_2.Modellen.Betaling;
+﻿using WPRProject_1A_2.Modellen.Abonnement;
 
-public class Factuur
+namespace WPRProject_1A_2.Modellen.Betaling;
+
+public class Factuur 
 {
-    int FactuurId { get; set; }
-    int Prijs { get; set; }
-    int Korting { get; set; }
+    public int FactuurId { get; set; }
+    public int Prijs { get; set; }
+    public int Korting { get; set; }
+    public Bedrijf Bedrijf { get; set; }
 
-    public Factuur(int factuurId, int prijs, int korting)
+    public Factuur(int factuurId, int prijs, int korting, Bedrijf bedrijf)
     {
         FactuurId = factuurId;
         Prijs = prijs;
         Korting = korting;
+        Bedrijf = bedrijf;
     }
 
     public int StelFactuurOp()
@@ -23,6 +27,11 @@ public class Factuur
     public override string ToString()
     {
         return $"Factuur ID: {FactuurId}\n" +
+               $"Bedrijfsnaam: {Bedrijf.Bedrijfsnaam}\n" +
+               $"Domeinnaam: {Bedrijf.Domeinnaam}\n" +
+               $"Adres: {Bedrijf.Adres}\n" +
+               $"Kvk-nummer: {Bedrijf.KvkNummer}\n" +
+               $"Abonnement: {Bedrijf.Abonnement}\n" +
                $"Prijs: €{Prijs}\n" +
                $"Korting: {Korting}%\n" +
                $"Totaalbedrag na korting: €{StelFactuurOp()}";
