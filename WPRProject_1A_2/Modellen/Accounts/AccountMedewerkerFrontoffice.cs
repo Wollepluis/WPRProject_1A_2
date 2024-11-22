@@ -2,9 +2,9 @@
 
 namespace WPRProject_1A_2.Modellen.Accounts;
 
-public class Account_Medewerker_Frontoffice : Account_Medewerker
+public class AccountMedewerkerFrontoffice : AccountMedewerker
 {
-    public Account_Medewerker_Frontoffice(string email, string wachtwoord) : base(email, wachtwoord)
+    public AccountMedewerkerFrontoffice(string email, string wachtwoord) : base(email, wachtwoord)
     {
         
     }

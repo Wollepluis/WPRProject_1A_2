@@ -2,19 +2,19 @@
 
 namespace WPRProject_1A_2.Modellen.Accounts;
 
-public class Account_Medewerker_Backoffice : Account_Medewerker
+public class AccountMedewerkerBackoffice : AccountMedewerker
 {
-    public Account_Medewerker_Backoffice(string email, string wachtwoord) : base(email, wachtwoord)
+    public AccountMedewerkerBackoffice(string email, string wachtwoord) : base(email, wachtwoord)
     {
         
     }
 
-    public void VoegMedewerkerToe(Account_Medewerker account)
+    public void VoegMedewerkerToe(AccountMedewerker account)
     {
         
     }
 
-    public void VerwijderMedewerker(Account_Medewerker account)
+    public void VerwijderMedewerker(AccountMedewerker account)
     {
         
     }
