@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WPRProject_1A_2.Modellen.Abonnement;
+using WPRProject_1A_2.Modellen.Abonnementen;
 using WPRProject_1A_2.Modellen.Voertuigmodellen;
 using WPRProject_1A_2.Modellen.Betaling;
 using WPRProject_1A_2.Modellen.Accounts;

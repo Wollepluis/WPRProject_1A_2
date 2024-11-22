@@ -1,6 +1,6 @@
-﻿using WPRProject_1A_2.Modellen.Abonnement;
+﻿using WPRProject_1A_2.Modellen.Abonnementen;
 
-namespace WPRProject_1A_2.Modellen.Betaling;
+namespace WPRProject_1A_2.Modellen.Betalingen;
 
 public class Factuur 
 {

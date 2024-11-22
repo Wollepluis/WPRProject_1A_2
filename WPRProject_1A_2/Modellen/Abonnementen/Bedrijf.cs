@@ -1,6 +1,6 @@
 ﻿using WPRProject_1A_2.Modellen.Accounts;
 
-namespace WPRProject_1A_2.Modellen.Abonnement;
+namespace WPRProject_1A_2.Modellen.Abonnementen;
 
 public class Bedrijf
 {

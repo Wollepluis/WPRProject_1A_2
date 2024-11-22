@@ -1,4 +1,4 @@
-﻿using WPRProject_1A_2.Modellen.Abonnement;
+﻿using WPRProject_1A_2.Modellen.Abonnementen;
 
 namespace WPRProject_1A_2.Modellen.Accounts;
 

@@ -3672,6 +3672,7 @@
   "projectFileDependencyGroups": {
     "net8.0": [
       "Microsoft.AspNetCore.OpenApi >= 8.0.8",
+      "Microsoft.EntityFrameworkCore >= 9.0.0",
       "Microsoft.EntityFrameworkCore.Design >= 9.0.0",
       "Microsoft.EntityFrameworkCore.Sqlite >= 9.0.0",
       "Microsoft.EntityFrameworkCore.Tools >= 9.0.0",
@@ -3679,20 +3680,20 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Mark\\.nuget\\packages\\": {}
+    "C:\\Users\\Morri\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Mark\\RiderProjects\\WPRProject_1A_2\\WPRProject_1A_2\\WPRProject_1A_2.csproj",
+      "projectUniqueName": "C:\\Users\\Morri\\RiderProjects\\WPRProject_1A_2\\WPRProject_1A_2\\WPRProject_1A_2.csproj",
       "projectName": "WPRProject_1A_2",
-      "projectPath": "C:\\Users\\Mark\\RiderProjects\\WPRProject_1A_2\\WPRProject_1A_2\\WPRProject_1A_2.csproj",
-      "packagesPath": "C:\\Users\\Mark\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Mark\\RiderProjects\\WPRProject_1A_2\\WPRProject_1A_2\\obj\\",
+      "projectPath": "C:\\Users\\Morri\\RiderProjects\\WPRProject_1A_2\\WPRProject_1A_2\\WPRProject_1A_2.csproj",
+      "packagesPath": "C:\\Users\\Morri\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Morri\\RiderProjects\\WPRProject_1A_2\\WPRProject_1A_2\\obj\\",
       "projectStyle": "PackageReference",
       "UsingMicrosoftNETSdk": false,
       "configFilePaths": [
-        "C:\\Users\\Mark\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Morri\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -3727,6 +3728,10 @@
           "Microsoft.AspNetCore.OpenApi": {
             "target": "Package",
             "version": "[8.0.8, )"
+          },
+          "Microsoft.EntityFrameworkCore": {
+            "target": "Package",
+            "version": "[9.0.0, )"
           },
           "Microsoft.EntityFrameworkCore.Design": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
@@ -3768,7 +3773,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

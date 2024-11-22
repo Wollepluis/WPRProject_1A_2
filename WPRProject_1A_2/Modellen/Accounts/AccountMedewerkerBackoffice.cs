@@ -1,4 +1,5 @@
-﻿using WPRProject_1A_2.Modellen.Voertuigmodellen;
+﻿using WPRProject_1A_2.Modellen.Abonnementen;
+using WPRProject_1A_2.Modellen.Voertuigmodellen;
 
 namespace WPRProject_1A_2.Modellen.Accounts;
 
@@ -24,7 +25,7 @@ public class AccountMedewerkerBackoffice : AccountMedewerker
         
     }
 
-    public void KeurAbonnement(Abonnement.Abonnement abonnement)
+    public void KeurAbonnement(Abonnement abonnement)
     {
         
     }

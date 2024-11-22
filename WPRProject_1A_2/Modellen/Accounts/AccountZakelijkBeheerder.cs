@@ -1,4 +1,4 @@
-﻿using WPRProject_1A_2.Modellen.Abonnement;
+﻿using WPRProject_1A_2.Modellen.Abonnementen;
 using WPRProject_1A_2.Modellen.Voertuigmodellen;
 
 namespace WPRProject_1A_2.Modellen.Accounts;
@@ -26,7 +26,7 @@ public class AccountZakelijkBeheerder : AccountZakelijk
         
     }
 
-    public void WijzigAbonnement(Abonnement.Abonnement abonnement)
+    public void WijzigAbonnement(Abonnement abonnement)
     {
         
     }

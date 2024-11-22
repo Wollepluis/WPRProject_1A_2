@@ -1,4 +1,6 @@
-﻿namespace WPRProject_1A_2.Modellen.Accounts;
+﻿using WPRProject_1A_2.Modellen.Abonnementen;
+
+namespace WPRProject_1A_2.Modellen.Accounts;
 
 public class AccountMedewerker : Account
 {
@@ -7,7 +9,7 @@ public class AccountMedewerker : Account
         
     }
 
-    public void PasAbonnementAan(Abonnement.Abonnement abonnement)
+    public void PasAbonnementAan(Abonnement abonnement)
     {
         
     }

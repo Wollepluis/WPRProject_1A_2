@@ -1,4 +1,4 @@
-﻿namespace WPRProject_1A_2.Modellen.Abonnement;
+﻿namespace WPRProject_1A_2.Modellen.Abonnementen;
 
 public class AbonnementManager
 {
