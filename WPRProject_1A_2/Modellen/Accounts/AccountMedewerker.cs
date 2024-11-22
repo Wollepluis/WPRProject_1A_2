@@ -7,7 +7,7 @@ public class AccountMedewerker : Account
         
     }
 
-    public void PasAbonnementAan(/*Abonnement abonnement*/)
+    public void PasAbonnementAan(Abonnement.Abonnement abonnement)
     {
         
     }

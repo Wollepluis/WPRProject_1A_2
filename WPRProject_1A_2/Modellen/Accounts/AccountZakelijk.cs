@@ -6,9 +6,9 @@ public class AccountZakelijk : Account
 {
     public Bedrijf Bedrijf { get; set; }
     
-    public AccountZakelijk(string email, string wachtwoord/*, Bedrijf bedrijf*/) : base(email, wachtwoord)
+    public AccountZakelijk(string email, string wachtwoord, Bedrijf bedrijf) : base(email, wachtwoord)
     {
-        //Bedrijf = bedrijf;
+        Bedrijf = bedrijf;
     }
     
     public void VraagHuurAan()

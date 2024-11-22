@@ -24,12 +24,12 @@ public class AccountMedewerkerBackoffice : AccountMedewerker
         
     }
 
-    public void KeurAbonnement(/*Abonnement abonnement*/)
+    public void KeurAbonnement(Abonnement.Abonnement abonnement)
     {
         
     }
 
-    public void KeurSchadeclaim(/*Schadeclaim schadeclaim*/)
+    public void KeurSchadeclaim(Schadeclaim schadeclaim)
     {
         
     }
