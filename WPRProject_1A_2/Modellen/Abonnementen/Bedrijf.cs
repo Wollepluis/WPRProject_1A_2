@@ -1,4 +1,5 @@
-﻿using WPRProject_1A_2.Modellen.Accounts;
+﻿using WPRProject_1A_2.Modellen.Abonnementen;
+using WPRProject_1A_2.Modellen.Accounts;
 
 namespace WPRProject_1A_2.Modellen.Abonnementen;
 
@@ -22,6 +23,4 @@ public class Bedrijf
         Abonnement = abonnement;
         Accounts = accounts;
     }
-    
-    
 }
