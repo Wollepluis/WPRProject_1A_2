@@ -1,4 +1,6 @@
-//using WPRProject_1A_2.EmailSysteem;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace WPRProject_1A_2;
 
@@ -6,48 +8,31 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        //EmailSender.SendEmail();
-        var builder = WebApplication.CreateBuilder(args);
         
-        // Add services to the container.
-        builder.Services.AddAuthorization();
 
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        var builder = WebApplication.CreateBuilder(args);
+
+// Voeg services toe aan de DI-container
+        builder.Services.AddControllers(); // Nodig om controllers zoals AdresController te ondersteunen
+        builder.Services.AddEndpointsApiExplorer(); // Voor Swagger
+        builder.Services.AddSwaggerGen(); // Swagger configuratie
 
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
+// Middleware pipeline configureren
         if (app.Environment.IsDevelopment())
         {
+            // Gebruik Swagger alleen in de ontwikkelomgeving
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(); // Swagger UI beschikbaar maken op /swagger
         }
 
-        app.UseHttpsRedirection();
+        app.UseHttpsRedirection(); // Voor beveiligde verbindingen
 
-        app.UseAuthorization();
+        app.UseAuthorization(); // Voor eventuele authenticatie/authorisatie (indien nodig)
 
-        var summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-        app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-            {
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                        new WeatherForecast
-                        {
-                            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                            TemperatureC = Random.Shared.Next(-20, 55),
-                            Summary = summaries[Random.Shared.Next(summaries.Length)]
-                        })
-                    .ToArray();
-                return forecast;
-            })
-            .WithName("GetWeatherForecast")
-            .WithOpenApi();
+// Registreer de controllers
+        app.MapControllers(); // Dit zorgt ervoor dat AdresController werkt
 
         app.Run();
     }
