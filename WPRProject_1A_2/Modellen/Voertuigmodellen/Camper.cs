@@ -2,7 +2,7 @@
 
 public class Camper : Voertuig
 {
-    public Camper(string kenteken, string merk, string model, string kleur, int aanschafjaar) : base(kenteken, merk, model, kleur, aanschafjaar)
+    public Camper(string kenteken, string merk, string model, string kleur, int aanschafjaar, double prijs) : base(kenteken, merk, model, kleur, aanschafjaar, prijs)
     {
     }
 }

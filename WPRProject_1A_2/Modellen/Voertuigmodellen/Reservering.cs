@@ -17,6 +17,8 @@ public class Reservering
     public string VersteBestemming { get; set; }
     public int VerwachteHoeveelheidKm { get; set; }
     
+    public List<Voertuig> BesteldeVoertuigen { get; set; }
+    
     public Account Account { get; set; }
     public int RijbewijsDocumentnummer { get; set; }
     
@@ -26,16 +28,16 @@ public class Reservering
     
     public bool IsBetaald { get; set; }
     
-    private Reservering() {}
-    public Reservering(DateTime begindatum, DateTime einddatum, string aardVanReis, string versteBestemming, int verwachteHoeveelheidKm, Account accont, int rijbewijsDocumentnummer, double totaalprijs, bool isBetaald)
+    public Reservering(List<Voertuig> besteldeVoertuigen, DateTime begindatum, DateTime einddatum, string aardVanReis, string versteBestemming, int verwachteHoeveelheidKm, Account account, int rijbewijsDocumentnummer, double totaalprijs, bool isBetaald)
     {
+        BesteldeVoertuigen = besteldeVoertuigen;
         Begindatum = begindatum;
         Einddatum = einddatum;
         AardVanReis = aardVanReis;
         VersteBestemming = versteBestemming;
         VerwachteHoeveelheidKm = verwachteHoeveelheidKm;
 
-        Account = accont;
+        Account = account;
         RijbewijsDocumentnummer = rijbewijsDocumentnummer;
         
         Totaalprijs = totaalprijs;
@@ -48,5 +50,10 @@ public class Reservering
     {
         int prijs = 0;
         return prijs;
+    }
+
+    public void MaakFactuurAan()
+    {
+        
     }
 }

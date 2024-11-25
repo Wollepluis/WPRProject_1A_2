@@ -41,13 +41,16 @@ public class Voertuig
     }
     private List<Schadeclaim> schadeclaims { get; set; }
 
-    public Voertuig(string kenteken, string merk, string model, string kleur, int aanschafjaar)
+    public double Prijs;
+
+    public Voertuig(string kenteken, string merk, string model, string kleur, int aanschafjaar, double prijs)
     {
         Kenteken = kenteken;
         Merk = merk;
         Model = model;
         Kleur = kleur;
         Aanschafjaar = aanschafjaar;
+        Prijs = prijs;
         Voertuigstatus = VoertuigStatus.Beschikbaar;
 
         Reserveringen = new List<Reservering>();
