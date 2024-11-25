@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using WPRProject_1A_2.Modellen.Abonnementen; // Namespace waarin jouw `Adres`-klasse zit
+using WPRProject_1A_2.Modellen.Accounts; // Namespace waarin jouw `account`-klasse zit
 
 
 namespace WPRProject_1A_2.Controllers
@@ -23,6 +23,18 @@ namespace WPRProject_1A_2.Controllers
         {
             var account = await _context.Accounts.FindAsync(id);
             return Ok(account);
+        }
+
+        [HttpPost("Maak account")]
+        public async Task<IActionResult> PostAccount(Account? account)
+        {
+            if (account == null)
+            {
+                return BadRequest();
+            }
+            _context.Accounts.Add(account);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetAccount), new { id = account.Id }, account);
         }
     }
 }
