@@ -5,13 +5,15 @@ namespace WPRProject_1A_2.Modellen.Abonnementen;
 
 public class Adres
 {
+    [Key]
+    public int AdresId { get; set; }
     [MaxLength(50)]
     public required string Straatnaam { get; set; }
 
     [Range(1, 9999)]
     public required int Huisnummer { get; set; }
 
-    [MaxLength(50)]
+    [StringLength(6)]
     public required string Postcode { get; set; }
 
     [MaxLength(50)]

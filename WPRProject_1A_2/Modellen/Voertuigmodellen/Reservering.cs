@@ -26,6 +26,7 @@ public class Reservering
     
     public bool IsBetaald { get; set; }
     
+    private Reservering() {}
     public Reservering(DateTime begindatum, DateTime einddatum, string aardVanReis, string versteBestemming, int verwachteHoeveelheidKm, Account accont, int rijbewijsDocumentnummer, double totaalprijs, bool isBetaald)
     {
         Begindatum = begindatum;

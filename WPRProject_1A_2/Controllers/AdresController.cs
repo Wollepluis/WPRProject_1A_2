@@ -1,18 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using WPRProject_1A_2.Modellen.Abonnementen; // Namespace waarin jouw `Adres`-klasse zit
+using WPRProject_1A_2;
 
 namespace WPRProject_1A_2.Controllers
 {
 
-
-
-    namespace WPRProject_1A_2.Controllers
-    {
+    
         [ApiController]
         [Route("api/[controller]")]
         public class AdresController : ControllerBase
         {
+            private CarAndAllContext _context;
+            public AdresController()
+            {
+                _context = new CarAndAllContext();
+            }
+            
+            
             [HttpGet("zoek-adres")]
             public async Task<IActionResult> ZoekAdres([FromQuery] string postcode, int huisnummer)
             {
@@ -51,7 +56,10 @@ namespace WPRProject_1A_2.Controllers
                                     Gemeente = (string?)adresData["gemeentenaam"],
                                     Provincie = (string?)adresData["provincienaam"]
                                 };
+                                _context.Adressen.Add(adress);
 
+                                // Sla de wijzigingen op in de database
+                                await _context.SaveChangesAsync();
                                 return Ok(adress);
                             }
                             else
@@ -70,4 +78,4 @@ namespace WPRProject_1A_2.Controllers
             }
         }
     }
-}
+
