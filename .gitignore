@@ -39,3 +39,4 @@ appsettings*.json
 .Up2Date
 .sourceLink.json
 AssemblyInfo.cs
+/WPRProject_1A_2/obj/

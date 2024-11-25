@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WPRProject_1A_2.Modellen.Enums;
 
 namespace WPRProject_1A_2.Modellen.Voertuigmodellen;
 
@@ -7,13 +8,6 @@ public class Voertuig
 {
     [Key]
     public int VoertuigId { set; get; }
-
-
-    public enum TypeVoertuigEnum { Auto, Camper, Caravan }
-    public required TypeVoertuigEnum TypeVoertuig { set; get; }
-    
-    public enum VoertuigStatusEnum { Beschikbaar, Verhuurd, InReparatie, Geblokkeerd }
-    public required VoertuigStatusEnum VoertuigStatus { set; get; }
     
     private string kenteken;
     public string Kenteken
@@ -22,6 +16,12 @@ public class Voertuig
         get { return kenteken; }
     }
     
+    public required string Merk { set; get; }
+    public required string Model { set; get; }
+    public required string Kleur { set; get; }
+    [Range(1885, 9999)]
+    public required int Aanschafjaar { set; get; }
+    public VoertuigStatus Voertuigstatus { get; set; }
     
     public int ReserveringId { set; get; }
     [ForeignKey("ReserveringId")]
@@ -40,11 +40,20 @@ public class Voertuig
         get { return schadeclaims; }
     }
     private List<Schadeclaim> schadeclaims { get; set; }
-    
-    public required string Merk { set; get; }
-    public required string Model { set; get; }
-    public required string Kleur { set; get; }
-    public required int Aanschafjaar { set; get; }
+
+    public Voertuig(string kenteken, string merk, string model, string kleur, int aanschafjaar)
+    {
+        Kenteken = kenteken;
+        Merk = merk;
+        Model = model;
+        Kleur = kleur;
+        Aanschafjaar = aanschafjaar;
+        Voertuigstatus = VoertuigStatus.Beschikbaar;
+
+        Reserveringen = new List<Reservering>();
+        Schadeclaims = new List<Schadeclaim>();
+
+    }
 
     public void SetIsVerhuurd()
     {
