@@ -12,6 +12,7 @@ public class Factuur
     public int Korting { get; set; }
     public Bedrijf Bedrijf { get; set; }
 
+    private Factuur(){}
     public Factuur(int factuurId, int prijs, int korting, Bedrijf bedrijf)
     {
         FactuurId = factuurId;

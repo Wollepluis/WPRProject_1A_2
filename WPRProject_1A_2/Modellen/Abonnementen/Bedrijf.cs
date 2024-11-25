@@ -13,6 +13,7 @@ public class Bedrijf
     public Abonnement? Abonnement { get; set; }
     public required List<Account> Accounts { get; set; }
 
+    private Bedrijf() {}
     public Bedrijf(int id, string bedrijfsnaam, string domeinnaam, Adres adres, int kVkNummer, Abonnement abonnement, List<Account> accounts)
     {
         Id = id;
