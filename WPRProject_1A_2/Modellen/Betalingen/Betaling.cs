@@ -1,8 +1,12 @@
-﻿namespace WPRProject_1A_2.Modellen.Betaling;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WPRProject_1A_2.Modellen.Betaling;
 
 public class Betaling
 {
+    [Key]
     public int BetalingId { get; set; }
+    [DataType(DataType.Currency)]
     public double Bedrag { get; set; }
     public bool IsBetaald { get; private set; }
 

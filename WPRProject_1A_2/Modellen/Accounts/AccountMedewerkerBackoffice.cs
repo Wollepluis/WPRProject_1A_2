@@ -20,7 +20,7 @@ public class AccountMedewerkerBackoffice : AccountMedewerker
         
     }
 
-    public void KeurHuurverzoek(/*Huurverzoek huurverzoek*/)
+    public void KeurReservering(Reservering reservering)
     {
         
     }
