@@ -9,8 +9,9 @@ public class Reservering
 {
     [Key]
     public int ReserveringId { get; set; }
-    
+    [DataType(DataType.DateTime)]
     public DateTime Begindatum { get; set; }
+    [DataType(DataType.DateTime)]
     public DateTime Einddatum { get; set; }
     public string AardVanReis { get; set; }
     public string VersteBestemming { get; set; }

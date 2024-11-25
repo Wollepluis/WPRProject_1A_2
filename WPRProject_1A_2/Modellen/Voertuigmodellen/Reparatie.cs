@@ -7,6 +7,7 @@ public class Reparatie
     [Key]
     public int ReparatieId { set; get; }
     public string? Beschrijving { set; get; }
+    [DataType(DataType.DateTime)]
     public required DateTime Reparatiedatum { set; get; }
     public required List<string> Opmerkingen { set; get; }
 }
