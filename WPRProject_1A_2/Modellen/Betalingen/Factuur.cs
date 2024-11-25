@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using WPRProject_1A_2.Modellen.Abonnementen;
+using WPRProject_1A_2.Modellen.Voertuigmodellen;
 
 namespace WPRProject_1A_2.Modellen.Betalingen;
 
@@ -7,24 +8,59 @@ public class Factuur
 {
     [Key]
     public int FactuurId { get; set; }
+    public Reservering Reservering { get; set; }
     [DataType(DataType.Currency)]
-    public int Prijs { get; set; }
-    public int Korting { get; set; }
+    public double Prijs { get; set; }
     public Bedrijf Bedrijf { get; set; }
 
-    public Factuur(int factuurId, int prijs, int korting, Bedrijf bedrijf)
+    public Factuur(int factuurId, double prijs, Bedrijf bedrijf)
     {
         FactuurId = factuurId;
         Prijs = prijs;
-        Korting = korting;
         Bedrijf = bedrijf;
     }
-
-    public int StelFactuurOp()
+    
+    private double StelFactuurOp()
     {
-        int kortingsBedrag = (Prijs * Korting) / 100;
-        int totaalPrijs = Prijs - kortingsBedrag;
+        double totaalPrijs = 0;
+        foreach (var v in Reservering.BesteldeVoertuigen)
+        {
+            double prijs = v.Prijs;
+            if (Bedrijf.Abonnement is PayAsYouGo)
+            {
+                double prijs2 = BerekenKorting(prijs, v);
+                totaalPrijs += prijs2;
+            }
+            else
+            {
+                Console.WriteLine($"Artikel: {Prijs}");
+                totaalPrijs += prijs;
+            }
+        }
         return totaalPrijs;
+    }
+    
+    private double BerekenKorting(double prijs, Voertuig v)
+    {
+        double nieuwePrijs = prijs;
+        int korting = 0;
+        switch (v) 
+        { 
+            case Caravan:
+                nieuwePrijs *= 0.60;
+                korting = 40;
+                break;
+            case Camper:
+                nieuwePrijs *= 0.70;
+                korting = 30;
+                break;
+            case Auto:
+                nieuwePrijs *= 0.50;
+                korting = 50;
+                break;
+        }
+        Console.WriteLine($"Artikel: {nieuwePrijs} + {korting}");
+        return nieuwePrijs;
     }
 
     public override string ToString()
@@ -35,9 +71,8 @@ public class Factuur
                $"Adres: {Bedrijf.Adres}\n" +
                $"Kvk-nummer: {Bedrijf.KvkNummer}\n" +
                $"Abonnement: {Bedrijf.Abonnement}\n" +
-               $"Prijs: €{Prijs}\n" +
-               $"Korting: {Korting}%\n" +
-               $"Totaalbedrag na korting: €{StelFactuurOp()}";
+               
+               StelFactuurOp();
     }
 }
 
