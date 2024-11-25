@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using WPRProject_1A_2.Modellen.Abonnementen; // Namespace waarin jouw `Adres`-klasse zit
-using WPRProject_1A_2;
+
 
 namespace WPRProject_1A_2.Controllers
 {
@@ -19,7 +19,7 @@ namespace WPRProject_1A_2.Controllers
             
             
             [HttpGet("zoek-adres")]
-            public async Task<IActionResult> ZoekAdres([FromQuery] string postcode, int huisnummer)
+            public async Task<IActionResult> ZoekAdres(string postcode, int huisnummer)
             {
                 if (string.IsNullOrWhiteSpace(postcode) || huisnummer <= 0)
                 {
