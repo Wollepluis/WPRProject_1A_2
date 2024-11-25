@@ -23,9 +23,22 @@ public class Reservering
     public Huuraanvraag Huuraanvraag { get; set; }
     
     public bool IsBetaald { get; set; }
-    public Reservering(DateTime begindatum, DateTime einddatum, string aardVanReis, string versteBestemming, int verwachteHoeveelheidKm, int rijbewijsDocumentnummer, double totaalprijs, bool isBetaald)
+    
+    public Reservering(DateTime begindatum, DateTime einddatum, string aardVanReis, string versteBestemming, int verwachteHoeveelheidKm, Account accont, int rijbewijsDocumentnummer, double totaalprijs, bool isBetaald)
     {
+        Begindatum = begindatum;
+        Einddatum = einddatum;
+        AardVanReis = aardVanReis;
+        VersteBestemming = versteBestemming;
+        VerwachteHoeveelheidKm = verwachteHoeveelheidKm;
+
+        Account = accont;
+        RijbewijsDocumentnummer = rijbewijsDocumentnummer;
+        
+        Totaalprijs = totaalprijs;
         Huuraanvraag = Huuraanvraag.InBehandeling;
+        
+        IsBetaald = isBetaald;
     }
 
     public int BerekenPrijs()
