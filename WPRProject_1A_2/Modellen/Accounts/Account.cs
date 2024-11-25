@@ -8,9 +8,9 @@ public class Account
 {
     [Key]
     public int Id { get; set; }
-    [MaxLength(30)]
+    [DataType(DataType.EmailAddress)]
     public string Email { get; set; }
-    [StringLength(30, MinimumLength = 8)]
+    [DataType(DataType.Password)]
     public string Wachtwoord { get; set; }
     
     public List<Reservering> ActieveReserveringen { get; set; }

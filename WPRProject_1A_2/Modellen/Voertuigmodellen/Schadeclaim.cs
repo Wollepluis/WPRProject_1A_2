@@ -8,8 +8,8 @@ public class Schadeclaim
 {
     [Key]
     public int SchadeclaimId { get; set; }
-    
     public string? Beschrijving { get; set; }
+    [DataType(DataType.DateTime)]
     public required DateTime Datum { get; set; }
     //List<Foto> Fotos { get; set; }
     
@@ -25,7 +25,6 @@ public class Schadeclaim
         get { return reparaties; }
     }
     private List<Reparatie> reparaties;
-    
     public SchadeclaimStatus SchadeclaimStatus { get; set; }
 
     public Schadeclaim(string beschrijving, DateTime datum)

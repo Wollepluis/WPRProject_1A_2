@@ -1,10 +1,13 @@
-﻿using WPRProject_1A_2.Modellen.Abonnementen;
+﻿using System.ComponentModel.DataAnnotations;
+using WPRProject_1A_2.Modellen.Abonnementen;
 
 namespace WPRProject_1A_2.Modellen.Betalingen;
 
 public class Factuur 
 {
+    [Key]
     public int FactuurId { get; set; }
+    [DataType(DataType.Currency)]
     public int Prijs { get; set; }
     public int Korting { get; set; }
     public Bedrijf Bedrijf { get; set; }

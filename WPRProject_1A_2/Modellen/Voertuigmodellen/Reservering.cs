@@ -20,6 +20,7 @@ public class Reservering
     public Account Account { get; set; }
     public int RijbewijsDocumentnummer { get; set; }
     
+    [DataType(DataType.Currency)]
     public Double Totaalprijs { get; set; }
     public Huuraanvraag Huuraanvraag { get; set; }
     
