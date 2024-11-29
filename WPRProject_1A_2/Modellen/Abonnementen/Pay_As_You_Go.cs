@@ -5,9 +5,9 @@ public class PayAsYouGo : Abonnement
     public int MaandelijkseKosten { get; set; }
     public int ProcentueleKorting { get; set; }
 
-    public PayAsYouGo(int id, int maxVoertuigen, int maxMedewerkers, int maandelijkseKosten, int procentueleKorting) : base(id, maxVoertuigen, maxMedewerkers)
+    public PayAsYouGo(int maxVoertuigen, int maxMedewerkers) : base(maxVoertuigen, maxMedewerkers)
     {
-        MaandelijkseKosten = maandelijkseKosten;
-        ProcentueleKorting = procentueleKorting;
+        //MaandelijkseKosten = maandelijkseKosten;
+        //ProcentueleKorting = procentueleKorting;
     }
 }

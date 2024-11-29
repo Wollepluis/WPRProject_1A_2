@@ -2,7 +2,7 @@
 
 public class UpFront : Abonnement
 {
-    public UpFront(int id, int maxVoertuigen, int maxMedewerkers) : base(id, maxVoertuigen, maxMedewerkers)
+    public UpFront(int maxVoertuigen, int maxMedewerkers) : base(maxVoertuigen, maxMedewerkers)
     {
         
     }

@@ -16,11 +16,11 @@ public class Voertuig
         get { return kenteken; }
     }
     
-    public required string Merk { set; get; }
-    public required string Model { set; get; }
-    public required string Kleur { set; get; }
+    public string Merk { set; get; }
+    public string Model { set; get; }
+    public string Kleur { set; get; }
     [Range(1885, 9999)]
-    public required int Aanschafjaar { set; get; }
+    public int Aanschafjaar { set; get; }
     public VoertuigStatus Voertuigstatus { get; set; }
     
     public int ReserveringId { set; get; }

@@ -9,9 +9,8 @@ public class Abonnement
     public int Maxvoertuigen  { get; set; }
     public int MaxMedewerkers { get; set; }
 
-    public Abonnement(int id, int maxvoertuigen, int maxMedewerkers)
+    public Abonnement(int maxvoertuigen, int maxMedewerkers)
     {
-        Id = id;
         Maxvoertuigen = maxvoertuigen;
         MaxMedewerkers = maxMedewerkers;
     }
