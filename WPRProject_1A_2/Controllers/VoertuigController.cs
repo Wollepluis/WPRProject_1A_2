@@ -18,7 +18,13 @@ namespace WPRProject_1A_2.Controllers
         {
             _context = new CarAndAllContext();
         }
-        
+
+        // [HttpGet("Filter")]
+        // public async Task<ActionResult<IEnumerable<Voertuig>>> FilterVoertuig()
+        // {
+        //     
+        // }
+
         [HttpPost("Voeg voertuig toe")]
         public async Task<IActionResult> PostAbonnement(VoertuigType voertuigType, string kenteken, string merk , string model, string kleur, int aanschafjaar, double prijs)
         {

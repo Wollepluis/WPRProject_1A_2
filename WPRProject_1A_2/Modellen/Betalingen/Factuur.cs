@@ -11,70 +11,70 @@ public class Factuur
     public Reservering Reservering { get; set; }
     [DataType(DataType.Currency)]
     public double Prijs { get; set; }
-    public Bedrijf Bedrijf { get; set; }
+    //public Bedrijf? Bedrijf { get; set; }
 
-    public Factuur(int factuurId, double prijs, Bedrijf bedrijf)
+    public Factuur(int factuurId, double prijs/*, Bedrijf bedrijf*/)
     {
         FactuurId = factuurId;
         Prijs = prijs;
-        Bedrijf = bedrijf;
+        //Bedrijf = bedrijf;
     }
     
-    private double StelFactuurOp()
-    {
-        double totaalPrijs = 0;
-        foreach (var v in Reservering.BesteldeVoertuigen)
-        {
-            double prijs = v.Prijs;
-            if (Bedrijf.Abonnement is PayAsYouGo)
-            {
-                double prijs2 = BerekenKorting(prijs, v);
-                totaalPrijs += prijs2;
-            }
-            else
-            {
-                Console.WriteLine($"Artikel: {Prijs}");
-                totaalPrijs += prijs;
-            }
-        }
-        return totaalPrijs;
-    }
-    
-    private double BerekenKorting(double prijs, Voertuig v)
-    {
-        double nieuwePrijs = prijs;
-        int korting = 0;
-        switch (v) 
-        { 
-            case Caravan:
-                nieuwePrijs *= 0.60;
-                korting = 40;
-                break;
-            case Camper:
-                nieuwePrijs *= 0.70;
-                korting = 30;
-                break;
-            case Auto:
-                nieuwePrijs *= 0.50;
-                korting = 50;
-                break;
-        }
-        Console.WriteLine($"Artikel: {nieuwePrijs} + {korting}");
-        return nieuwePrijs;
-    }
-
-    public override string ToString()
-    {
-        return $"Factuur ID: {FactuurId}\n" +
-               $"Bedrijfsnaam: {Bedrijf.Bedrijfsnaam}\n" +
-               $"Domeinnaam: {Bedrijf.Domeinnaam}\n" +
-               $"Adres: {Bedrijf.Adres}\n" +
-               $"Kvk-nummer: {Bedrijf.KvkNummer}\n" +
-               $"Abonnement: {Bedrijf.Abonnement}\n" +
-               
-               StelFactuurOp();
-    }
-}
+    // private double StelFactuurOp()
+    // {
+    //     double totaalPrijs = 0;
+    //     foreach (var v in Reservering.BesteldeVoertuigen)
+    //     {
+    //         double prijs = v.Prijs;
+    //         if (Bedrijf.Abonnement is PayAsYouGo)
+    //         {
+    //             double prijs2 = BerekenKorting(prijs, v);
+    //             totaalPrijs += prijs2;
+    //         }
+    //         else
+    //         {
+    //             Console.WriteLine($"Artikel: {Prijs}");
+    //             totaalPrijs += prijs;
+    //         }
+    //     }
+    //     return totaalPrijs;
+    // }
+    //
+//     private double BerekenKorting(double prijs, Voertuig v)
+//     {
+//         double nieuwePrijs = prijs;
+//         int korting = 0;
+//         switch (v) 
+//         { 
+//             case Caravan:
+//                 nieuwePrijs *= 0.60;
+//                 korting = 40;
+//                 break;
+//             case Camper:
+//                 nieuwePrijs *= 0.70;
+//                 korting = 30;
+//                 break;
+//             case Auto:
+//                 nieuwePrijs *= 0.50;
+//                 korting = 50;
+//                 break;
+//         }
+//         Console.WriteLine($"Artikel: {nieuwePrijs} + {korting}");
+//         return nieuwePrijs;
+//     }
+//
+//     public override string ToString()
+//     {
+//         return $"Factuur ID: {FactuurId}\n" +
+//                $"Bedrijfsnaam: {Bedrijf.Bedrijfsnaam}\n" +
+//                $"Domeinnaam: {Bedrijf.Domeinnaam}\n" +
+//                $"Adres: {Bedrijf.Adres}\n" +
+//                $"Kvk-nummer: {Bedrijf.KvkNummer}\n" +
+//                $"Abonnement: {Bedrijf.Abonnement}\n" +
+//                
+//                StelFactuurOp();
+//     }
+ }
 
 
 
