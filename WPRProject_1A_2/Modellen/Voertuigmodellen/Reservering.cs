@@ -27,7 +27,9 @@ public class Reservering
     public Huuraanvraag Huuraanvraag { get; set; }
     
     public bool IsBetaald { get; set; }
-    
+
+    private Reservering() {}
+
     public Reservering(List<Voertuig> besteldeVoertuigen, DateTime begindatum, DateTime einddatum, string aardVanReis, string versteBestemming, int verwachteHoeveelheidKm, Account account, int rijbewijsDocumentnummer, double totaalprijs, bool isBetaald)
     {
         BesteldeVoertuigen = besteldeVoertuigen;

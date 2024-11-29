@@ -13,9 +13,8 @@ public class Factuur
     public double Prijs { get; set; }
     public Bedrijf Bedrijf { get; set; }
 
-    public Factuur(int factuurId, double prijs, Bedrijf bedrijf)
+    public Factuur(double prijs, Bedrijf bedrijf)
     {
-        FactuurId = factuurId;
         Prijs = prijs;
         Bedrijf = bedrijf;
     }
