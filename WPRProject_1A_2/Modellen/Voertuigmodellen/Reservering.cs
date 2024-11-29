@@ -17,7 +17,7 @@ public class Reservering
     public int AccountId { get; set; }
     [ForeignKey("AccountId")]
     
-    public List<Voertuig> BesteldeVoertuigen { get; set; }
+    public List<Voertuig>? BesteldeVoertuigen { get; set; }
     
     public Account Account { get; set; }
     public long RijbewijsDocumentnummer { get; set; }
@@ -30,9 +30,9 @@ public class Reservering
     
     public Reservering() {}
 
-    public Reservering(List<Voertuig> besteldeVoertuigen, DateTime begindatum, DateTime einddatum, string aardVanReis, string versteBestemming, int verwachteHoeveelheidKm, Account account, int accountId, int rijbewijsDocumentnummer, double totaalprijs, bool isBetaald)
+    public Reservering(DateTime begindatum, DateTime einddatum, string aardVanReis, string versteBestemming, int verwachteHoeveelheidKm, int accountId, Account account, long rijbewijsDocumentnummer, double totaalprijs)
     {
-        BesteldeVoertuigen = besteldeVoertuigen;
+
         Begindatum = begindatum;
         Einddatum = einddatum;
         AardVanReis = aardVanReis;
