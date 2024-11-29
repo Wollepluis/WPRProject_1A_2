@@ -56,10 +56,7 @@ namespace WPRProject_1A_2.Controllers
                                     Gemeente = (string?)adresData["gemeentenaam"],
                                     Provincie = (string?)adresData["provincienaam"]
                                 };
-                                _context.Adressen.Add(adress);
-
-                                // Sla de wijzigingen op in de database
-                                await _context.SaveChangesAsync();
+                                
                                 return Ok(adress);
                             }
                             else
@@ -75,6 +72,16 @@ namespace WPRProject_1A_2.Controllers
                 {
                     return StatusCode(500, $"Er is een fout opgetreden: {ex.Message}");
                 }
+            }
+            
+            [HttpPost("Sla adres op")]
+            public async Task<IActionResult> PostAdres(Adres adres)
+            {
+                _context.Adressen.Add(adres);
+
+                // Sla de wijzigingen op in de database
+                await _context.SaveChangesAsync();
+                return Ok(adres);
             }
         }
     }

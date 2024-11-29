@@ -25,13 +25,10 @@ namespace WPRProject_1A_2.Controllers
             return Ok(account);
         }
 
-        [HttpPost("Maak account")]
-        public async Task<IActionResult> PostAccount(Account? account)
+        [HttpPost("Maak Account")]
+        public async Task<IActionResult> PostAccount(string email, string password)
         {
-            if (account == null)
-            {
-                return BadRequest();
-            }
+            Account account = new Account(email, password);
             _context.Accounts.Add(account);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetAccount), new { id = account.Id }, account);
