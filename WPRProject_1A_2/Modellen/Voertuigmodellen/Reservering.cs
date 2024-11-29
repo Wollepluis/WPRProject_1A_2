@@ -9,16 +9,15 @@ public class Reservering
 {
     [Key]
     public int ReserveringId { get; set; }
-    [DataType(DataType.DateTime)]
     public DateTime Begindatum { get; set; }
-    [DataType(DataType.DateTime)]
     public DateTime Einddatum { get; set; }
     public string AardVanReis { get; set; }
     public string VersteBestemming { get; set; }
     public int VerwachteHoeveelheidKm { get; set; }
-    
+    public int AccountId { get; set; }
+    [ForeignKey("AccountId")]
     public Account Account { get; set; }
-    public int RijbewijsDocumentnummer { get; set; }
+    public long RijbewijsDocumentnummer { get; set; }
     
     [DataType(DataType.Currency)]
     public Double Totaalprijs { get; set; }
@@ -26,27 +25,57 @@ public class Reservering
     
     public bool IsBetaald { get; set; }
     
-    private Reservering() {}
-    public Reservering(DateTime begindatum, DateTime einddatum, string aardVanReis, string versteBestemming, int verwachteHoeveelheidKm, Account accont, int rijbewijsDocumentnummer, double totaalprijs, bool isBetaald)
+    public Reservering() {}
+    public Reservering(DateTime begindatum, DateTime einddatum, string aardVanReis, string versteBestemming, int verwachteHoeveelheidKm, int accountId, Account account, long rijbewijsDocumentnummer, double totaalprijs)
     {
         Begindatum = begindatum;
         Einddatum = einddatum;
         AardVanReis = aardVanReis;
         VersteBestemming = versteBestemming;
         VerwachteHoeveelheidKm = verwachteHoeveelheidKm;
-
-        Account = accont;
+        AccountId = accountId;
+        Account = account;
         RijbewijsDocumentnummer = rijbewijsDocumentnummer;
         
         Totaalprijs = totaalprijs;
         Huuraanvraag = Huuraanvraag.InBehandeling;
         
-        IsBetaald = isBetaald;
+        IsBetaald = false;
     }
 
     public int BerekenPrijs()
     {
         int prijs = 0;
         return prijs;
+    }
+
+    public async void CheckRijbewijs(long rijbewijs)
+    {
+        string apiUrl = "https://api.rdw.nl/rijbewijs";  // Voorbeeld URL van een REST API
+
+        using (HttpClient client = new HttpClient())
+        {
+            // Stel de parameters in voor de aanvraag
+            var parameters = new
+            {
+                rijbewijsnummer = rijbewijs,
+                gebruiker = "jouw_gebruikersnaam",
+                wachtwoord = "jouw_wachtwoord"
+            };
+
+            // Stuur de GET-aanroep
+            HttpResponseMessage response = await client.GetAsync($"{apiUrl}?rijbewijsnummer={rijbewijs}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                string responseBody = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Rijbewijs is geldig:");
+                Console.WriteLine(responseBody); // Verwerk de JSON response
+            }
+            else
+            {
+                Console.WriteLine($"Fout bij het controleren van het rijbewijs: {response.StatusCode}");
+            }
+        }
     }
 }

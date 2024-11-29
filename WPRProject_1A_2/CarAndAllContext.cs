@@ -10,11 +10,12 @@ namespace WPRProject_1A_2;
 public class CarAndAllContext : DbContext
 {
     public DbSet<Abonnement> Abonnementen { get; set; }
-    public DbSet<Adres> Adressen { get; set; }
+    
     public DbSet<Voertuig> Voertuigen { get; set; }
     public DbSet<Betaling> Betalingen { get; set; }
     public DbSet<Account> Accounts { get; set; }
-    
+    public DbSet<Adres> Adressen { get; set; }
+    public DbSet<Reservering> Reserveringen { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder) {}
     

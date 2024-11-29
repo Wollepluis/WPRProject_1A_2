@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using WPRProject_1A_2.Modellen.Abonnementen;
 using WPRProject_1A_2.Modellen.Betalingen;
 using WPRProject_1A_2.Modellen.Voertuigmodellen;
 
@@ -8,14 +10,17 @@ public class Account
 {
     [Key]
     public int Id { get; set; }
+    
     [DataType(DataType.EmailAddress)]
     public string Email { get; set; }
     [DataType(DataType.Password)]
     public string Wachtwoord { get; set; }
-    
-    public List<Reservering> ActieveReserveringen { get; set; }
+    public List<Reservering>? ActieveReserveringen { get; set; }
+    public int BetaalgeschiedenisId { get; set; }
+    [ForeignKey("BetaalgeschiedenisId")]
     public List<Factuur> Betaalgeschiedenis { get; set; }
 
+    public Account() { }
     public Account(string email, string wachtwoord)
     {
         Email = email;
