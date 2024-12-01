@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using WPRProject_1A_2.Modellen.Abonnementen;
 using WPRProject_1A_2.Modellen.Accounts;
@@ -19,11 +20,37 @@ namespace WPRProject_1A_2.Controllers
             _context = new CarAndAllContext();
         }
 
+        [HttpGet("Krijg Alle Voertuigen")]
+        public async Task<ActionResult<IEnumerable<Voertuig>>> GetAlleVoertuigen()
+        {
+            return await _context.Voertuigen.ToListAsync();
+        }
+        
         // [HttpGet("Filter")]
-        // public async Task<ActionResult<IEnumerable<Voertuig>>> FilterVoertuig()
+        // public async Task<ActionResult<IEnumerable<Voertuig>>> FilterVoertuig(VoertuigType voertuigType)
         // {
-        //     
+        //     try
+        //     {
+        //         // Filter the vehicles based on the provided voertuigType
+        //         var filteredVoertuigen = await _context.Voertuigen
+        //             .Where(v => v.GetType().Name == voertuigType.ToString()) // Adjust based on the actual type name in the model
+        //             .ToListAsync();
+        //
+        //         // If no vehicles found, return a 404 Not Found response
+        //         if (filteredVoertuigen == null || !filteredVoertuigen.Any())
+        //         {
+        //             return NotFound($"No vehicles found for the type {voertuigType}");
+        //         }
+        //
+        //         return Ok(filteredVoertuigen);
+        //     }
+        //     catch (ArgumentException e)
+        //     {
+        //         return BadRequest(e.Message);
+        //     }
         // }
+
+
 
         [HttpPost("Voeg voertuig toe")]
         public async Task<IActionResult> PostAbonnement(VoertuigType voertuigType, string kenteken, string merk , 
