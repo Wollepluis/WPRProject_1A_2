@@ -13,6 +13,8 @@ public class Factuur
     public double Prijs { get; set; }
     public Bedrijf Bedrijf { get; set; }
 
+    public Factuur() {}
+
     public Factuur(double prijs, Bedrijf bedrijf)
     {
         Prijs = prijs;

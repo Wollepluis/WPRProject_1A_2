@@ -43,6 +43,8 @@ public class Voertuig
 
     public double Prijs;
 
+    public Voertuig() {}
+
     public Voertuig(string kenteken, string merk, string model, string kleur, int aanschafjaar, double prijs)
     {
         Kenteken = kenteken;
