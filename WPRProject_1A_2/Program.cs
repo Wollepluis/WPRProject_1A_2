@@ -8,7 +8,17 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        
+
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("Allowvite",
+                builder => builder
+                    .WithOrigins("http://localhost:5173")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader());
+        });
+
+        app.UseCors("Allowvite");
 
         var builder = WebApplication.CreateBuilder(args);
 
