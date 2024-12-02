@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using WPRProject_1A_2.Modellen.Accounts; // Namespace waarin jouw `account`-klasse zit
 
@@ -12,10 +14,11 @@ namespace WPRProject_1A_2.Controllers
     public class AccountController : ControllerBase
     {
         private CarAndAllContext _context;
-
+        private readonly PasswordHasher<Account> _passwordHasher;
         public AccountController()
         {
             _context = new CarAndAllContext();
+            _passwordHasher = new PasswordHasher<Account>(); // Initialiseer de PasswordHasher
         }
 
         [HttpGet("Krijg Account")]
@@ -28,10 +31,35 @@ namespace WPRProject_1A_2.Controllers
         [HttpPost("Maak Account")]
         public async Task<IActionResult> PostAccount(string email, string password)
         {
-            Account account = new Account(email, password);
+            // Maak een nieuw account object
+            var account = new Account(email, password);
+
+            // Hashet het wachtwoord
+            account.Wachtwoord = _passwordHasher.HashPassword(account, password);
+
+            // Voeg account toe aan de database
             _context.Accounts.Add(account);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetAccount), new { id = account.Id }, account);
+        }
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(string email, string password)
+        {
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
+            if (account == null)
+            {
+                return Unauthorized(); // Account niet gevonden
+            }
+
+            // Vergelijk het gehashte wachtwoord
+            var result = _passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, password);
+
+            if (result == PasswordVerificationResult.Failed)
+            {
+                return Unauthorized(); // Wachtwoord incorrect
+            }
+
+            return Ok("Inloggen succesvol");
         }
     }
 }
