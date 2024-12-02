@@ -10,29 +10,13 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         
-        var app = builder.Build();
-
-        builder.Services.AddCors(options =>
-        {
-            options.AddPolicy("Allowvite",
-                builder => builder
-                    .WithOrigins("http://localhost:5173")
-                    .AllowAnyMethod()
-                    .AllowAnyHeader());
-        });
-
-        app.UseCors("Allowvite");
-
-        builder.WebHost.ConfigureKestrel(options =>
-        {
-        options.ListenLocalhost(5000);
-        });
 
 // Voeg services toe aan de DI-container
         builder.Services.AddControllers(); // Nodig om controllers zoals AdresController te ondersteunen
         builder.Services.AddEndpointsApiExplorer(); // Voor Swagger
         builder.Services.AddSwaggerGen(); // Swagger configuratie
 
+        var app = builder.Build();
 // Middleware pipeline configureren
         if (app.Environment.IsDevelopment())
         {
