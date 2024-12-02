@@ -22,6 +22,11 @@ public class Program
 
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.WebHost.ConfigureKestrel(options =>
+        {
+        options.ListenLocalhost(5000);
+        });
+
 // Voeg services toe aan de DI-container
         builder.Services.AddControllers(); // Nodig om controllers zoals AdresController te ondersteunen
         builder.Services.AddEndpointsApiExplorer(); // Voor Swagger
