@@ -8,6 +8,9 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        var builder = WebApplication.CreateBuilder(args);
+        
+        var app = builder.Build();
 
         builder.Services.AddCors(options =>
         {
@@ -20,8 +23,6 @@ public class Program
 
         app.UseCors("Allowvite");
 
-        var builder = WebApplication.CreateBuilder(args);
-
         builder.WebHost.ConfigureKestrel(options =>
         {
         options.ListenLocalhost(5000);
@@ -31,8 +32,6 @@ public class Program
         builder.Services.AddControllers(); // Nodig om controllers zoals AdresController te ondersteunen
         builder.Services.AddEndpointsApiExplorer(); // Voor Swagger
         builder.Services.AddSwaggerGen(); // Swagger configuratie
-
-        var app = builder.Build();
 
 // Middleware pipeline configureren
         if (app.Environment.IsDevelopment())
