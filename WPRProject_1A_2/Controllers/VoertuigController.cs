@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using WPRProject_1A_2.Modellen.Abonnementen;
 using WPRProject_1A_2.Modellen.Accounts;
@@ -19,28 +20,56 @@ namespace WPRProject_1A_2.Controllers
             _context = new CarAndAllContext();
         }
 
+        [HttpGet("Krijg Alle Voertuigen")]
+        public async Task<ActionResult<IEnumerable<Voertuig>>> GetAlleVoertuigen()
+        {
+            return await _context.Voertuigen.ToListAsync();
+        }
+        
         // [HttpGet("Filter")]
-        // public async Task<ActionResult<IEnumerable<Voertuig>>> FilterVoertuig()
+        // public async Task<ActionResult<IEnumerable<Voertuig>>> FilterVoertuig(VoertuigType voertuigType)
         // {
-        //     
+        //     try
+        //     {
+        //         return await _context.Voertuigen.Select(v => v.GetType());
+        //     }
+        //     catch (ArgumentException e)
+        //     {
+        //         return BadRequest(e.Message);
+        //     }
         // }
 
+
+
         [HttpPost("Voeg voertuig toe")]
-        public async Task<IActionResult> PostAbonnement(VoertuigType voertuigType, string kenteken, string merk , 
-            string model, string kleur, int aanschafjaar, double prijs)
+        public async Task<IActionResult> PostAbonnement(Voertuig voertuig)
         {
             try
             {
-                Voertuig voertuig =
-                    VoertuigFactory.CreateVoertuig(voertuigType, kenteken, merk, model, kleur, aanschafjaar, prijs);
                 _context.Voertuigen.Add(voertuig);
                 await _context.SaveChangesAsync();
-                return Ok($"{voertuigType}: '{merk} {model}' met kenteken {kenteken} is toegevoegd aan de database");
+                
+                return Ok();
             }
             catch (ArgumentException e)
             {
                 return BadRequest(e.Message);
             }
+        }
+
+        [HttpDelete("Verwijder voertuig")]
+        public async Task<IActionResult> VerwijderVoertuig(int id)
+        {
+            Voertuig? voertuig = await _context.Voertuigen.FindAsync(id);
+            if (voertuig == null)
+            {
+                return NotFound();
+            }
+
+            _context.Voertuigen.Remove(voertuig);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }

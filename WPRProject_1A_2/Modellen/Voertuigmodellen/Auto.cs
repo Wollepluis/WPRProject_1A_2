@@ -6,5 +6,6 @@ public class Auto : Voertuig
 {
     public Auto(string kenteken, string merk, string model, string kleur, int aanschafjaar, double prijs) : base(kenteken, merk, model, kleur, aanschafjaar, prijs)
     {
+        
     }
 }
