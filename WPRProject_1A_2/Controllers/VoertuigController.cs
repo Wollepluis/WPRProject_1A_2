@@ -25,7 +25,14 @@ namespace WPRProject_1A_2.Controllers
         {
             return await _context.Voertuigen.ToListAsync();
         }
-        
+
+        [HttpGet("Krijg alle autos")]
+        public async Task<ActionResult<IEnumerable<Voertuig>>> GetAlleAutos()
+        {
+            //var autos = await _context.Voertuigen.Select(a => a.Voert)
+            return Ok();
+        }
+
         // [HttpGet("Filter")]
         // public async Task<ActionResult<IEnumerable<Voertuig>>> FilterVoertuig(VoertuigType voertuigType)
         // {
