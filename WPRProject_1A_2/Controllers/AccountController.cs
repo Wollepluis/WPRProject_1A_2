@@ -7,8 +7,7 @@ using WPRProject_1A_2.Modellen.Accounts; // Namespace waarin jouw `account`-klas
 
 namespace WPRProject_1A_2.Controllers
 {
-
-
+    
     [ApiController]
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
@@ -29,15 +28,12 @@ namespace WPRProject_1A_2.Controllers
         }
 
         [HttpPost("Maak Account")]
-        public async Task<IActionResult> PostAccount(string email, string password)
+        public async Task<IActionResult> PostAccount(Account account)
         {
-            // Maak een nieuw account object
-            var account = new Account(email, password);
-
-            // Hashet het wachtwoord
-            account.Wachtwoord = _passwordHasher.HashPassword(account, password);
-
-            // Voeg account toe aan de database
+            //var account = new Account(email, password);
+            
+            //account.Wachtwoord = _passwordHasher.HashPassword(account, password);
+            
             _context.Accounts.Add(account);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetAccount), new { id = account.Id }, account);
@@ -60,6 +56,24 @@ namespace WPRProject_1A_2.Controllers
             }
 
             return Ok("Inloggen succesvol");
+        }
+
+        [HttpDelete("Verwijder Account")]
+        public async Task<IActionResult> VerwijderAccount(int id)
+        {
+            //BevestigingVerwijderen();
+
+            Account? account = await _context.Accounts.FindAsync(id);
+
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            _context.Accounts.Remove(account);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }
