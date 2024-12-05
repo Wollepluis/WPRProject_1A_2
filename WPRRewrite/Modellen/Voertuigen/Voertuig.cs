@@ -11,8 +11,6 @@ public class Voertuig
     public string Kleur { get; set; }
     public int Aanschafjaar { get; set; }
     public int Prijs { get; set; }
-    public TypeVoertuig TypeVoertuig { get; set; }
-    private string typeVoertuig { get; set; }
 
     public void UpdateVoertuig(Voertuig updatedVoertuig)
     {
@@ -22,21 +20,5 @@ public class Voertuig
         Kleur = updatedVoertuig.Kleur;
         Aanschafjaar = updatedVoertuig.Aanschafjaar;
         Prijs = updatedVoertuig.Prijs;
-    }
-
-    public void CreateVoertuigAsync(TypeVoertuig typeVoertuig)
-    {
-        switch (typeVoertuig)
-        {
-            case TypeVoertuig.Auto:
-                this.typeVoertuig = "Auto";
-                break;
-            case TypeVoertuig.Camper:
-                this.typeVoertuig = "Camper";
-                break;
-            case TypeVoertuig.Caravan:
-                this.typeVoertuig = "Caravan";
-                break;
-        }
     }
 }

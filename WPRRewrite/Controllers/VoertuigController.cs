@@ -33,8 +33,6 @@ public class VoertuigController(CarAndAllContext context) : ControllerBase
         {
             return BadRequest("Voertuig mag niet 'NULL' zijn");
         }
-
-        voertuig.CreateVoertuigAsync(voertuig.TypeVoertuig);
         
         context.Voertuigen.Add(voertuig);
         await context.SaveChangesAsync();
