@@ -1,6 +1,6 @@
 ﻿using WPRRewrite.Enums;
 
-namespace WPRRewrite.Modellen;
+namespace WPRRewrite.Modellen.Voertuigen;
 
 public class Voertuig
 {

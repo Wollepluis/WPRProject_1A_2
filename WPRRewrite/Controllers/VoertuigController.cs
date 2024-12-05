@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WPRRewrite.Interfaces;
-using WPRRewrite.Modellen;
+using WPRRewrite.Modellen.Voertuigen;
 
 namespace WPRRewrite.Controllers;
 
