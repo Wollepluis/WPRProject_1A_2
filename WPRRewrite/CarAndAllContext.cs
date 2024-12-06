@@ -36,7 +36,7 @@ public class CarAndAllContext : DbContext
     public DbSet<Adres> Adressen { get; set; }
     public DbSet<Bedrijf> Bedrijven { get; set; }
     
-    
     public DbSet<Reservering> Reserveringen { get; set; }
     public DbSet<IAccount> Accounts { get; set; }
+
 }
