@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Interfaces;
+using WPRRewrite.Modellen.Accounts;
+using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite;
 
@@ -19,9 +22,10 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddScoped<IPasswordHasher<Account>, PasswordHasher<Account>>();
         builder.Services.AddScoped<IAdresService, AdresService>();
-
-
+        builder.Services.AddScoped<EmailSender>();
+        
         var app = builder.Build();
         if (app.Environment.IsDevelopment())
         {

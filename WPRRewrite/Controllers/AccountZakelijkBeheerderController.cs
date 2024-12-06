@@ -1,13 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Accounts;
+using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Controllers;
 
 [ApiController]
 [Route("api/[Controller]")]
-public class AccountZakelijkBeheerderController(CarAndAllContext context, PasswordHasher<AccountZakelijkBeheerder> passwordHasher, AdresController adresController) : ControllerBase
+public class AccountZakelijkBeheerderController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher, EmailSender emailSender) : ControllerBase
 {
     
     [HttpGet("Krijg alle acoounts")]
@@ -39,10 +41,21 @@ public class AccountZakelijkBeheerderController(CarAndAllContext context, Passwo
         accountZakelijkBeheerder.Wachtwoord = passwordHasher.HashPassword(accountZakelijkBeheerder, accountZakelijkBeheerder.Wachtwoord); // hasher toegevoegd
         accountZakelijkBeheerder.Account = accountZakelijkBeheerder.AccountId;
 
-        context.ZakelijkBeheerderAccounts.Add(accountZakelijkBeheerder);
-        await context.SaveChangesAsync();
+        try
+        {
+            context.ZakelijkBeheerderAccounts.Add(accountZakelijkBeheerder);
+            await context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetAccountZakelijkBeheerder), new { id = accountZakelijkBeheerder.AccountId }, accountZakelijkBeheerder);
+            /*var bedrijf = await context.Bedrijven.FindAsync(accountZakelijkBeheerder.BedrijfsId);
+            emailSender.SendEmail(bedrijf);*/
+
+            return CreatedAtAction(nameof(GetAccountZakelijkBeheerder), new { id = accountZakelijkBeheerder.AccountId }, accountZakelijkBeheerder);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);;
+            return StatusCode(500);
+        }
     }
     
     [HttpPost("Login")]

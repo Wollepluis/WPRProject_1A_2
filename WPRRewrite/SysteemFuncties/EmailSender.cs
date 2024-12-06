@@ -1,11 +1,12 @@
 ﻿using System.Net;
 using System.Net.Mail;
+using WPRRewrite.Modellen;
 
 namespace WPRRewrite.SysteemFuncties;
 
 public class EmailSender
 {
-    public static void SendEmail()
+    public void SendEmail(Bedrijf bedrijf)
     {
         MailMessage mailMessage = new MailMessage();
         mailMessage.From = new MailAddress("mark2492@gmail.com");
