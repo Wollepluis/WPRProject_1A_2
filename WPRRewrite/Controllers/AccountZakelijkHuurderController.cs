@@ -45,8 +45,8 @@ public class AccountZakelijkHuurderController(CarAndAllContext context, IPasswor
             context.ZakelijkHuurderAccounts.Add(accountZakelijkHuurder);
             await context.SaveChangesAsync();
             
-            var bedrijf = await context.Bedrijven.FindAsync(accountZakelijkHuurder.BedrijfsId);
-            emailSender.SendEmail(bedrijf);
+            /*var bedrijf = await context.Bedrijven.FindAsync(accountZakelijkHuurder.BedrijfsId);
+            emailSender.SendEmail(bedrijf);*/
 
             return CreatedAtAction(nameof(GetAccountZakelijkHuurder), new { id = accountZakelijkHuurder.AccountId }, accountZakelijkHuurder);
         }
