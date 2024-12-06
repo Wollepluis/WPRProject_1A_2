@@ -9,7 +9,7 @@ public class ReserveringController(CarAndAllContext context) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Reservering>>> GetAlleReserveringenPerAccount(int accountId)
     {
-        var reserveringen = await context.Reserveringen.Where(r => r.Account.AccountId == accountId).ToListAsync();
+        var reserveringen = await context.Reserveringen.Where(r => r.Account == accountId).ToListAsync();
         if (!reserveringen.Any())
         {
             return NotFound($"Geen reserveringen gevonden voor accountId: {accountId}");
@@ -32,8 +32,8 @@ public class ReserveringController(CarAndAllContext context) : ControllerBase
         var ZakelijkAccount = await context.ZakelijkAccounts.FindAsync(reservering.Account);
         if (ZakelijkAccount == null) return NotFound();
         ZakelijkAccount.AddReservering(reservering);
-        context.Reserveringen.Add(reservering);
         
+        context.Reserveringen.Add(reservering);
         
         for (int i = 0; reservering.GereserveerdeVoertuigen.Count() > i; i++)
         {
