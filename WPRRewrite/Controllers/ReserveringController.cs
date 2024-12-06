@@ -45,4 +45,14 @@ public class ReserveringController(CarAndAllContext context) : ControllerBase
         
         return Ok(reservering);
     }
+
+    [HttpPut]
+    public async Task<ActionResult<IEnumerable<Reservering>>> UpdateReservering(int id, Reservering geupdateReservering)
+    {
+        var bestaandeReservering = await context.Reserveringen.FindAsync(id);
+        if (bestaandeReservering == null) return NotFound();
+        bestaandeReservering.Update(geupdateReservering);
+        await context.SaveChangesAsync();
+        return Ok(bestaandeReservering);
+    }
 }
