@@ -1,18 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Interfaces;
-using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Accounts;
 
 namespace WPRRewrite.Controllers;
 
 [ApiController]
 [Route("api/[Controller]")]
-public class AccountParticulierController(CarAndAllContext context) : ControllerBase
+public class AccountParticulierController(CarAndAllContext context, PasswordHasher<AccountParticulier> passwordHasher, IAdresService adresService) : ControllerBase //Parameters toegevoed
 {
-    private IAdresService _adresService;
+     
     
-    [HttpGet]
+    [HttpGet("Krijg alle accounts")]
     public async Task<ActionResult<IEnumerable<AccountParticulier>>> GetAlleParticuliersAccounts()
     {
         return await context.ParticulierAccounts.ToListAsync();
@@ -30,15 +30,17 @@ public class AccountParticulierController(CarAndAllContext context) : Controller
         return Ok(accountParticulier);
     }
 
-    [HttpPost]
+    [HttpPost("Maak account aan")]
     public async Task<ActionResult<AccountParticulier>> PostAccountParticulier([FromBody] AccountParticulier accountParticulier, string postcode, int huisnummer)
     {
         if (accountParticulier == null)
         {
             return BadRequest("AccountParticulier mag niet 'NULL' zijn");
         }
+        
+        accountParticulier.Wachtwoord = passwordHasher.HashPassword(accountParticulier, accountParticulier.Wachtwoord); // hasher toegevoegd
 
-        var adres = await _adresService.ZoekAdresAsync(postcode, huisnummer);
+        var adres = await adresService.ZoekAdresAsync(postcode, huisnummer);
 
         if (adres == null)
         {
@@ -46,11 +48,32 @@ public class AccountParticulierController(CarAndAllContext context) : Controller
         }
 
         accountParticulier.ParticulierAdres = adres.AdresId;
+        accountParticulier.Account = accountParticulier.AccountId;
 
         context.ParticulierAccounts.Add(accountParticulier);
         await context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetAccountParticulier), new { id = accountParticulier.ParticulierAccountId }, accountParticulier);
+    }
+    //Login toegevoegd
+    [HttpPost("Login")]
+    public async Task<IActionResult> Login(string email, string password)
+    {
+        var account = await context.ParticulierAccounts.FirstOrDefaultAsync(a => a.Email == email);
+
+        if (account == null)
+        {
+            return Unauthorized();
+        }
+        
+        var result = passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, password);
+
+        if (result == PasswordVerificationResult.Failed)
+        {
+            return Unauthorized();
+        }
+
+        return Ok("Inloggen succesvol");
     }
 
     [HttpPut("{id}")]

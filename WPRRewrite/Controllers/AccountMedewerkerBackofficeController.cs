@@ -1,17 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Accounts;
 
 namespace WPRRewrite.Controllers;
 
 [ApiController]
 [Route("api/[Controller]")]
-public class AccountMedewerkerBackofficeController(CarAndAllContext context) : ControllerBase
+public class AccountMedewerkerBackofficeController(CarAndAllContext context,PasswordHasher<AccountMedewerkerBackoffice> passwordHasher) : ControllerBase
 {
-    private AdresController _adresController;
     
-    [HttpGet]
+    [HttpGet("Krijg alle accounts")]
     public async Task<ActionResult<IEnumerable<AccountMedewerkerBackoffice>>> GetAlleMedewerkerBackofficeAccounts()
     {
         return await context.BackofficeAccounts.ToListAsync();
@@ -29,7 +28,7 @@ public class AccountMedewerkerBackofficeController(CarAndAllContext context) : C
         return Ok(accountMedewerkerBackoffice);
     }
 
-    [HttpPost]
+    [HttpPost("Maak account aan")]
     public async Task<ActionResult<AccountMedewerkerBackoffice>> PostAccountMedewerkerBackoffice([FromBody] AccountMedewerkerBackoffice accountMedewerkerBackoffice)
     {
         if (accountMedewerkerBackoffice == null)
@@ -37,12 +36,33 @@ public class AccountMedewerkerBackofficeController(CarAndAllContext context) : C
             return BadRequest("AccountMedewerkerBackoffice mag niet 'NULL' zijn");
         }
 
+        accountMedewerkerBackoffice.Wachtwoord = passwordHasher.HashPassword(accountMedewerkerBackoffice, accountMedewerkerBackoffice.Wachtwoord); // hasher toegevoegd
         accountMedewerkerBackoffice.Account = accountMedewerkerBackoffice.AccountId;
 
         context.BackofficeAccounts.Add(accountMedewerkerBackoffice);
         await context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetAccountMedewerkerBackoffice), new { id = accountMedewerkerBackoffice.AccountId }, accountMedewerkerBackoffice);
+    }
+    
+    [HttpPost("Login")]
+    public async Task<IActionResult> Login(string email, string password)
+    {
+        var account = await context.BackofficeAccounts.FirstOrDefaultAsync(a => a.Email == email);
+
+        if (account == null)
+        {
+            return Unauthorized();
+        }
+        
+        var result = passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, password);
+
+        if (result == PasswordVerificationResult.Failed)
+        {
+            return Unauthorized();
+        }
+
+        return Ok("Inloggen succesvol");
     }
 
     [HttpPut("{id}")]

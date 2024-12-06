@@ -1,17 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Accounts;
 
 namespace WPRRewrite.Controllers;
 
 [ApiController]
 [Route("api/[Controller]")]
-public class AccountZakelijkHuurderController(CarAndAllContext context) : ControllerBase
+public class AccountZakelijkHuurderController(CarAndAllContext context, PasswordHasher<AccountZakelijkHuurder> passwordHasher) : ControllerBase
 {
-    private AdresController _adresController;
     
-    [HttpGet]
+    [HttpGet("Krijg alle accounts")]
     public async Task<ActionResult<IEnumerable<AccountZakelijkHuurder>>> GetAlleZakelijkHuurderAccounts()
     {
         return await context.ZakelijkHuurderAccounts.ToListAsync();
@@ -29,7 +28,7 @@ public class AccountZakelijkHuurderController(CarAndAllContext context) : Contro
         return Ok(accountZakelijkHuurder);
     }
 
-    [HttpPost]
+    [HttpPost("Maak accounts aan")]
     public async Task<ActionResult<AccountZakelijkHuurder>> PostAccountZakelijkHuurder([FromBody] AccountZakelijkHuurder accountZakelijkHuurder)
     {
         if (accountZakelijkHuurder == null)
@@ -37,6 +36,7 @@ public class AccountZakelijkHuurderController(CarAndAllContext context) : Contro
             return BadRequest("AccountZakelijkHuurder mag niet 'NULL' zijn");
         }
 
+        accountZakelijkHuurder.Wachtwoord = passwordHasher.HashPassword(accountZakelijkHuurder, accountZakelijkHuurder.Wachtwoord); // hasher toegevoegd
         accountZakelijkHuurder.Account = accountZakelijkHuurder.AccountId;
 
         context.ZakelijkHuurderAccounts.Add(accountZakelijkHuurder);
@@ -45,6 +45,26 @@ public class AccountZakelijkHuurderController(CarAndAllContext context) : Contro
         return CreatedAtAction(nameof(GetAccountZakelijkHuurder), new { id = accountZakelijkHuurder.AccountId }, accountZakelijkHuurder);
     }
 
+    [HttpPost("Login")]
+    public async Task<IActionResult> Login(string email, string password)
+    {
+        var account = await context.ZakelijkHuurderAccounts.FirstOrDefaultAsync(a => a.Email == email);
+
+        if (account == null)
+        {
+            return Unauthorized();
+        }
+        
+        var result = passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, password);
+
+        if (result == PasswordVerificationResult.Failed)
+        {
+            return Unauthorized();
+        }
+
+        return Ok("Inloggen succesvol");
+    }
+    
     [HttpPut("{id}")]
     public async Task<IActionResult> PutAccountZakelijkHuurder(int id, [FromBody] AccountZakelijkHuurder updatedAccountZakelijkHuurder)
     {
