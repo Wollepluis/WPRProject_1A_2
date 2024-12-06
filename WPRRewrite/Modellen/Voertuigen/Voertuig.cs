@@ -24,4 +24,15 @@ public abstract class Voertuig : IVoertuig
         Aanschafjaar = updatedVoertuig.Aanschafjaar;
         Prijs = updatedVoertuig.Prijs;
     }
+
+    public Voertuig(string kenteken, string merk, string model, string kleur, int aanschafjaar, int prijs)
+    {
+        Kenteken = kenteken;
+        Merk = merk;
+        Model = model;
+        Kleur = kleur;
+        Aanschafjaar = aanschafjaar;
+        Prijs = prijs;
+        Reserveringen = new List<Reservering>();
+    }
 }

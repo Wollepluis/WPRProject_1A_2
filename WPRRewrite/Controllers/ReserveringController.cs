@@ -4,20 +4,22 @@ using WPRRewrite.Modellen;
 
 namespace WPRRewrite.Controllers;
 
+[ApiController]
+[Route("api/[Controller]")]
 public class ReserveringController(CarAndAllContext context) : ControllerBase
 {
-    [HttpGet]
+    [HttpGet("PerAccount/{accountId}")]
     public async Task<ActionResult<IEnumerable<Reservering>>> GetAlleReserveringenPerAccount(int accountId)
     {
         var reserveringen = await context.Reserveringen.Where(r => r.Account == accountId).ToListAsync();
-        if (!reserveringen.Any())
+        if (reserveringen.Count == 0)
         {
             return NotFound($"Geen reserveringen gevonden voor accountId: {accountId}");
         }
         return Ok(reserveringen);
     }
 
-    [HttpGet]
+    [HttpGet("PerVoertuig/{voertuigId}")]
     public async Task<ActionResult<IEnumerable<Reservering>>> GetAlleReserveringenPerVoertuig(int voertuigId)
     {
         var voertuig = await context.Voertuigen.FindAsync(voertuigId);
@@ -29,9 +31,9 @@ public class ReserveringController(CarAndAllContext context) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<IEnumerable<Reservering>>> PostReservering(Reservering reservering)
     {
-        var ZakelijkAccount = await context.ZakelijkAccounts.FindAsync(reservering.Account);
-        if (ZakelijkAccount == null) return NotFound();
-        ZakelijkAccount.AddReservering(reservering);
+        var zakelijkAccount = await context.ZakelijkAccounts.FindAsync(reservering.Account);
+        if (zakelijkAccount == null) return NotFound();
+        zakelijkAccount.AddReservering(reservering);
         
         context.Reserveringen.Add(reservering);
         
@@ -53,6 +55,16 @@ public class ReserveringController(CarAndAllContext context) : ControllerBase
         if (bestaandeReservering == null) return NotFound();
         bestaandeReservering.Update(geupdateReservering);
         await context.SaveChangesAsync();
-        return Ok(bestaandeReservering);
+        return NoContent();
+    }
+
+    [HttpDelete]
+    public async Task<ActionResult<IEnumerable<Reservering>>> DeleteReservering(int id)
+    {
+        var reservering = await context.Reserveringen.FindAsync(id);
+        if (reservering == null) return NotFound();
+        context.Reserveringen.Remove(reservering);
+        await context.SaveChangesAsync();
+        return NoContent();
     }
 }
