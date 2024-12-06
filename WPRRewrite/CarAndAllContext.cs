@@ -2,6 +2,7 @@
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.Modellen;
+using WPRRewrite.Modellen.Abonnementen;
 using WPRRewrite.Modellen.Voertuigen;
 
 namespace WPRRewrite;
@@ -35,15 +36,7 @@ public class CarAndAllContext : DbContext
     public DbSet<Adres> Adressen { get; set; }
     public DbSet<Bedrijf> Bedrijven { get; set; }
     
-    public DbSet<Account> Accounts { get; set; }
-    
-    public DbSet<AccountZakelijk> ZakelijkAccounts { get; set; }
-    public DbSet<AccountZakelijkBeheerder> ZakelijkBeheerderAccounts { get; set; }
-    public DbSet<AccountZakelijkHuurder> ZakelijkHuurderAccounts { get; set; }
-    
-    public DbSet<AccountMedewerker> MedewerkerAccounts { get; set; }
-    public DbSet<AccountMedewerkerFrontoffice> FrontofficeAccounts { get; set; }
-    public DbSet<AccountMedewerkerBackoffice> BackofficeAccounts { get; set; }
-    public DbSet<AccountParticulier> ParticulierAccounts { get; set; }
     public DbSet<Reservering> Reserveringen { get; set; }
+    public DbSet<IAccount> Accounts { get; set; }
+
 }

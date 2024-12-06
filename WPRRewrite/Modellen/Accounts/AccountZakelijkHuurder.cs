@@ -1,13 +1,15 @@
-﻿namespace WPRRewrite.Modellen.Accounts;
+﻿using Microsoft.AspNetCore.Identity;
+using WPRRewrite.Interfaces;
 
-public class AccountZakelijkHuurder : AccountZakelijk
+namespace WPRRewrite.Modellen.Accounts;
+
+public class AccountZakelijkHuurder(IPasswordHasher<Account> passwordHasher) : AccountZakelijk(passwordHasher)
 {
     public int AccountZakelijkHuurderId { get; set; }
     public int Account { get; set; }
-    
-    public void UpdateAccountZakelijkHuurder(AccountZakelijkHuurder updatedAccountZakelijkHuurder)
+
+    public override PasswordVerificationResult WachtwoordVerifieren(string password)
     {
-        Email = updatedAccountZakelijkHuurder.Email;
-        Wachtwoord = updatedAccountZakelijkHuurder.Wachtwoord;
+        return passwordHasher.VerifyHashedPassword(this, Wachtwoord, password);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace WPRRewrite.Modellen;
+﻿using WPRRewrite.Modellen.Abonnementen;
+
+namespace WPRRewrite.Modellen;
 
 public class Bedrijf
 {
@@ -7,6 +9,7 @@ public class Bedrijf
     public int BedrijfAdres { get; set; }
     public string Domeinnaam { get; set; }
     public int KvkNummer { get; set; }
+    public Abonnement Abonnement { get; set; }
     
     
     public void UpdateBedrijf(Bedrijf updatedBedrijf)

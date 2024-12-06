@@ -1,13 +1,14 @@
-﻿namespace WPRRewrite.Modellen.Accounts;
+﻿using Microsoft.AspNetCore.Identity;
 
-public class AccountMedewerkerBackoffice : AccountMedewerker
+namespace WPRRewrite.Modellen.Accounts;
+
+public class AccountMedewerkerBackoffice(IPasswordHasher<Account> passwordHasher) : AccountMedewerker(passwordHasher)
 {
     public int AccountMedewerkerBackOfficeId { get; set; }
     public int Account { get; set; }
     
-    public void UpdateAccountMedewerkerBackoffice(AccountMedewerkerBackoffice updatedAccountMedewerkerBackoffice)
+    public override PasswordVerificationResult WachtwoordVerifieren(string password)
     {
-        Email = updatedAccountMedewerkerBackoffice.Email;
-        Wachtwoord = updatedAccountMedewerkerBackoffice.Wachtwoord;
+        return passwordHasher.VerifyHashedPassword(this, Wachtwoord, password);
     }
 }
