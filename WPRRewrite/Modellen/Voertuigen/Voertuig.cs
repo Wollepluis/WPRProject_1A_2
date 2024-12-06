@@ -1,8 +1,9 @@
 ﻿using WPRRewrite.Enums;
+using WPRRewrite.Interfaces;
 
 namespace WPRRewrite.Modellen.Voertuigen;
 
-public class Voertuig
+public abstract class Voertuig : IVoertuig
 {
     public int VoertuigId { get; set; }
     public string Kenteken { get; set; }
@@ -12,7 +13,9 @@ public class Voertuig
     public int Aanschafjaar { get; set; }
     public int Prijs { get; set; }
 
-    public void UpdateVoertuig(Voertuig updatedVoertuig)
+    public List<Reservering> Reserveringen { get; set; }
+    public abstract List<Reservering> GetReserveringen();
+    public void UpdateVoertuig(IVoertuig updatedVoertuig)
     {
         Kenteken = updatedVoertuig.Kenteken;
         Merk = updatedVoertuig.Merk;

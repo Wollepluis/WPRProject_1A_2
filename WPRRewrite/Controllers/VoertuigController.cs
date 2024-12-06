@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Voertuigen;
 
 namespace WPRRewrite.Controllers;
@@ -9,7 +10,7 @@ namespace WPRRewrite.Controllers;
 public class VoertuigController(CarAndAllContext context) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Voertuig>>> GetAlleVoertuigen()
+    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen()
     {
         return await context.Voertuigen.ToListAsync();
     }
