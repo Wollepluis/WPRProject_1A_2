@@ -1,6 +1,13 @@
-﻿namespace WPRRewrite.Modellen.Accounts;
+﻿using Microsoft.AspNetCore.Identity;
+using WPRRewrite.Interfaces;
 
-public abstract class AccountMedewerker : Account
+namespace WPRRewrite.Modellen.Accounts;
+
+public abstract class AccountMedewerker(IPasswordHasher<Account> passwordHasher) : Account(passwordHasher), IAccountMedewerker
 {
-    
+    public override void UpdateAccount(IAccount updatedAccount)
+    {
+        Email = updatedAccount.Email;
+        Wachtwoord = updatedAccount.Wachtwoord;
+    }
 }

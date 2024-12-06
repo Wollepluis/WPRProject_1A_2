@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Voertuigen;
@@ -30,7 +31,7 @@ public class CarAndAllContext : DbContext
                              "TrustServerCertificate=True");
     }
 
-    public DbSet<Voertuig> Voertuigen { get; set; }
+    public DbSet<IVoertuig> Voertuigen { get; set; }
     public DbSet<Adres> Adressen { get; set; }
     public DbSet<Bedrijf> Bedrijven { get; set; }
     
@@ -44,4 +45,5 @@ public class CarAndAllContext : DbContext
     public DbSet<AccountMedewerkerFrontoffice> FrontofficeAccounts { get; set; }
     public DbSet<AccountMedewerkerBackoffice> BackofficeAccounts { get; set; }
     public DbSet<AccountParticulier> ParticulierAccounts { get; set; }
+    public DbSet<Reservering> Reserveringen { get; set; }
 }

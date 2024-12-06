@@ -1,6 +1,9 @@
-﻿namespace WPRRewrite.Modellen.Accounts;
+﻿using Microsoft.AspNetCore.Identity;
+using WPRRewrite.Interfaces;
 
-public class AccountParticulier : Account
+namespace WPRRewrite.Modellen.Accounts;
+
+public class AccountParticulier(IPasswordHasher<Account> passwordHasher) : Account(passwordHasher)
 {
     public int ParticulierAccountId { get; set; }
     public string Naam { get; set; }
@@ -8,12 +11,19 @@ public class AccountParticulier : Account
     public int Telefoonnummer { get; set; }
     public int Account { get; set; }
 
-    public void UpdateAccountParticulier(AccountParticulier updatedAccountParticulier)
+    public override void UpdateAccount(IAccount updatedAccount)
     {
-        Email = updatedAccountParticulier.Email;
-        Wachtwoord = updatedAccountParticulier.Wachtwoord;
-        Naam = updatedAccountParticulier.Naam;
-        ParticulierAdres = updatedAccountParticulier.ParticulierAdres;
-        Telefoonnummer = updatedAccountParticulier.Telefoonnummer;
+        var particulierAccount = (AccountParticulier)updatedAccount;
+        
+        Email = particulierAccount.Email;
+        Wachtwoord = particulierAccount.Wachtwoord;
+        Naam = particulierAccount.Naam;
+        ParticulierAdres = particulierAccount.ParticulierAdres;
+        Telefoonnummer = particulierAccount.Telefoonnummer;
+    }
+
+    public override PasswordVerificationResult WachtwoordVerifieren(string password)
+    {
+        return passwordHasher.VerifyHashedPassword(this, Wachtwoord, password);
     }
 }
