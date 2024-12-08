@@ -24,6 +24,13 @@ public class CarAndAllContext : DbContext
             .HasValue<AccountZakelijk>("ZakelijkAccount")
             .HasValue<AccountZakelijkBeheerder>("MedewerkerAccount")
             .HasValue<AccountZakelijkHuurder>("MedewerkerAccount");
+
+        builder.Entity<Voertuig>()
+            .HasDiscriminator<string>("VoertuigType")
+            .HasValue<Voertuig>("Voertuig")
+            .HasValue<Auto>("Auto")
+            .HasValue<Camper>("Camper")
+            .HasValue<Caravan>("Caravan");
     }
     
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -34,7 +41,7 @@ public class CarAndAllContext : DbContext
                              "TrustServerCertificate=True");
     }
 
-    public DbSet<IVoertuig> Voertuigen { get; set; }
+    public DbSet<Voertuig> Voertuigen { get; set; }
     public DbSet<Adres> Adressen { get; set; }
     public DbSet<Bedrijf> Bedrijven { get; set; }
     
