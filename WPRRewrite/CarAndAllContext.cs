@@ -47,4 +47,5 @@ public class CarAndAllContext : DbContext
     
     public DbSet<Account> Accounts { get; set; }
     public DbSet<Reservering> Reserveringen { get; set; }
+    public DbSet<Reparatie> Reparaties { get; set; }
 }
