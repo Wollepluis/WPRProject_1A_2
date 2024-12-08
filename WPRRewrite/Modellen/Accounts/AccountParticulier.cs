@@ -5,11 +5,10 @@ namespace WPRRewrite.Modellen.Accounts;
 
 public class AccountParticulier : Account
 {
-    private readonly IPasswordHasher<Account> _passwordHasher;
     public AccountParticulier(IPasswordHasher<Account> passwordHasher)
         : base(passwordHasher)
     {
-        _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
+        
     }
     
     public int ParticulierAccountId { get; set; }
@@ -35,6 +34,6 @@ public class AccountParticulier : Account
             throw new ArgumentException("Wachtwoord mag niet null of leeg zijn", nameof(password));
         }
 
-        return _passwordHasher.VerifyHashedPassword(this, Wachtwoord, password);
+        return PasswordHasher.VerifyHashedPassword(this, Wachtwoord, password);
     }
 }

@@ -3,10 +3,18 @@ using WPRRewrite.Interfaces;
 
 namespace WPRRewrite.Modellen.Accounts;
 
-public abstract class AccountMedewerker(IPasswordHasher<Account> passwordHasher) : Account(passwordHasher), IAccountMedewerker
+public abstract class AccountMedewerker : Account, IAccountMedewerker
 {
+    protected AccountMedewerker(IPasswordHasher<Account> passwordHasher)
+        : base(passwordHasher)
+    {
+        
+    }
+    
     public override void UpdateAccount(IAccount updatedAccount)
     {
+        if (updatedAccount == null) throw new ArgumentNullException(nameof(updatedAccount));
+        
         Email = updatedAccount.Email;
         Wachtwoord = updatedAccount.Wachtwoord;
     }
