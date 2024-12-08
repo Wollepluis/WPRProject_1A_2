@@ -14,13 +14,16 @@ public class CarAndAllContext : DbContext
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<AccountParticulier>().HasBaseType<Account>();
-        builder.Entity<AccountZakelijk>().HasBaseType<Account>();
-        builder.Entity<AccountMedewerker>().HasBaseType<Account>();
-        builder.Entity<AccountMedewerkerFrontoffice>().HasBaseType<AccountMedewerker>();
-        builder.Entity<AccountMedewerkerBackoffice>().HasBaseType<AccountMedewerker>();
-        builder.Entity<AccountZakelijkBeheerder>().HasBaseType<AccountZakelijk>();
-        builder.Entity<AccountZakelijkHuurder>().HasBaseType<AccountZakelijk>();
+        builder.Entity<Account>()
+            .HasDiscriminator<string>("AccountType")
+            .HasValue<Account>("BaseAccount")
+            .HasValue<AccountParticulier>("ParticulierAccount")
+            .HasValue<AccountMedewerker>("MedewerkerAccount")
+            .HasValue<AccountMedewerkerFrontoffice>("FrontofficeAccount")
+            .HasValue<AccountMedewerkerBackoffice>("BackofficeAccount")
+            .HasValue<AccountZakelijk>("ZakelijkAccount")
+            .HasValue<AccountZakelijkBeheerder>("MedewerkerAccount")
+            .HasValue<AccountZakelijkHuurder>("MedewerkerAccount");
     }
     
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -35,6 +38,6 @@ public class CarAndAllContext : DbContext
     public DbSet<Adres> Adressen { get; set; }
     public DbSet<Bedrijf> Bedrijven { get; set; }
     
-    public DbSet<IAccount> Accounts { get; set; }
+    public DbSet<Account> Accounts { get; set; }
     public DbSet<Reservering> Reserveringen { get; set; }
 }

@@ -14,7 +14,6 @@ public abstract class Account : IAccount
     public int AccountId { get; set; }
     public string Email { get; set; }
     public string Wachtwoord { get; set; }
-    public string TypeAccount { get; set; }
 
     public abstract void UpdateAccount(IAccount account);
     public abstract PasswordVerificationResult WachtwoordVerify(string password);
