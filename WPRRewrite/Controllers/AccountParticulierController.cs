@@ -1,72 +1,80 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Accounts;
 
 namespace WPRRewrite.Controllers;
 
 [ApiController]
 [Route("api/[Controller]")]
-public class AccountParticulierController(CarAndAllContext context, PasswordHasher<AccountParticulier> passwordHasher, IAdresService adresService) : ControllerBase //Parameters toegevoed
+public class AccountParticulierController : ControllerBase
 {
-     
+    private readonly CarAndAllContext _context;
+    private readonly IPasswordHasher<Account> _passwordHasher;
+    private readonly AdresService _adresService;
+
+    public AccountParticulierController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher, AdresService adresService)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
+        _adresService = adresService ?? throw new ArgumentNullException(nameof(adresService));
+    }
     
     [HttpGet("Krijg alle accounts")]
-    public async Task<ActionResult<IEnumerable<AccountParticulier>>> GetAlleParticuliersAccounts()
+    public async Task<ActionResult<IEnumerable<AccountParticulier>>> GetAllAccounts()
     {
-        return await context.ParticulierAccounts.ToListAsync();
+        return await _context.Accounts.OfType<AccountParticulier>().ToListAsync();
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<AccountParticulier>> GetAccountParticulier(int id)
+    [HttpGet("Krijg specifiek account")]
+    public async Task<ActionResult<AccountParticulier>> GetAccount(int id)
     {
-        var accountParticulier = await context.ParticulierAccounts.FindAsync(id);
+        var account = await _context.Accounts.FindAsync(id);
 
-        if (accountParticulier == null)
+        if (account == null)
         {
             return NotFound();
         }
-        return Ok(accountParticulier);
+        return Ok(account);
     }
-
+    
     [HttpPost("Maak account aan")]
-    public async Task<ActionResult<AccountParticulier>> PostAccountParticulier([FromBody] AccountParticulier accountParticulier, string postcode, int huisnummer)
+    public async Task<ActionResult<AccountParticulier>> PostAccount([FromBody] AccountParticulier account, string postcode, int huisnummer)
     {
-        if (accountParticulier == null)
+        if (account == null)
         {
             return BadRequest("AccountParticulier mag niet 'NULL' zijn");
         }
-        
-        accountParticulier.Wachtwoord = passwordHasher.HashPassword(accountParticulier, accountParticulier.Wachtwoord); // hasher toegevoegd
 
-        var adres = await adresService.ZoekAdresAsync(postcode, huisnummer);
+        account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
+        
+        var adres = await _adresService.ZoekAdresAsync(postcode, huisnummer);
 
         if (adres == null)
         {
             return NotFound("Address not found for the given postcode and huisnummer.");
         }
+        
+        account.ParticulierAdres = adres.AdresId;
+        account.Account = account.AccountId;
 
-        accountParticulier.ParticulierAdres = adres.AdresId;
-        accountParticulier.Account = accountParticulier.AccountId;
+        _context.Accounts.Add(account);
+        await _context.SaveChangesAsync();
 
-        context.ParticulierAccounts.Add(accountParticulier);
-        await context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetAccountParticulier), new { id = accountParticulier.ParticulierAccountId }, accountParticulier);
+        return CreatedAtAction(nameof(GetAccount), new { id = account.AccountId }, account);
     }
-    //Login toegevoegd
+    
     [HttpPost("Login")]
     public async Task<IActionResult> Login(string email, string password)
     {
-        var account = await context.ParticulierAccounts.FirstOrDefaultAsync(a => a.Email == email);
+        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
 
         if (account == null)
         {
             return Unauthorized();
         }
-        
-        var result = passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, password);
+
+        var result = account.WachtwoordVerify(password);
 
         if (result == PasswordVerificationResult.Failed)
         {
@@ -76,37 +84,37 @@ public class AccountParticulierController(CarAndAllContext context, PasswordHash
         return Ok("Inloggen succesvol");
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutAccountParticulier(int id, [FromBody] AccountParticulier updatedAccountParticulier)
+    [HttpPut("Update Account")]
+    public async Task<IActionResult> PutAccount(int id, [FromBody] AccountParticulier updatedAccount)
     {
-        if (id != updatedAccountParticulier.AccountId)
+        if (id != updatedAccount.AccountId)
         {
             return BadRequest("ID mismatch");
         }
 
-        var existingAccountParticulier = await context.ParticulierAccounts.FindAsync(id);
-        if (existingAccountParticulier == null)
+        var existingAccount = await _context.Accounts.FindAsync(id);
+        if (existingAccount == null)
         {
             return NotFound();
         }
 
-        existingAccountParticulier.UpdateAccountParticulier(updatedAccountParticulier);
+        existingAccount.UpdateAccount(updatedAccount);
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
         return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAccountParticulier(int id)
+    public async Task<IActionResult> DeleteAccount(int id)
     {
-        var accountParticulier = await context.ParticulierAccounts.FindAsync(id);
-        if (accountParticulier == null)
+        var account = await _context.Accounts.FindAsync(id);
+        if (account == null)
         {
             return NotFound();
         }
 
-        context.ParticulierAccounts.Remove(accountParticulier);
-        await context.SaveChangesAsync();
+        _context.Accounts.Remove(account);
+        await _context.SaveChangesAsync();
 
         return NoContent();
     }

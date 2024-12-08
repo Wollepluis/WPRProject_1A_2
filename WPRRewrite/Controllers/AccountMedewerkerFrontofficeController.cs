@@ -1,63 +1,69 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using WPRRewrite.Interfaces;
-using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Accounts;
 
 namespace WPRRewrite.Controllers;
 
 [ApiController]
 [Route("api/[Controller]")]
-public class AccountMedewerkerFrontofficeController(CarAndAllContext context, PasswordHasher<AccountMedewerkerFrontoffice> passwordHasher) : ControllerBase
+public class AccountMedewerkerFrontofficeController : ControllerBase
 {
+    private readonly CarAndAllContext _context;
+    private readonly IPasswordHasher<Account> _passwordHasher;
+
+    public AccountMedewerkerFrontofficeController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
+    }
     
     [HttpGet("Krijg alle accounts")]
-    public async Task<ActionResult<IEnumerable<AccountMedewerkerFrontoffice>>> GetAlleMedewerkerFrontofficeAccounts()
+    public async Task<ActionResult<IEnumerable<AccountMedewerkerFrontoffice>>> GetAllAccounts()
     {
-        return await context.FrontofficeAccounts.ToListAsync();
+        return await _context.Accounts.OfType<AccountMedewerkerFrontoffice>().ToListAsync();
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<AccountMedewerkerFrontoffice>> GetAccountMedewerkerFrontoffice(int id)
+    [HttpGet("Krijg specifiek account")]
+    public async Task<ActionResult<AccountMedewerkerFrontoffice>> GetAccount(int id)
     {
-        var accountMedewerkerFrontoffice = await context.FrontofficeAccounts.FindAsync(id);
+        var account = await _context.Accounts.FindAsync(id);
 
-        if (accountMedewerkerFrontoffice == null)
+        if (account == null)
         {
             return NotFound();
         }
-        return Ok(accountMedewerkerFrontoffice);
+        return Ok(account);
     }
 
     [HttpPost("Maak account aan")]
-    public async Task<ActionResult<AccountMedewerkerFrontoffice>> PostAccountMedewerkerFrontoffice([FromBody] AccountMedewerkerFrontoffice accountMedewerkerFrontoffice)
+    public async Task<ActionResult<AccountMedewerkerFrontoffice>> PostAccount([FromBody] AccountMedewerkerFrontoffice account)
     {
-        if (accountMedewerkerFrontoffice == null)
+        if (account == null)
         {
             return BadRequest("AccountMedewerkerFrontoffice mag niet 'NULL' zijn");
         }
-        
-        accountMedewerkerFrontoffice.Wachtwoord = passwordHasher.HashPassword(accountMedewerkerFrontoffice, accountMedewerkerFrontoffice.Wachtwoord); // hasher toegevoegd
-        accountMedewerkerFrontoffice.Account = accountMedewerkerFrontoffice.AccountId;
 
-        context.FrontofficeAccounts.Add(accountMedewerkerFrontoffice);
-        await context.SaveChangesAsync();
+        account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
+        account.Account = account.AccountId;
 
-        return CreatedAtAction(nameof(GetAccountMedewerkerFrontoffice), new { id = accountMedewerkerFrontoffice.AccountId }, accountMedewerkerFrontoffice);
+        _context.Accounts.Add(account);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetAccount), new { id = account.AccountId }, account);
     }
     
     [HttpPost("Login")]
     public async Task<IActionResult> Login(string email, string password)
     {
-        var account = await context.FrontofficeAccounts.FirstOrDefaultAsync(a => a.Email == email);
+        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
 
         if (account == null)
         {
             return Unauthorized();
         }
-        
-        var result = passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, password);
+
+        var result = account.WachtwoordVerify(password);
 
         if (result == PasswordVerificationResult.Failed)
         {
@@ -67,37 +73,37 @@ public class AccountMedewerkerFrontofficeController(CarAndAllContext context, Pa
         return Ok("Inloggen succesvol");
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutAccountMedewerkerFrontoffice(int id, [FromBody] AccountMedewerkerFrontoffice updatedAccountMedewerkerFrontoffice)
+    [HttpPut("Update Account")]
+    public async Task<IActionResult> PutAccount(int id, [FromBody] AccountMedewerkerFrontoffice updatedAccount)
     {
-        if (id != updatedAccountMedewerkerFrontoffice.AccountId)
+        if (id != updatedAccount.AccountId)
         {
             return BadRequest("ID mismatch");
         }
 
-        var existingAccountMedewerkerFrontoffice = await context.FrontofficeAccounts.FindAsync(id);
-        if (existingAccountMedewerkerFrontoffice == null)
+        var existingAccount = await _context.Accounts.FindAsync(id);
+        if (existingAccount == null)
         {
             return NotFound();
         }
 
-        existingAccountMedewerkerFrontoffice.UpdateAccountMedewerkerFrontoffice(updatedAccountMedewerkerFrontoffice);
+        existingAccount.UpdateAccount(updatedAccount);
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
         return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAccountMedewerkerFrontoffice(int id)
+    public async Task<IActionResult> DeleteAccount(int id)
     {
-        var accountMedewerkerFrontoffice = await context.FrontofficeAccounts.FindAsync(id);
-        if (accountMedewerkerFrontoffice == null)
+        var account = await _context.Accounts.FindAsync(id);
+        if (account == null)
         {
             return NotFound();
         }
 
-        context.FrontofficeAccounts.Remove(accountMedewerkerFrontoffice);
-        await context.SaveChangesAsync();
+        _context.Accounts.Remove(account);
+        await _context.SaveChangesAsync();
 
         return NoContent();
     }

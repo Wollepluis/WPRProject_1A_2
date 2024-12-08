@@ -7,55 +7,63 @@ namespace WPRRewrite.Controllers;
 
 [ApiController]
 [Route("api/[Controller]")]
-public class AccountMedewerkerBackofficeController(CarAndAllContext context,PasswordHasher<AccountMedewerkerBackoffice> passwordHasher) : ControllerBase
+public class AccountMedewerkerBackofficeController : ControllerBase
 {
+    private readonly CarAndAllContext _context;
+    private readonly IPasswordHasher<Account> _passwordHasher;
+
+    public AccountMedewerkerBackofficeController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
+    }
     
     [HttpGet("Krijg alle accounts")]
-    public async Task<ActionResult<IEnumerable<AccountMedewerkerBackoffice>>> GetAlleMedewerkerBackofficeAccounts()
+    public async Task<ActionResult<IEnumerable<AccountMedewerkerBackoffice>>> GetAllAccounts()
     {
-        return await context.BackofficeAccounts.ToListAsync();
+        return await _context.Accounts.OfType<AccountMedewerkerBackoffice>().ToListAsync();
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<AccountMedewerkerBackoffice>> GetAccountMedewerkerBackoffice(int id)
+    [HttpGet("Krijg specifiek account")]
+    public async Task<ActionResult<AccountMedewerkerBackoffice>> GetAccount(int id)
     {
-        var accountMedewerkerBackoffice = await context.BackofficeAccounts.FindAsync(id);
+        var account = await _context.Accounts.FindAsync(id);
 
-        if (accountMedewerkerBackoffice == null)
+        if (account == null)
         {
             return NotFound();
         }
-        return Ok(accountMedewerkerBackoffice);
+        return Ok(account);
     }
 
     [HttpPost("Maak account aan")]
-    public async Task<ActionResult<AccountMedewerkerBackoffice>> PostAccountMedewerkerBackoffice([FromBody] AccountMedewerkerBackoffice accountMedewerkerBackoffice)
+    public async Task<ActionResult<AccountMedewerkerBackoffice>> PostAccount([FromBody] AccountMedewerkerBackoffice account)
     {
-        if (accountMedewerkerBackoffice == null)
+        if (account == null)
         {
             return BadRequest("AccountMedewerkerBackoffice mag niet 'NULL' zijn");
         }
 
-        accountMedewerkerBackoffice.Wachtwoord = passwordHasher.HashPassword(accountMedewerkerBackoffice, accountMedewerkerBackoffice.Wachtwoord); // hasher toegevoegd
-        accountMedewerkerBackoffice.Account = accountMedewerkerBackoffice.AccountId;
+        account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
+        account.Account = account.AccountId;
 
-        context.BackofficeAccounts.Add(accountMedewerkerBackoffice);
-        await context.SaveChangesAsync();
+        _context.Accounts.Add(account);
+        await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetAccountMedewerkerBackoffice), new { id = accountMedewerkerBackoffice.AccountId }, accountMedewerkerBackoffice);
+        return CreatedAtAction(nameof(GetAccount), new { id = account.AccountId }, account);
     }
     
     [HttpPost("Login")]
     public async Task<IActionResult> Login(string email, string password)
     {
-        var account = await context.BackofficeAccounts.FirstOrDefaultAsync(a => a.Email == email);
+        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
 
         if (account == null)
         {
             return Unauthorized();
         }
-        
-        var result = passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, password);
+
+        var result = account.WachtwoordVerify(password);
 
         if (result == PasswordVerificationResult.Failed)
         {
@@ -65,37 +73,37 @@ public class AccountMedewerkerBackofficeController(CarAndAllContext context,Pass
         return Ok("Inloggen succesvol");
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutAccountMedewerkerBackoffice(int id, [FromBody] AccountMedewerkerBackoffice updatedAccountMedewerkerBackoffice)
+    [HttpPut("Update Account")]
+    public async Task<IActionResult> PutAccount(int id, [FromBody] AccountMedewerkerBackoffice updatedAccount)
     {
-        if (id != updatedAccountMedewerkerBackoffice.AccountId)
+        if (id != updatedAccount.AccountId)
         {
             return BadRequest("ID mismatch");
         }
 
-        var existingAccountMedewerkerBackoffice = await context.BackofficeAccounts.FindAsync(id);
-        if (existingAccountMedewerkerBackoffice == null)
+        var existingAccount = await _context.Accounts.FindAsync(id);
+        if (existingAccount == null)
         {
             return NotFound();
         }
 
-        existingAccountMedewerkerBackoffice.UpdateAccountMedewerkerBackoffice(updatedAccountMedewerkerBackoffice);
+        existingAccount.UpdateAccount(updatedAccount);
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
         return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAccountMedewerkerBackoffice(int id)
+    public async Task<IActionResult> DeleteAccount(int id)
     {
-        var accountMedewerkerBackoffice = await context.BackofficeAccounts.FindAsync(id);
-        if (accountMedewerkerBackoffice == null)
+        var account = await _context.Accounts.FindAsync(id);
+        if (account == null)
         {
             return NotFound();
         }
 
-        context.BackofficeAccounts.Remove(accountMedewerkerBackoffice);
-        await context.SaveChangesAsync();
+        _context.Accounts.Remove(account);
+        await _context.SaveChangesAsync();
 
         return NoContent();
     }

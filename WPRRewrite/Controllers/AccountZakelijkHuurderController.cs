@@ -8,47 +8,58 @@ namespace WPRRewrite.Controllers;
 
 [ApiController]
 [Route("api/[Controller]")]
-public class AccountZakelijkHuurderController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher, EmailSender emailSender) : ControllerBase
+public class AccountZakelijkHuurderController : ControllerBase
 {
     
-    [HttpGet("Krijg alle accounts")]
-    public async Task<ActionResult<IEnumerable<AccountZakelijkHuurder>>> GetAlleZakelijkHuurderAccounts()
+    private readonly CarAndAllContext _context;
+    private readonly IPasswordHasher<Account> _passwordHasher;
+    private readonly EmailSender _emailSender;
+
+    public AccountZakelijkHuurderController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher, EmailSender emailSender)
     {
-        return await context.ZakelijkHuurderAccounts.ToListAsync();
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
+        _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
+    }
+    
+    [HttpGet("Krijg alle accounts")]
+    public async Task<ActionResult<IEnumerable<AccountZakelijkHuurder>>> GetAllAccounts()
+    {
+        return await _context.Accounts.OfType<AccountZakelijkHuurder>().ToListAsync();
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<AccountZakelijkHuurder>> GetAccountZakelijkHuurder(int id)
+    [HttpGet("Krijg specifiek account")]
+    public async Task<ActionResult<AccountZakelijkHuurder>> GetAccount(int id)
     {
-        var accountZakelijkHuurder = await context.ZakelijkHuurderAccounts.FindAsync(id);
+        var account = await _context.Accounts.FindAsync(id);
 
-        if (accountZakelijkHuurder == null)
+        if (account == null)
         {
             return NotFound();
         }
-        return Ok(accountZakelijkHuurder);
+        return Ok(account);
     }
-
-    [HttpPost("Maak accounts aan")]
-    public async Task<ActionResult<AccountZakelijkHuurder>> PostAccountZakelijkHuurder([FromBody] AccountZakelijkHuurder accountZakelijkHuurder)
+    
+    [HttpPost("Maak account aan")]
+    public async Task<ActionResult<AccountZakelijkHuurder>> PostAccount([FromBody] AccountZakelijkHuurder account)
     {
-        if (accountZakelijkHuurder == null)
+        if (account == null)
         {
             return BadRequest("AccountZakelijkHuurder mag niet 'NULL' zijn");
         }
 
-        accountZakelijkHuurder.Wachtwoord = passwordHasher.HashPassword(accountZakelijkHuurder, accountZakelijkHuurder.Wachtwoord); // hasher toegevoegd
-        accountZakelijkHuurder.Account = accountZakelijkHuurder.AccountId;
-        
+        account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
+        account.Account = account.AccountId;
+
         try
         {
-            context.ZakelijkHuurderAccounts.Add(accountZakelijkHuurder);
-            await context.SaveChangesAsync();
-            
+            _context.Accounts.Add(account);
+            await _context.SaveChangesAsync();
+
             /*var bedrijf = await context.Bedrijven.FindAsync(accountZakelijkHuurder.BedrijfsId);
             emailSender.SendEmail(bedrijf);*/
 
-            return CreatedAtAction(nameof(GetAccountZakelijkHuurder), new { id = accountZakelijkHuurder.AccountId }, accountZakelijkHuurder);
+            return CreatedAtAction(nameof(GetAccount), new { id = account.AccountId }, account);
         }
         catch (Exception ex)
         {
@@ -56,18 +67,18 @@ public class AccountZakelijkHuurderController(CarAndAllContext context, IPasswor
             return StatusCode(500);
         }
     }
-
+    
     [HttpPost("Login")]
     public async Task<IActionResult> Login(string email, string password)
     {
-        var account = await context.ZakelijkHuurderAccounts.FirstOrDefaultAsync(a => a.Email == email);
+        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
 
         if (account == null)
         {
             return Unauthorized();
         }
-        
-        var result = passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, password);
+
+        var result = account.WachtwoordVerify(password);
 
         if (result == PasswordVerificationResult.Failed)
         {
@@ -76,38 +87,38 @@ public class AccountZakelijkHuurderController(CarAndAllContext context, IPasswor
 
         return Ok("Inloggen succesvol");
     }
-    
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutAccountZakelijkHuurder(int id, [FromBody] AccountZakelijkHuurder updatedAccountZakelijkHuurder)
+
+    [HttpPut("Update Account")]
+    public async Task<IActionResult> PutAccount(int id, [FromBody] AccountZakelijkHuurder updatedAccount)
     {
-        if (id != updatedAccountZakelijkHuurder.AccountId)
+        if (id != updatedAccount.AccountId)
         {
             return BadRequest("ID mismatch");
         }
 
-        var existingAccountZakelijkHuurder = await context.ZakelijkHuurderAccounts.FindAsync(id);
-        if (existingAccountZakelijkHuurder == null)
+        var existingAccount = await _context.Accounts.FindAsync(id);
+        if (existingAccount == null)
         {
             return NotFound();
         }
 
-        existingAccountZakelijkHuurder.UpdateAccountZakelijkHuurder(updatedAccountZakelijkHuurder);
+        existingAccount.UpdateAccount(updatedAccount);
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
         return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAccountZakelijkHuurder(int id)
+    public async Task<IActionResult> DeleteAccount(int id)
     {
-        var accountZakelijkHuurder = await context.ZakelijkHuurderAccounts.FindAsync(id);
-        if (accountZakelijkHuurder == null)
+        var account = await _context.Accounts.FindAsync(id);
+        if (account == null)
         {
             return NotFound();
         }
 
-        context.ZakelijkHuurderAccounts.Remove(accountZakelijkHuurder);
-        await context.SaveChangesAsync();
+        _context.Accounts.Remove(account);
+        await _context.SaveChangesAsync();
 
         return NoContent();
     }
