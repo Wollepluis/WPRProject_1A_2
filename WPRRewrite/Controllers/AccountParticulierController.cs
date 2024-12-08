@@ -118,4 +118,6 @@ public class AccountParticulierController : ControllerBase
 
         return NoContent();
     }
+
+    
 }

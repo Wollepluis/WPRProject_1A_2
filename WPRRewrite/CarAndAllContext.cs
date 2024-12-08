@@ -2,6 +2,7 @@
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.Modellen;
+using WPRRewrite.Modellen.Abonnementen;
 using WPRRewrite.Modellen.Voertuigen;
 
 namespace WPRRewrite;
@@ -27,10 +28,16 @@ public class CarAndAllContext : DbContext
 
         builder.Entity<Voertuig>()
             .HasDiscriminator<string>("VoertuigType")
-            .HasValue<Voertuig>("Voertuig")
+            .HasValue<Voertuig>("BaseVoertuig")
             .HasValue<Auto>("Auto")
             .HasValue<Camper>("Camper")
             .HasValue<Caravan>("Caravan");
+
+        builder.Entity<Abonnement>()
+            .HasDiscriminator<String>("Voertuigtype")
+            .HasValue<Abonnement>("BaseAbonnement")
+            .HasValue<PayAsYouGo>("PayAsYouGo")
+            .HasValue<UpFront>("UpFront");
     }
     
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
@@ -44,7 +51,7 @@ public class CarAndAllContext : DbContext
     public DbSet<Voertuig> Voertuigen { get; set; }
     public DbSet<Adres> Adressen { get; set; }
     public DbSet<Bedrijf> Bedrijven { get; set; }
-    
+    public DbSet<Abonnement> Abonnementen { get; set; }
     public DbSet<Account> Accounts { get; set; }
     public DbSet<Reservering> Reserveringen { get; set; }
     public DbSet<Reparatie> Reparaties { get; set; }

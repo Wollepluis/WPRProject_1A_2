@@ -7,18 +7,25 @@ namespace WPRRewrite.Controllers;
 
 [ApiController]
 [Route("api/[Controller]")]
-public class AdresController(CarAndAllContext context) : ControllerBase
+public class AdresController : ControllerBase
 {
+    private readonly CarAndAllContext _context;
+
+    public AdresController(CarAndAllContext context)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+    }
+    
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Adres>>> GetAlleAdressen()
     {
-        return await context.Adressen.ToListAsync();
+        return await _context.Adressen.ToListAsync();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Adres>> GetAdres(int id)
     {
-        var adres = await context.Adressen.FindAsync(id);
+        var adres = await _context.Adressen.FindAsync(id);
 
         if (adres == null)
         {
@@ -35,8 +42,8 @@ public class AdresController(CarAndAllContext context) : ControllerBase
             return BadRequest("Adres mag niet 'NULL' zijn");
         }
 
-        context.Adressen.Add(adres);
-        await context.SaveChangesAsync();
+        _context.Adressen.Add(adres);
+        await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetAdres), new { id = adres.AdresId }, adres);
     }
@@ -49,7 +56,7 @@ public class AdresController(CarAndAllContext context) : ControllerBase
             return BadRequest("ID mismatch");
         }
 
-        var existingAdres = await context.Adressen.FindAsync(id);
+        var existingAdres = await _context.Adressen.FindAsync(id);
         if (existingAdres == null)
         {
             return NotFound();
@@ -57,21 +64,21 @@ public class AdresController(CarAndAllContext context) : ControllerBase
 
         existingAdres.UpdateAdres(updatedAdres);
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAdres(int id)
     {
-        var adres = await context.Adressen.FindAsync(id);
+        var adres = await _context.Adressen.FindAsync(id);
         if (adres == null)
         {
             return NotFound();
         }
 
-        context.Adressen.Remove(adres);
-        await context.SaveChangesAsync();
+        _context.Adressen.Remove(adres);
+        await _context.SaveChangesAsync();
 
         return NoContent();
     }

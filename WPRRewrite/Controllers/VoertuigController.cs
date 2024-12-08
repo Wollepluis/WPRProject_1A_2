@@ -7,18 +7,25 @@ namespace WPRRewrite.Controllers;
 
 [ApiController]
 [Route("api/[Controller]")]
-public class VoertuigController(CarAndAllContext context) : ControllerBase
+public class VoertuigController : ControllerBase
 {
+    private readonly CarAndAllContext _context;
+
+    public VoertuigController(CarAndAllContext context)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+    }
+    
     [HttpGet]
     public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen()
     {
-        return await context.Voertuigen.ToListAsync();
+        return await _context.Voertuigen.ToListAsync();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Voertuig>> GetVoertuig(int id)
     {
-        var voertuig = await context.Voertuigen.FindAsync(id);
+        var voertuig = await _context.Voertuigen.FindAsync(id);
 
         if (voertuig == null)
         {
@@ -35,8 +42,8 @@ public class VoertuigController(CarAndAllContext context) : ControllerBase
             return BadRequest("Voertuig mag niet 'NULL' zijn");
         }
         
-        context.Voertuigen.Add(voertuig);
-        await context.SaveChangesAsync();
+        _context.Voertuigen.Add(voertuig);
+        await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetVoertuig), new { id = voertuig.VoertuigId }, voertuig);
     }
@@ -49,7 +56,7 @@ public class VoertuigController(CarAndAllContext context) : ControllerBase
             return BadRequest("ID mismatch");
         }
 
-        var existingVoertuig = await context.Voertuigen.FindAsync(id);
+        var existingVoertuig = await _context.Voertuigen.FindAsync(id);
         if (existingVoertuig == null)
         {
             return NotFound();
@@ -57,21 +64,21 @@ public class VoertuigController(CarAndAllContext context) : ControllerBase
 
         existingVoertuig.UpdateVoertuig(updatedVoertuig);
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteVoertuig(int id)
     {
-        var voertuig = await context.Voertuigen.FindAsync(id);
+        var voertuig = await _context.Voertuigen.FindAsync(id);
         if (voertuig == null)
         {
             return NotFound();
         }
 
-        context.Voertuigen.Remove(voertuig);
-        await context.SaveChangesAsync();
+        _context.Voertuigen.Remove(voertuig);
+        await _context.SaveChangesAsync();
 
         return NoContent();
     }

@@ -7,20 +7,26 @@ namespace WPRRewrite.Controllers;
 
 [ApiController]
 [Route("api/[Controller]")]
-public class BedrijfController(CarAndAllContext context) : ControllerBase
+public class BedrijfController : ControllerBase
 {
-    private IAdresService _adresService;
+    private readonly CarAndAllContext _context;
+    private readonly AdresService _adresService;
+    public BedrijfController(CarAndAllContext context, AdresService adresService)
+    {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _adresService = adresService ?? throw new ArgumentNullException(nameof(adresService));
+    }
     
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Bedrijf>>> GetAlleBedrijven()
     {
-        return await context.Bedrijven.ToListAsync();
+        return await _context.Bedrijven.ToListAsync();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Bedrijf>> GetBedrijf(int id)
     {
-        var bedrijf = await context.Bedrijven.FindAsync(id);
+        var bedrijf = await _context.Bedrijven.FindAsync(id);
 
         if (bedrijf == null)
         {
@@ -46,8 +52,8 @@ public class BedrijfController(CarAndAllContext context) : ControllerBase
 
         bedrijf.BedrijfAdres = adres.AdresId;
 
-        context.Bedrijven.Add(bedrijf);
-        await context.SaveChangesAsync();
+        _context.Bedrijven.Add(bedrijf);
+        await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetBedrijf), new { id = bedrijf.BedrijfId }, bedrijf);
     }
@@ -60,7 +66,7 @@ public class BedrijfController(CarAndAllContext context) : ControllerBase
             return BadRequest("ID mismatch");
         }
 
-        var existingBedrijf = await context.Bedrijven.FindAsync(id);
+        var existingBedrijf = await _context.Bedrijven.FindAsync(id);
         if (existingBedrijf == null)
         {
             return NotFound();
@@ -68,21 +74,21 @@ public class BedrijfController(CarAndAllContext context) : ControllerBase
 
         existingBedrijf.UpdateBedrijf(updatedBedrijf);
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteBedrijf(int id)
     {
-        var bedrijf = await context.Bedrijven.FindAsync(id);
+        var bedrijf = await _context.Bedrijven.FindAsync(id);
         if (bedrijf == null)
         {
             return NotFound();
         }
 
-        context.Bedrijven.Remove(bedrijf);
-        await context.SaveChangesAsync();
+        _context.Bedrijven.Remove(bedrijf);
+        await _context.SaveChangesAsync();
 
         return NoContent();
     }
