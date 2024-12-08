@@ -1,5 +1,4 @@
-﻿using WPRRewrite.Enums;
-using WPRRewrite.Interfaces;
+﻿using WPRRewrite.Interfaces;
 
 namespace WPRRewrite.Modellen.Voertuigen;
 
