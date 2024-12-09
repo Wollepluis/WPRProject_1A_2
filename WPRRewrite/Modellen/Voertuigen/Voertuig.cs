@@ -11,6 +11,7 @@ public abstract class Voertuig : IVoertuig
     public string Kleur { get; set; }
     public int Aanschafjaar { get; set; }
     public int Prijs { get; set; }
+    public string VoertuigStatus { get; set; }
 
     public List<Reservering> Reserveringen { get; set; }
     public abstract List<Reservering> GetReserveringen();
@@ -22,5 +23,6 @@ public abstract class Voertuig : IVoertuig
         Kleur = updatedVoertuig.Kleur;
         Aanschafjaar = updatedVoertuig.Aanschafjaar;
         Prijs = updatedVoertuig.Prijs;
+        VoertuigStatus = updatedVoertuig.VoertuigStatus;
     }
 }

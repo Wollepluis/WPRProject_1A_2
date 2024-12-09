@@ -9,6 +9,11 @@ public class AccountZakelijkHuurder : AccountZakelijk
     {
         
     }
+
+    private AccountZakelijkHuurder()
+    {
+        
+    }
     
     public int AccountZakelijkHuurderId { get; set; }
     public int Account { get; set; }

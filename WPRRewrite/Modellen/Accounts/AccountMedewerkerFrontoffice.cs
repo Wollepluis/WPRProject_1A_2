@@ -9,6 +9,11 @@ public class AccountMedewerkerFrontoffice : AccountMedewerker
     {
         
     }
+
+    private AccountMedewerkerFrontoffice()
+    {
+        
+    }
     
     public int AccountMedewerkerFrontofficeId { get; set; }
     public int Account { get; set; }

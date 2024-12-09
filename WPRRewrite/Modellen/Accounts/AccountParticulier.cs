@@ -10,6 +10,11 @@ public class AccountParticulier : Account
     {
         
     }
+
+    private AccountParticulier()
+    {
+        
+    }
     
     public int ParticulierAccountId { get; set; }
     public string Naam { get; set; }

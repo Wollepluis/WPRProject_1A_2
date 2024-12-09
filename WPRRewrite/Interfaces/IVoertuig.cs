@@ -12,6 +12,7 @@ public interface IVoertuig
     public string Kleur { get; set; }
     public int Aanschafjaar { get; set; }
     public int Prijs { get; set; }
+    public string VoertuigStatus { get; set; }
     List<Reservering> Reserveringen{ get; set; }
     
     public List<Reservering> GetReserveringen();
