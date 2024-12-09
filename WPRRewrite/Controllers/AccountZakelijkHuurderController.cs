@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.SysteemFuncties;
 
@@ -38,6 +39,31 @@ public class AccountZakelijkHuurderController : ControllerBase
             return NotFound();
         }
         return Ok(account);
+    }
+    
+    [HttpGet("Krijg alle autos")]
+    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAutos()
+    {
+        var autos = await _context.Voertuigen
+            .Where(v => EF.Property<string>(v, "VoertuigType") == "Auto")
+            .ToListAsync();
+
+        return Ok(autos);
+    }
+    
+    [HttpGet("Filter voertuigen")]
+    public async Task<ActionResult<IEnumerable<IVoertuig>>> FilterVoertuigen(string voertuigType)
+    {
+        if (string.IsNullOrWhiteSpace(voertuigType))
+        {
+            return BadRequest("VoertuigType is verplicht meegegeven te worden");
+        }
+        
+        var voertuigen = await _context.Voertuigen
+            .Where(v => EF.Property<string>(v, "VoertuigType") == voertuigType)
+            .ToListAsync();
+
+        return Ok(voertuigen);
     }
     
     [HttpPost("Maak account aan")]
