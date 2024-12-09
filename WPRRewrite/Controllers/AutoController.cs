@@ -7,6 +7,8 @@ using WPRRewrite.Modellen.Voertuigen;
 
 namespace WPRRewrite.Controllers;
 
+[ApiController]
+[Route("api/[Controller]")]
 public class AutoController : ControllerBase, IVoertuigController
 {
     private readonly CarAndAllContext _context;
@@ -16,7 +18,7 @@ public class AutoController : ControllerBase, IVoertuigController
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    [HttpGet("Krijg alle voertuigen")]
+    [HttpGet("Krijg alle Auto voertuigen")]
     public async Task<ActionResult<IEnumerable<VoertuigDto>>> GetAlleVoertuigen()
     {
         List<VoertuigDto> voertuigen = await FilterVoertuigen("Auto");
@@ -24,7 +26,7 @@ public class AutoController : ControllerBase, IVoertuigController
         return Ok(voertuigen);
     }
 
-    [HttpGet("Krijg specifiek voertuig / {id}")]
+    [HttpGet("Krijg specifiek Auto voertuig / {id}")]
     public async Task<ActionResult<VoertuigDto>> GetVoertuig(int id)
     {
         IVoertuig auto = await _context.Voertuigen.FindAsync(id);
@@ -79,7 +81,7 @@ public class AutoController : ControllerBase, IVoertuigController
         return NoContent();
     }
     
-    [HttpGet("filter voertuigen")]
+    [HttpGet("filter voertuigen (Auto)")]
     public async Task<List<VoertuigDto>> FilterVoertuigen(string voertuigType)
     {
         if (string.IsNullOrWhiteSpace(voertuigType)) return null;

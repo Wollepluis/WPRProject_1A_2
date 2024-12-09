@@ -7,6 +7,8 @@ using WPRRewrite.Modellen.Voertuigen;
 
 namespace WPRRewrite.Controllers;
 
+[ApiController]
+[Route("api/[Controller]")]
 public class CamperController : ControllerBase, IVoertuigController
 {
     private readonly CarAndAllContext _context;
