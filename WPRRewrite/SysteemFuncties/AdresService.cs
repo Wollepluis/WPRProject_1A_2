@@ -2,6 +2,8 @@
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen;
 
+namespace WPRRewrite.SysteemFuncties;
+
 public class AdresService : IAdresService
 {
     public async Task<Adres?> ZoekAdresAsync(string postcode, int huisnummer)
