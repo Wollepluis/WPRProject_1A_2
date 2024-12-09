@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Voertuigen;
+using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Controllers;
 
@@ -16,13 +17,13 @@ public class VoertuigController : ControllerBase
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
     
-    [HttpGet]
+    [HttpGet("Krijg alle voertuigen")]
     public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen()
     {
         return await _context.Voertuigen.ToListAsync();
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("Krijg specifiek voertuig")]
     public async Task<ActionResult<Voertuig>> GetVoertuig(int id)
     {
         var voertuig = await _context.Voertuigen.FindAsync(id);
@@ -32,6 +33,21 @@ public class VoertuigController : ControllerBase
             return NotFound();
         }
         return Ok(voertuig);
+    }
+
+    [HttpGet("Filter voertuigen")]
+    public async Task<ActionResult<IEnumerable<IVoertuig>>> FilterVoertuigen(string voertuigType)
+    {
+        if (string.IsNullOrWhiteSpace(voertuigType))
+        {
+            return BadRequest("VoertuigType is verplicht meegegeven te worden");
+        }
+        
+        var voertuigen = await _context.Voertuigen
+            .Where(v => EF.Property<string>(v, "VoertuigType") == voertuigType)
+            .ToListAsync();
+
+        return Ok(voertuigen);
     }
 
     [HttpPost]
