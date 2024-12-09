@@ -11,16 +11,13 @@ public class AccountParticulier : Account
         
     }
 
-    private AccountParticulier()
+    public AccountParticulier()
     {
-        
     }
-    
-    public int ParticulierAccountId { get; set; }
+
     public string Naam { get; set; }
-    public int ParticulierAdres { get; set; }
+    public Adres Adres { get; set; }
     public int Telefoonnummer { get; set; }
-    public int Account { get; set; }
 
     public override void UpdateAccount(IAccount updatedAccount)
     {
@@ -29,7 +26,7 @@ public class AccountParticulier : Account
         Email = particulierAccount.Email;
         Wachtwoord = particulierAccount.Wachtwoord;
         Naam = particulierAccount.Naam;
-        ParticulierAdres = particulierAccount.ParticulierAdres;
+        //ParticulierAdres = particulierAccount.ParticulierAdres;
         Telefoonnummer = particulierAccount.Telefoonnummer;
     }
     public override PasswordVerificationResult WachtwoordVerify(string password)

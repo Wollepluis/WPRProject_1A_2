@@ -17,7 +17,7 @@ public abstract class AccountZakelijk : Account, IAccountZakelijk
         
     }
     
-    public int BedrijfId { get; set; }
+    public Bedrijf Bedrijf { get; set; }
     public List<Reservering> Reserveringen { get; set; }
 
     public override void UpdateAccount(IAccount updatedAccount)

@@ -10,13 +10,9 @@ public class AccountZakelijkHuurder : AccountZakelijk
         
     }
 
-    private AccountZakelijkHuurder()
+    public AccountZakelijkHuurder()
     {
-        
     }
-    
-    public int AccountZakelijkHuurderId { get; set; }
-    public int Account { get; set; }
 
     public override PasswordVerificationResult WachtwoordVerify(string password)
     {

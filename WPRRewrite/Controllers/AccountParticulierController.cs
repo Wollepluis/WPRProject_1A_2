@@ -56,9 +56,8 @@ public class AccountParticulierController : ControllerBase
         {
             return NotFound("Address not found for the given postcode and huisnummer.");
         }
-        
-        account.ParticulierAdres = adres.AdresId;
-        account.Account = account.AccountId;
+
+        account.Adres = adres;
 
         _context.Accounts.Add(account);
         await _context.SaveChangesAsync();

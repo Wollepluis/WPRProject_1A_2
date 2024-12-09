@@ -75,7 +75,6 @@ public class AccountZakelijkHuurderController : ControllerBase
         }
 
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
-        account.Account = account.AccountId;
 
         try
         {

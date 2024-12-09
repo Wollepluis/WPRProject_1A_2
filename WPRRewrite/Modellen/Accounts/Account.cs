@@ -11,9 +11,9 @@ public abstract class Account : IAccount
         PasswordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
     }
 
-    protected Account()
+    public Account()
     {
-        throw new NotImplementedException();
+
     }
 
     public int AccountId { get; set; }

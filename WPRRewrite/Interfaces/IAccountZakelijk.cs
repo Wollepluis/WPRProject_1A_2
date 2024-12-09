@@ -1,6 +1,8 @@
-﻿namespace WPRRewrite.Interfaces;
+﻿using WPRRewrite.Modellen;
+
+namespace WPRRewrite.Interfaces;
 
 public interface IAccountZakelijk
 {
-    int BedrijfId { get; set; }
+    Bedrijf Bedrijf { get; set; }
 }

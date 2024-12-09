@@ -10,13 +10,9 @@ public class AccountMedewerkerBackoffice : AccountMedewerker
         
     }
 
-    private AccountMedewerkerBackoffice() 
+    public AccountMedewerkerBackoffice()
     {
-        
     }
-    
-    public int AccountMedewerkerBackOfficeId { get; set; }
-    public int Account { get; set; }
 
     public override PasswordVerificationResult WachtwoordVerify(string password)
     {

@@ -10,13 +10,10 @@ public class AccountZakelijkBeheerder : AccountZakelijk
     {
         
     }
-    private AccountZakelijkBeheerder ()
+
+    public AccountZakelijkBeheerder()
     {
-        
     }
-    
-    public int AccountZakelijkBeheerderId { get; set; }
-    public int Account { get; set; }
 
     public override PasswordVerificationResult WachtwoordVerify(string password)
     {

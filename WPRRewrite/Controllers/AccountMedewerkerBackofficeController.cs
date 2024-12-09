@@ -45,7 +45,6 @@ public class AccountMedewerkerBackofficeController : ControllerBase
         }
 
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
-        account.Account = account.AccountId;
 
         _context.Accounts.Add(account);
         await _context.SaveChangesAsync();
