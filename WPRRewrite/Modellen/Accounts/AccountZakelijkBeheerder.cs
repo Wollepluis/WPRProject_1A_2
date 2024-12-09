@@ -10,6 +10,10 @@ public class AccountZakelijkBeheerder : AccountZakelijk
     {
         
     }
+    private AccountZakelijkBeheerder ()
+    {
+        
+    }
     
     public int AccountZakelijkBeheerderId { get; set; }
     public int Account { get; set; }

@@ -23,8 +23,8 @@ public class CarAndAllContext : DbContext
             .HasValue<AccountMedewerkerFrontoffice>("FrontofficeAccount")
             .HasValue<AccountMedewerkerBackoffice>("BackofficeAccount")
             .HasValue<AccountZakelijk>("ZakelijkAccount")
-            .HasValue<AccountZakelijkBeheerder>("MedewerkerAccount")
-            .HasValue<AccountZakelijkHuurder>("MedewerkerAccount");
+            .HasValue<AccountZakelijkBeheerder>("ZakelijkBeheerder")
+            .HasValue<AccountZakelijkHuurder>("ZakelijkHuurder");
 
         builder.Entity<Voertuig>()
             .HasDiscriminator<string>("VoertuigType")
@@ -42,8 +42,8 @@ public class CarAndAllContext : DbContext
     
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
-        builder.UseSqlServer(@"Server=WOLLEPLUISPC\SQLExpress;" +
-                             "Database=CarAndAll;" +
+        builder.UseSqlServer(@"Server=Xanderslaptop\SQLExpress;" +
+                             "Database=CarAndAll4;" +
                              "Integrated Security=True;" +
                              "TrustServerCertificate=True");
     }

@@ -10,7 +10,12 @@ public abstract class Account : IAccount
     {
         PasswordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
     }
-    
+
+    protected Account()
+    {
+        throw new NotImplementedException();
+    }
+
     public int AccountId { get; set; }
     public string Email { get; set; }
     public string Wachtwoord { get; set; }

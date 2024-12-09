@@ -11,6 +11,11 @@ public abstract class AccountZakelijk : Account, IAccountZakelijk
     {
         
     }
+
+    public AccountZakelijk()
+    {
+        
+    }
     
     public int BedrijfId { get; set; }
     public List<Reservering> Reserveringen { get; set; }
