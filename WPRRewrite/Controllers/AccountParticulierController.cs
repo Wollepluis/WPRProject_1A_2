@@ -15,9 +15,9 @@ public class AccountParticulierController : ControllerBase
 
     public AccountParticulierController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher, AdresService adresService)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
-        _adresService = adresService ?? throw new ArgumentNullException(nameof(adresService));
+        _context = context;
+        _passwordHasher = passwordHasher;
+        _adresService = adresService;
     }
     
     [HttpGet("Krijg alle accounts")]
@@ -38,7 +38,7 @@ public class AccountParticulierController : ControllerBase
         return Ok(account);
     }
     
-    [HttpPost("Maak account aan")]
+    [HttpPost("maakaccount")]
     public async Task<ActionResult<AccountParticulier>> PostAccount([FromBody] AccountParticulier account, string postcode, int huisnummer)
     {
         if (account == null)

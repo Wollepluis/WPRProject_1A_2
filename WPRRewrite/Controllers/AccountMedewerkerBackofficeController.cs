@@ -36,7 +36,7 @@ public class AccountMedewerkerBackofficeController : ControllerBase
         return Ok(account);
     }
 
-    [HttpPost("Maak account aan")]
+    [HttpPost("maakaccount")]
     public async Task<ActionResult<AccountMedewerkerBackoffice>> PostAccount([FromBody] AccountMedewerkerBackoffice account)
     {
         if (account == null)
