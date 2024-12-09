@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Interfaces;
+using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.SysteemFuncties;
 
@@ -87,6 +88,29 @@ public class AccountZakelijkBeheerderController : ControllerBase
         }
 
         return Ok("Inloggen succesvol");
+    }
+
+    [HttpPut("Voeg medewerker toe aan abonnement")]
+    public async Task<IActionResult> VoegMedewerkerToe(string email, Bedrijf bedrijf)
+    {
+        var account = await _context.Accounts
+            .OfType<AccountZakelijk>()
+            .FirstOrDefaultAsync(a => a.Email == email);
+
+        if (account == null)
+        {
+            return BadRequest($"Account met email {email} niet gevonden");
+        }
+
+        if (bedrijf.BevoegdeMedewerkers.Contains(account))
+        {
+            return BadRequest($"Account is al toegevoegd aan abonnement");
+        }
+        
+        bedrijf.VoegMedewerkerToe(account);
+
+        await _context.SaveChangesAsync();
+        return NoContent();
     }
 
     [HttpPut("Update Account")]

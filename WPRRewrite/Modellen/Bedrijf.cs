@@ -1,4 +1,7 @@
-﻿namespace WPRRewrite.Modellen;
+﻿using WPRRewrite.Modellen.Abonnementen;
+using WPRRewrite.Modellen.Accounts;
+
+namespace WPRRewrite.Modellen;
 
 public class Bedrijf
 {
@@ -7,7 +10,8 @@ public class Bedrijf
     public int BedrijfAdres { get; set; }
     public string Domeinnaam { get; set; }
     public int KvkNummer { get; set; }
-    
+    public Abonnement Abonnement { get; set; }
+    public List<AccountZakelijk> BevoegdeMedewerkers { get; set; }
     
     public void UpdateBedrijf(Bedrijf updatedBedrijf)
     {
@@ -15,5 +19,10 @@ public class Bedrijf
         BedrijfAdres = updatedBedrijf.BedrijfAdres;
         Domeinnaam = updatedBedrijf.Domeinnaam;
         KvkNummer = updatedBedrijf.KvkNummer;
+    }
+
+    public void VoegMedewerkerToe(AccountZakelijk account)
+    {
+        BevoegdeMedewerkers.Add(account);
     }
 }
