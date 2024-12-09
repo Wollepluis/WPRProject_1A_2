@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen;
+using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Controllers;
 
@@ -10,8 +11,8 @@ namespace WPRRewrite.Controllers;
 public class BedrijfController : ControllerBase
 {
     private readonly CarAndAllContext _context;
-    private readonly AdresService _adresService;
-    public BedrijfController(CarAndAllContext context, AdresService adresService)
+    private readonly IAdresService _adresService;
+    public BedrijfController(CarAndAllContext context, IAdresService adresService)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _adresService = adresService ?? throw new ArgumentNullException(nameof(adresService));

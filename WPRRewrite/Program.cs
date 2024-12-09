@@ -18,6 +18,16 @@ public class Program
                                  "Integrated Security=True;" +
                                  "TrustServerCertificate=True"
                                  ));
+                                 
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowReactApp", policy =>
+            {
+                policy.WithOrigins("http://localhost:5173")
+                    .AllowAnyHeader()                    
+                    .AllowAnyMethod();                   
+            });
+        });
         
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
@@ -27,6 +37,7 @@ public class Program
         builder.Services.AddScoped<EmailSender>();
         
         var app = builder.Build();
+        app.UseCors("AllowReactApp");
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();

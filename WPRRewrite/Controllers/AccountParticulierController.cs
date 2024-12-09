@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Accounts;
+using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Controllers;
 
@@ -11,9 +13,9 @@ public class AccountParticulierController : ControllerBase
 {
     private readonly CarAndAllContext _context;
     private readonly IPasswordHasher<Account> _passwordHasher;
-    private readonly AdresService _adresService;
+    private readonly IAdresService _adresService;
 
-    public AccountParticulierController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher, AdresService adresService)
+    public AccountParticulierController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher, IAdresService adresService)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
@@ -38,7 +40,7 @@ public class AccountParticulierController : ControllerBase
         return Ok(account);
     }
     
-    [HttpPost("Maak account aan")]
+    [HttpPost("maakaccount")]
     public async Task<ActionResult<AccountParticulier>> PostAccount([FromBody] AccountParticulier account, string postcode, int huisnummer)
     {
         if (account == null)
