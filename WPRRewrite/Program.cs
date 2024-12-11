@@ -13,17 +13,13 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddDbContext<CarAndAllContext>(options =>
-            options.UseSqlServer(@"Server=WOLLEPLUISPC\SQLExpress;" +
-                                 "Database=CarAndAll;" +
-                                 "Integrated Security=True;" +
-                                 "TrustServerCertificate=True"
-                                 ));
+            options.UseSqlServer(@"Server=tcp:wprproject.database.windows.net,1433;Initial Catalog=CarAndAll;Persist Security Info=False;User ID=BoterhamZakje;Password=Banaan123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
                                  
         builder.Services.AddCors(options =>
         {
-            options.AddPolicy("AllowReactApp", policy =>
+            options.AddPolicy("AllowAll", policy =>
             {
-                policy.WithOrigins("http://localhost:5173")
+                policy.AllowAnyOrigin()
                     .AllowAnyHeader()                    
                     .AllowAnyMethod();                   
             });
@@ -37,7 +33,7 @@ public class Program
         builder.Services.AddScoped<EmailSender>();
         
         var app = builder.Build();
-        app.UseCors("AllowReactApp");
+        app.UseCors("AllowAll");
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();

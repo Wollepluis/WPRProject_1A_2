@@ -10,7 +10,7 @@ using WPRRewrite.SysteemFuncties;
 namespace WPRRewrite.Controllers;
 
 [ApiController]
-[Route("api/[Controller]")]
+[Route("api/Particulier")]
 public class AccountParticulierController : ControllerBase
 {
     private readonly CarAndAllContext _context;
@@ -24,13 +24,13 @@ public class AccountParticulierController : ControllerBase
         _adresService = adresService ?? throw new ArgumentNullException(nameof(adresService));
     }
     
-    [HttpGet("Krijg alle accounts")]
+    [HttpGet("KrijgAlleAccounts")]
     public async Task<ActionResult<IEnumerable<AccountParticulier>>> GetAllAccounts()
     {
         return await _context.Accounts.OfType<AccountParticulier>().ToListAsync();
     }
 
-    [HttpGet("Krijg specifiek account")]
+    [HttpGet("KrijgSpecifiekAccount")]
     public async Task<ActionResult<AccountParticulier>> GetAccount(int id)
     {
         var account = await _context.Accounts.FindAsync(id);
@@ -42,7 +42,7 @@ public class AccountParticulierController : ControllerBase
         return Ok(account);
     }
     
-    [HttpPost("Maak Account")]
+    [HttpPost("MaakAccount")]
     public async Task<ActionResult<AccountParticulier>> PostAccount([FromBody] ParticulierDto accountDto, string postcode, int huisnummer)
     {
         Adres adres = await _adresService.ZoekAdresAsync(postcode, huisnummer);
@@ -60,25 +60,23 @@ public class AccountParticulierController : ControllerBase
         _context.Accounts.Add(account);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetAccount), new { id = account.AccountId }, account);
+        return account;
     }
     
     [HttpPost("Login")]
     public async Task<IActionResult> Login(string email, string password)
     {
         var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
-
-        if (account == null)
+        _passwordHasher.HashPassword(account, password);
+        
+        if (account == null || string.IsNullOrEmpty(account.Wachtwoord))
         {
-            return Unauthorized();
+            return Unauthorized("Account of wachtwoord niet gevonden.");
         }
 
         var result = account.WachtwoordVerify(password);
 
-        if (result == PasswordVerificationResult.Failed)
-        {
-            return Unauthorized();
-        }
+        if (result == PasswordVerificationResult.Failed) return Unauthorized("Fout wachtwoord");
 
         return Ok("Inloggen succesvol");
     }

@@ -45,6 +45,21 @@ public class AccountParticulier : Account
             throw new ArgumentException("Wachtwoord mag niet null of leeg zijn", nameof(password));
         }
 
-        return PasswordHasher.VerifyHashedPassword(this, Wachtwoord, password);
+        if (string.IsNullOrEmpty(this.Wachtwoord))
+        {
+            throw new InvalidOperationException("Het opgeslagen wachtwoord is null of leeg.");
+        }
+
+        try
+        {
+            return PasswordHasher.VerifyHashedPassword(this, Wachtwoord, password);
+        }
+        catch (Exception ex)
+        {
+            // Voeg logging toe om de fout verder te analyseren
+            Console.WriteLine($"Fout bij wachtwoordverificatie: {ex.Message}");
+            throw;
+        }
     }
+
 }
