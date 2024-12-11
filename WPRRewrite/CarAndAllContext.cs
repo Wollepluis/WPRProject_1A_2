@@ -42,10 +42,7 @@ public class CarAndAllContext : DbContext
     
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
-        builder.UseSqlServer(@"Server=WOLLEPLUISLAPTO\SQLExpress;" +
-                             "Database=CarAndAll9;" +
-                             "Integrated Security=True;" +
-                             "TrustServerCertificate=True");
+        builder.UseSqlServer(@"Server=tcp:wprproject.database.windows.net,1433;Initial Catalog=CarAndAll;Persist Security Info=False;User ID=BoterhamZakje;Password=Banaan123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
     }
 
     public DbSet<Voertuig> Voertuigen { get; set; }

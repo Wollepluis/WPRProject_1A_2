@@ -12,7 +12,7 @@ using WPRRewrite;
 namespace WPRRewrite.Migrations
 {
     [DbContext(typeof(CarAndAllContext))]
-    [Migration("20241211120757_initial")]
+    [Migration("20241211131519_initial")]
     partial class initial
     {
         /// <inheritdoc />

@@ -85,10 +85,10 @@ namespace WPRRewrite.Migrations
                 {
                     BedrijfId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    KvkNummer = table.Column<int>(type: "int", nullable: false),
                     Bedrijfsnaam = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BedrijfAdres = table.Column<int>(type: "int", nullable: false),
                     Domeinnaam = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    KvkNummer = table.Column<int>(type: "int", nullable: false),
                     AbonnementId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
