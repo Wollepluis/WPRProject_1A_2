@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WPRRewrite.Dtos;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen;
 using WPRRewrite.SysteemFuncties;
@@ -25,34 +26,28 @@ public class BedrijfController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Bedrijf>> GetBedrijf(int id)
+    public async Task<ActionResult<BedrijfDto>> GetBedrijf(int id, int kvknummer)
     {
-        var bedrijf = await _context.Bedrijven.FindAsync(id);
+        Bedrijf bedrijf = await _context.Bedrijven.FindAsync(id);
 
-        if (bedrijf == null)
-        {
-            return NotFound();
-        }
+        if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
+        if (bedrijf.KvkNummer != kvknummer) return BadRequest("Kvknummer komt niet overeen...");
+        
+        BedrijfDto bedrijfDto = new BedrijfDto(bedrijf.KvkNummer, bedrijf.Bedrijfsnaam, bedrijf.BedrijfAdres, bedrijf.Domeinnaam);
         return Ok(bedrijf);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Bedrijf>> PostBedrijf([FromBody] Bedrijf bedrijf, string postcode, int huisnummer)
+    public async Task<ActionResult<Bedrijf>> PostBedrijf([FromBody] BedrijfDto bedrijfDto, string postcode, int huisnummer)
     {
-        if (bedrijf == null)
-        {
-            return BadRequest("Bedrijf mag niet 'NULL' zijn");
-        }
+        if (bedrijfDto == null) return BadRequest("Bedrijf moet ingevuld zijn!");
 
         var adres = await _adresService.ZoekAdresAsync(postcode, huisnummer);
 
-        if (adres == null)
-        {
-            return NotFound("Address not found for the given postcode and huisnummer.");
-        }
-
-        bedrijf.BedrijfAdres = adres.AdresId;
-
+        if (adres == null) return NotFound("Het adres is niet gevonden met de bijbehorende postcode en huisnummer...");
+        
+        Bedrijf bedrijf = new Bedrijf(bedrijfDto.Kvknummer, bedrijfDto.Bedrijfsnaam, adres.AdresId, bedrijfDto.AbonnementId, bedrijfDto.Domeinnaam);
+        
         _context.Bedrijven.Add(bedrijf);
         await _context.SaveChangesAsync();
 
@@ -60,19 +55,13 @@ public class BedrijfController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutBedrijf(int id, [FromBody] Bedrijf updatedBedrijf)
+    public async Task<IActionResult> PutBedrijf(int id, [FromBody] BedrijfDto updatedBedrijfDto)
     {
-        if (id != updatedBedrijf.BedrijfId)
-        {
-            return BadRequest("ID mismatch");
-        }
-
         var existingBedrijf = await _context.Bedrijven.FindAsync(id);
-        if (existingBedrijf == null)
-        {
-            return NotFound();
-        }
+        
+        if (existingBedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
 
+        Bedrijf updatedBedrijf = new Bedrijf(updatedBedrijfDto.Kvknummer, updatedBedrijfDto.Bedrijfsnaam, updatedBedrijfDto.AbonnementId, updatedBedrijfDto.BedrijfAdres,updatedBedrijfDto.Domeinnaam);
         existingBedrijf.UpdateBedrijf(updatedBedrijf);
 
         await _context.SaveChangesAsync();
@@ -80,14 +69,12 @@ public class BedrijfController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteBedrijf(int id)
+    public async Task<IActionResult> DeleteBedrijf(int id, int kvknummer)
     {
         var bedrijf = await _context.Bedrijven.FindAsync(id);
-        if (bedrijf == null)
-        {
-            return NotFound();
-        }
-
+        if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
+        if (bedrijf.KvkNummer != kvknummer) return BadRequest("Kvknummer komt niet overeen...");
+        
         _context.Bedrijven.Remove(bedrijf);
         await _context.SaveChangesAsync();
 

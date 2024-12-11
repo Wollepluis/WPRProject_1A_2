@@ -27,10 +27,7 @@ public class AdresController : ControllerBase
     {
         var adres = await _context.Adressen.FindAsync(id);
 
-        if (adres == null)
-        {
-            return NotFound();
-        }
+        if (adres == null) return NotFound();
         return Ok(adres);
     }
     
