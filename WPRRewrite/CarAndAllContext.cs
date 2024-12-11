@@ -42,8 +42,8 @@ public class CarAndAllContext : DbContext
     
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
-        builder.UseSqlServer(@"Server=Xanderslaptop\SQLExpress;" +
-                             "Database=CarAndAll4;" +
+        builder.UseSqlServer(@"Server=WOLLEPLUISLAPTO\SQLExpress;" +
+                             "Database=CarAndAll2;" +
                              "Integrated Security=True;" +
                              "TrustServerCertificate=True");
     }
