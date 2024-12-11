@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using WPRRewrite.Dtos;
 using WPRRewrite.Interfaces;
+using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.SysteemFuncties;
 
@@ -40,25 +42,21 @@ public class AccountParticulierController : ControllerBase
         return Ok(account);
     }
     
-    [HttpPost("maakaccount")]
-    public async Task<ActionResult<AccountParticulier>> PostAccount([FromBody] AccountParticulier account, string postcode, int huisnummer)
+    [HttpPost("Maak Account")]
+    public async Task<ActionResult<AccountParticulier>> PostAccount([FromBody] ParticulierDto accountDto, string postcode, int huisnummer)
     {
-        if (account == null)
-        {
-            return BadRequest("AccountParticulier mag niet 'NULL' zijn");
-        }
-
+        Adres adres = await _adresService.ZoekAdresAsync(postcode, huisnummer);
+        if (adres == null) return NotFound("Address not found for the given postcode and huisnummer.");
+        _context.Adressen.Add(adres);
+        await _context.SaveChangesAsync();
+        
+        
+        if (accountDto == null) return BadRequest("AccountParticulier mag niet 'NULL' zijn");
+        
+        AccountParticulier account = new AccountParticulier(accountDto.Email, accountDto.Wachtwoord, accountDto.Naam, adres.AdresId, accountDto.Telefoonnummer, _passwordHasher);
+        
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
         
-        var adres = await _adresService.ZoekAdresAsync(postcode, huisnummer);
-
-        if (adres == null)
-        {
-            return NotFound("Address not found for the given postcode and huisnummer.");
-        }
-
-        account.Adres = adres;
-
         _context.Accounts.Add(account);
         await _context.SaveChangesAsync();
 
