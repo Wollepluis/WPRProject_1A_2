@@ -34,7 +34,7 @@ public class CarAndAllContext : DbContext
             .HasValue<Caravan>("Caravan");
 
         builder.Entity<Abonnement>()
-            .HasDiscriminator<String>("Voertuigtype")
+            .HasDiscriminator<String>("AbonnementType")
             .HasValue<Abonnement>("BaseAbonnement")
             .HasValue<PayAsYouGo>("PayAsYouGo")
             .HasValue<UpFront>("UpFront");
@@ -43,7 +43,7 @@ public class CarAndAllContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         builder.UseSqlServer(@"Server=WOLLEPLUISLAPTO\SQLExpress;" +
-                             "Database=CarAndAll2;" +
+                             "Database=CarAndAll9;" +
                              "Integrated Security=True;" +
                              "TrustServerCertificate=True");
     }
@@ -53,6 +53,7 @@ public class CarAndAllContext : DbContext
     public DbSet<Bedrijf> Bedrijven { get; set; }
     public DbSet<Abonnement> Abonnementen { get; set; }
     public DbSet<Account> Accounts { get; set; }
+   
     public DbSet<Reservering> Reserveringen { get; set; }
     public DbSet<Reparatie> Reparaties { get; set; }
 }

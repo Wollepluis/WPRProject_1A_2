@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 using WPRRewrite.Interfaces;
 
 namespace WPRRewrite.Modellen.Accounts;
@@ -16,8 +17,10 @@ public class AccountParticulier : Account
     }
 
     public string Naam { get; set; }
-    public Adres Adres { get; set; }
     public int Telefoonnummer { get; set; }
+    public int AdresId { get; set; }
+    [ForeignKey("AdresId")]
+    public Adres Adres { get; set; }
 
     public override void UpdateAccount(IAccount updatedAccount)
     {
