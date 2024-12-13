@@ -6,10 +6,15 @@ namespace WPRRewrite.Modellen.Accounts;
 
 public class AccountParticulier : Account
 {
-    public AccountParticulier(IPasswordHasher<Account> passwordHasher)
+    public AccountParticulier(string email, string wachtwoord, string naam, int adresId, int telefoonnummer, IPasswordHasher<Account> passwordHasher)
         : base(passwordHasher)
     {
-        
+        Email = email;
+        Wachtwoord = wachtwoord;
+        Naam = naam;
+        AdresId = adresId;
+        Telefoonnummer = telefoonnummer;
+        Reserveringen = new List<Reservering>();
     }
 
     public AccountParticulier()
@@ -17,10 +22,11 @@ public class AccountParticulier : Account
     }
 
     public string Naam { get; set; }
-    public int Telefoonnummer { get; set; }
     public int AdresId { get; set; }
     [ForeignKey("AdresId")]
     public Adres Adres { get; set; }
+    public int Telefoonnummer { get; set; }
+    private List<Reservering> Reserveringen;
 
     public override void UpdateAccount(IAccount updatedAccount)
     {

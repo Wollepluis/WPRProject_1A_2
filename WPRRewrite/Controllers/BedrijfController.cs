@@ -75,7 +75,11 @@ public class BedrijfController : ControllerBase
         if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
         if (bedrijf.KvkNummer != kvknummer) return BadRequest("Kvknummer komt niet overeen...");
         
+        Adres adres = await _context.Adressen.FindAsync(bedrijf.BedrijfAdres);
+        if (adres == null) return NotFound("Er is geen adres gevonden...");
+        
         _context.Bedrijven.Remove(bedrijf);
+        _context.Adressen.Remove(adres);
         await _context.SaveChangesAsync();
 
         return NoContent();
