@@ -37,13 +37,13 @@ public class CaravanController : ControllerBase, IVoertuigController
     }
 
     [HttpPost("Voeg Caravan Toe")]
-    public async Task<ActionResult<VoertuigDto>> PostVoertuig(VoertuigDto camperDto) 
+    public async Task<ActionResult<VoertuigDto>> PostVoertuig(VoertuigDto caravanDto) 
     {
-        if (camperDto == null)
+        if (caravanDto == null)
         {
             return BadRequest("Voertuig mag niet 'NULL' zijn");
         }
-        Caravan caravan = new Caravan(camperDto.Kenteken, camperDto.Merk, camperDto.Model, camperDto.Kleur, camperDto.Aanschafjaar, camperDto.Prijs, "Beschikbaar");
+        Caravan caravan = new Caravan(caravanDto.Kenteken, caravanDto.Merk, caravanDto.Model, caravanDto.Kleur, caravanDto.Aanschafjaar, caravanDto.Prijs, "Beschikbaar");
         _context.Voertuigen.Add(caravan);
         await _context.SaveChangesAsync();
 
@@ -51,13 +51,13 @@ public class CaravanController : ControllerBase, IVoertuigController
     }
 
     [HttpPut("Update Caravan / {id}")]
-    public async Task<IActionResult> PutVoertuig(int id, VoertuigDto updatedCamperDto)
+    public async Task<IActionResult> PutVoertuig(int id, VoertuigDto updatedCaravanDto)
     {
         IVoertuig? bestaandeCaravan = await _context.Voertuigen.FindAsync(id);
         
         if (bestaandeCaravan == null) return NotFound();
 
-        Caravan updatedCaravan = new Caravan(updatedCamperDto.Kenteken, updatedCamperDto.Merk, updatedCamperDto.Model, updatedCamperDto.Kleur, updatedCamperDto.Aanschafjaar, updatedCamperDto.Prijs, updatedCamperDto.VoertuigStatus);
+        Caravan updatedCaravan = new Caravan(updatedCaravanDto.Kenteken, updatedCaravanDto.Merk, updatedCaravanDto.Model, updatedCaravanDto.Kleur, updatedCaravanDto.Aanschafjaar, updatedCaravanDto.Prijs, updatedCaravanDto.VoertuigStatus);
         
         bestaandeCaravan.UpdateVoertuig(updatedCaravan);
         await _context.SaveChangesAsync();

@@ -1,21 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using WPRRewrite.Dtos;
 using WPRRewrite.Modellen.Accounts;
 
 namespace WPRRewrite.Controllers;
 
 [ApiController]
-[Route("api/[Controller]")]
+[Route("api/Backoffice")] 
 public class AccountMedewerkerBackofficeController : ControllerBase
 {
     private readonly CarAndAllContext _context;
-    private readonly IPasswordHasher<Account> _passwordHasher;
+    private IPasswordHasher<Account> _passwordHasher = new PasswordHasher<Account>();
 
-    public AccountMedewerkerBackofficeController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher)
+    public AccountMedewerkerBackofficeController(CarAndAllContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
-        _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
     }
     
     [HttpGet("Krijg alle accounts")]
@@ -36,43 +36,36 @@ public class AccountMedewerkerBackofficeController : ControllerBase
         return Ok(account);
     }
 
-    [HttpPost("maakaccount")]
-    public async Task<ActionResult<AccountMedewerkerBackoffice>> PostAccount([FromBody] AccountMedewerkerBackoffice account)
+    [HttpPost("MaakAccount")]
+    public async Task<ActionResult<AccountMedewerkerBackoffice>> PostAccount([FromBody] BackofficeDto accountDto)
     {
-        if (account == null)
-        {
-            return BadRequest("AccountMedewerkerBackoffice mag niet 'NULL' zijn");
-        }
+        var anyEmail = _context.Accounts.Any(a => a.Email == accountDto.Email);
+        if (anyEmail) return BadRequest("Een gebruiker met deze email bestaat al");
+        if (accountDto == null) return BadRequest("AccountMedewerkerBackoffice mag niet 'NULL' zijn");
 
+        AccountMedewerkerBackoffice account = new AccountMedewerkerBackoffice(accountDto.Email, accountDto.Wachtwoord, _passwordHasher);
+        
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
 
         _context.Accounts.Add(account);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetAccount), new { id = account.AccountId }, account);
+        return Ok(new { AccountId = account.AccountId, Message = "Account succesvol aangemaakt." });
     }
     
     [HttpPost("Login")]
-    public async Task<IActionResult> Login(string email, string password)
+    public async Task<IActionResult> Login([FromBody] LoginDto accountDto)
     {
-        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
-
-        if (account == null)
-        {
-            return Unauthorized();
-        }
-
-        var result = account.WachtwoordVerify(password);
-
-        if (result == PasswordVerificationResult.Failed)
-        {
-            return Unauthorized();
-        }
-
-        return Ok("Inloggen succesvol");
+        var account = await _context.Accounts.OfType<AccountMedewerkerBackoffice>().FirstOrDefaultAsync(a => a.Email == accountDto.Email);
+        string hashedPassword = _passwordHasher.HashPassword(account, accountDto.Wachtwoord);
+             
+        if (account == null) return Unauthorized("Account is niet gevonden");
+        if (_passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, accountDto.Wachtwoord) == PasswordVerificationResult.Failed) return Unauthorized("Verkeerd wachtwoord");
+     
+        return Ok();
     }
 
-    [HttpPut("Update Account")]
+    [HttpPut("UpdateAccount")]
     public async Task<IActionResult> PutAccount(int id, [FromBody] AccountMedewerkerBackoffice updatedAccount)
     {
         if (id != updatedAccount.AccountId)
@@ -92,7 +85,7 @@ public class AccountMedewerkerBackofficeController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("DeleteAccount")]
     public async Task<IActionResult> DeleteAccount(int id)
     {
         var account = await _context.Accounts.FindAsync(id);

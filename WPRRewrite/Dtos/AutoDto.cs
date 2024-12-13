@@ -12,14 +12,14 @@ public class AutoDto : VoertuigDto
         Prijs = prijs;
     }
 
-    public AutoDto(string caravanKenteken, string caravanMerk, string caravanModel, string caravanKleur, int caravanAanschafjaar, int caravanPrijs, string caravanVoertuigStatus)
+    public AutoDto(string kenteken, string merk, string model, string kleur, int aanschafjaar, int prijs, string autoVoertuigStatus)
     {
-        Kenteken = caravanKenteken;
-        Merk = caravanMerk;
-        Model = caravanModel;
-        Kleur = caravanKleur;
-        Aanschafjaar = caravanAanschafjaar;
-        Prijs = caravanPrijs;
-        VoertuigStatus = caravanVoertuigStatus;
+        Kenteken = kenteken;
+        Merk = merk;
+        Model = model;
+        Kleur = kleur;
+        Aanschafjaar = aanschafjaar;
+        Prijs = prijs;
+        VoertuigStatus = autoVoertuigStatus;
     }
 }
