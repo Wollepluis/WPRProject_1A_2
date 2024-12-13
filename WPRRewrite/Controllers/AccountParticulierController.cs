@@ -46,14 +46,16 @@ public class AccountParticulierController : ControllerBase
     public async Task<ActionResult<AccountParticulier>> PostAccount([FromBody] ParticulierDto accountDto)
     {
         var anyEmail = _context.Accounts.Any(a => a.Email == accountDto.Email);
+        
         if (anyEmail) return BadRequest("Een gebruiker met deze email bestaat al");
         if (accountDto == null) return BadRequest("Accountgegevens mogen niet leeg zijn.");
+        
         Adres adres = await _adresService.ZoekAdresAsync(accountDto.Postcode, accountDto.Huisnummer);
+        
         if (adres == null) return NotFound("Address not found for the given postcode and huisnummer.");
+        
         _context.Adressen.Add(adres);
         await _context.SaveChangesAsync();
-        
-        
         
         if (accountDto == null) return BadRequest("AccountParticulier mag niet 'NULL' zijn");
         
@@ -80,19 +82,20 @@ public class AccountParticulierController : ControllerBase
          }
 
     [HttpPut("updateaccount")]
-    public async Task<IActionResult> PutAccount(int id, [FromBody] AccountParticulier updatedAccount)
+    public async Task<IActionResult> PutAccount(int id, [FromBody]ParticulierDto dto)
     {
-        if (id != updatedAccount.AccountId)
-        {
-            return BadRequest("ID mismatch");
-        }
-
         var existingAccount = await _context.Accounts.FindAsync(id);
         if (existingAccount == null)
         {
             return NotFound();
         }
 
+        Adres adres = await _adresService.ZoekAdresAsync(dto.Postcode, dto.Huisnummer);
+        if (adres == null) return NotFound("Address not found for the given postcode and huisnummer.");
+
+        AccountParticulier updatedAccount = new AccountParticulier(dto.Email, dto.Wachtwoord, dto.Naam, adres.AdresId,
+            dto.Telefoonnummer, _passwordHasher);
+        
         existingAccount.UpdateAccount(updatedAccount);
 
         await _context.SaveChangesAsync();

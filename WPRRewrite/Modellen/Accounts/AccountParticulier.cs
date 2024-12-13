@@ -35,7 +35,7 @@ public class AccountParticulier : Account
         Email = particulierAccount.Email;
         Wachtwoord = particulierAccount.Wachtwoord;
         Naam = particulierAccount.Naam;
-        //ParticulierAdres = particulierAccount.ParticulierAdres;
+        AdresId = particulierAccount.AdresId;
         Telefoonnummer = particulierAccount.Telefoonnummer;
     }
     public override PasswordVerificationResult WachtwoordVerify(string password)
