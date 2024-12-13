@@ -82,7 +82,7 @@ public class AccountParticulierController : ControllerBase
          }
 
     [HttpPut("updateaccount")]
-    public async Task<IActionResult> PutAccount(int id, [FromBody]ParticulierDto dto)
+    public async Task<IActionResult> PutAccount([FromQuery]int id, [FromBody]ParticulierDto dto)
     {
         var existingAccount = await _context.Accounts.FindAsync(id);
         if (existingAccount == null)
@@ -92,6 +92,9 @@ public class AccountParticulierController : ControllerBase
 
         Adres adres = await _adresService.ZoekAdresAsync(dto.Postcode, dto.Huisnummer);
         if (adres == null) return NotFound("Address not found for the given postcode and huisnummer.");
+        
+        _context.Adressen.Add(adres);
+        await _context.SaveChangesAsync();
 
         AccountParticulier updatedAccount = new AccountParticulier(dto.Email, dto.Wachtwoord, dto.Naam, adres.AdresId,
             dto.Telefoonnummer, _passwordHasher);
