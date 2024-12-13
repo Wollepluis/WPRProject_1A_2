@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Dtos;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen;
+using WPRRewrite.Modellen.Abonnementen;
+using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Controllers;
@@ -32,21 +35,38 @@ public class BedrijfController : ControllerBase
 
         if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
         if (bedrijf.KvkNummer != kvknummer) return BadRequest("Kvknummer komt niet overeen...");
+
+        var abonnement = await _context.Abonnementen.FindAsync(bedrijf.AbonnementId);
+        var adres = await _context.Adressen.FindAsync(bedrijf.BedrijfAdres);
         
-        BedrijfDto bedrijfDto = new BedrijfDto(bedrijf.KvkNummer, bedrijf.Bedrijfsnaam, bedrijf.BedrijfAdres, bedrijf.Domeinnaam);
+        BedrijfDto bedrijfDto = new BedrijfDto(bedrijf.KvkNummer, bedrijf.Bedrijfsnaam, adres.Postcode, adres.Huisnummer, abonnement.MaxMedewerkers, abonnement.MaxVoertuigen);
         return Ok(bedrijf);
     }
 
-    [HttpPost]
-    public async Task<ActionResult<Bedrijf>> PostBedrijf([FromBody] BedrijfDto bedrijfDto, string postcode, int huisnummer)
+    [HttpPost("MaakBedrijf")]
+    public async Task<ActionResult<Bedrijf>> PostBedrijf([FromBody] BedrijfEnBeheerderDto bedrijfEnBeheerderDto)
     {
-        if (bedrijfDto == null) return BadRequest("Bedrijf moet ingevuld zijn!");
+        if (bedrijfEnBeheerderDto == null) return BadRequest("Bedrijf moet ingevuld zijn!");
+        var bedrijfDto = bedrijfEnBeheerderDto.Bedrijf;
+        var zakelijkBeheerderDto = bedrijfEnBeheerderDto.Beheerder;
+        
+        var anyEmail = _context.Accounts.Any(a => a.Email == zakelijkBeheerderDto.Email);
+        if (anyEmail) return BadRequest("Een gebruiker met deze email bestaat al");
+        
+        Adres adres = await _adresService.ZoekAdresAsync(bedrijfDto.Postcode, bedrijfDto.Huisnummer);
+        if (adres == null) return NotFound("Geen adres gevonden bij deze postcode en huisnummer");
+        Abonnement abonnement = new PayAsYouGo(bedrijfDto.MaxMedewerkers, bedrijfDto.MaxVoertuigen);
 
-        var adres = await _adresService.ZoekAdresAsync(postcode, huisnummer);
+        _context.Abonnementen.Add(abonnement);
+        _context.Adressen.Add(adres);
+        await _context.SaveChangesAsync();
+        
+        
 
         if (adres == null) return NotFound("Het adres is niet gevonden met de bijbehorende postcode en huisnummer...");
         
-        Bedrijf bedrijf = new Bedrijf(bedrijfDto.Kvknummer, bedrijfDto.Bedrijfsnaam, adres.AdresId, bedrijfDto.AbonnementId, bedrijfDto.Domeinnaam);
+        Bedrijf bedrijf = new Bedrijf(bedrijfDto.Kvknummer, bedrijfDto.Bedrijfsnaam, adres.AdresId, abonnement.AbonnementId, "@" + bedrijfDto.Bedrijfsnaam + ".com");
+        bedrijf.BevoegdeMedewerkers.Add(new AccountZakelijkBeheerder(zakelijkBeheerderDto.Email, zakelijkBeheerderDto.Wachtwoord, bedrijf.BedrijfId,new PasswordHasher<Account>()));
         
         _context.Bedrijven.Add(bedrijf);
         await _context.SaveChangesAsync();
@@ -61,7 +81,7 @@ public class BedrijfController : ControllerBase
         
         if (existingBedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
 
-        Bedrijf updatedBedrijf = new Bedrijf(updatedBedrijfDto.Kvknummer, updatedBedrijfDto.Bedrijfsnaam, updatedBedrijfDto.AbonnementId, updatedBedrijfDto.BedrijfAdres,updatedBedrijfDto.Domeinnaam);
+        Bedrijf updatedBedrijf = new Bedrijf(updatedBedrijfDto.Bedrijfsnaam, "@" + updatedBedrijfDto + ".com");
         existingBedrijf.UpdateBedrijf(updatedBedrijf);
 
         await _context.SaveChangesAsync();
@@ -76,12 +96,22 @@ public class BedrijfController : ControllerBase
         if (bedrijf.KvkNummer != kvknummer) return BadRequest("Kvknummer komt niet overeen...");
         
         Adres adres = await _context.Adressen.FindAsync(bedrijf.BedrijfAdres);
+        var abonnement = await _context.Abonnementen.FindAsync(bedrijf.AbonnementId);
         if (adres == null) return NotFound("Er is geen adres gevonden...");
+        if (abonnement == null) return NotFound("Geen abonnement gevonden...");
         
         _context.Bedrijven.Remove(bedrijf);
         _context.Adressen.Remove(adres);
+        _context.Abonnementen.Remove(abonnement);
         await _context.SaveChangesAsync();
 
         return NoContent();
     }
+
+    [HttpPost("MaakBedrijf")]
+    public async Task<ActionResult<Bedrijf>> PostMedewerker([FromBody] ZakelijkHuurderDto accountZakelijkDto)
+    {
+        
+    }
+    
 }

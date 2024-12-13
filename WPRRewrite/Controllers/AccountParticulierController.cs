@@ -43,12 +43,16 @@ public class AccountParticulierController : ControllerBase
     }
     
     [HttpPost("MaakAccount")]
-    public async Task<ActionResult<AccountParticulier>> PostAccount([FromBody] ParticulierDto accountDto, string postcode, int huisnummer)
+    public async Task<ActionResult<AccountParticulier>> PostAccount([FromBody] ParticulierDto accountDto)
     {
-        Adres adres = await _adresService.ZoekAdresAsync(postcode, huisnummer);
+        var anyEmail = _context.Accounts.Any(a => a.Email == accountDto.Email);
+        if (anyEmail) return BadRequest("Een gebruiker met deze email bestaat al");
+        if (accountDto == null) return BadRequest("Accountgegevens mogen niet leeg zijn.");
+        Adres adres = await _adresService.ZoekAdresAsync(accountDto.Postcode, accountDto.Huisnummer);
         if (adres == null) return NotFound("Address not found for the given postcode and huisnummer.");
         _context.Adressen.Add(adres);
         await _context.SaveChangesAsync();
+        
         
         
         if (accountDto == null) return BadRequest("AccountParticulier mag niet 'NULL' zijn");
@@ -60,26 +64,20 @@ public class AccountParticulierController : ControllerBase
         _context.Accounts.Add(account);
         await _context.SaveChangesAsync();
 
-        return account;
+        return Ok(new { AccountId = account.AccountId, Message = "Account succesvol aangemaakt." });
     }
     
     [HttpPost("Login")]
-    public async Task<IActionResult> Login(string email, string password)
-    {
-        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
-        _passwordHasher.HashPassword(account, password);
-        
-        if (account == null || string.IsNullOrEmpty(account.Wachtwoord))
-        {
-            return Unauthorized("Account of wachtwoord niet gevonden.");
-        }
-
-        var result = account.WachtwoordVerify(password);
-
-        if (result == PasswordVerificationResult.Failed) return Unauthorized("Fout wachtwoord");
-
-        return Ok("Inloggen succesvol");
-    }
+         public async Task<IActionResult> Login([FromBody] LoginDto accountDto)
+         {
+             var account = await _context.Accounts.OfType<AccountParticulier>().FirstOrDefaultAsync(a => a.Email == accountDto.Email);
+             string hashedPassword = _passwordHasher.HashPassword(account, accountDto.Wachtwoord);
+             
+             if (account == null) return Unauthorized("Account is niet gevonden");
+             if (_passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, accountDto.Wachtwoord) == PasswordVerificationResult.Failed) return Unauthorized("Verkeerd wachtwoord");
+     
+             return Ok();
+         }
 
     [HttpPut("Update Account")]
     public async Task<IActionResult> PutAccount(int id, [FromBody] AccountParticulier updatedAccount)

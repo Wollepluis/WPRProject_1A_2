@@ -5,10 +5,12 @@ namespace WPRRewrite.Modellen.Accounts;
 
 public class AccountZakelijkBeheerder : AccountZakelijk
 {
-    public AccountZakelijkBeheerder(IPasswordHasher<Account> passwordHasher)
+    public AccountZakelijkBeheerder(string email, string wachtwoord, int bedrijfsId ,IPasswordHasher<Account> passwordHasher)
         : base(passwordHasher)
     {
-        
+        Email = email;
+        Wachtwoord = wachtwoord;
+        BedrijfsId = bedrijfsId;
     }
 
     public AccountZakelijkBeheerder()

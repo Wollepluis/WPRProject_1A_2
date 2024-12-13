@@ -34,6 +34,12 @@ public class Bedrijf
         BevoegdeMedewerkers = new List<AccountZakelijk>();
     }
 
+    public Bedrijf(string bedrijfsnaam, string domeinnaam)
+    {
+        Bedrijfsnaam = bedrijfsnaam;
+        Domeinnaam = domeinnaam;
+    }
+
     public void VoegMedewerkerToe(AccountZakelijk account)
     {
         BevoegdeMedewerkers.Add(account);
