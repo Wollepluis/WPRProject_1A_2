@@ -38,13 +38,13 @@ public class AutoController : ControllerBase, IVoertuigController
     }
 
     [HttpPost("Voeg Auto Toe")]
-    public async Task<ActionResult<VoertuigDto>> PostVoertuig(VoertuigDto camperDto) 
+    public async Task<ActionResult<VoertuigDto>> PostVoertuig(VoertuigDto autoDto) 
     {
-        if (camperDto == null)
+        if (autoDto == null)
         {
             return BadRequest("Voertuig mag niet 'NULL' zijn");
         }
-        Auto auto = new Auto(camperDto.Kenteken, camperDto.Merk, camperDto.Model, camperDto.Kleur, camperDto.Aanschafjaar, camperDto.Prijs, "Beschikbaar");
+        Auto auto = new Auto(autoDto.Kenteken, autoDto.Merk, autoDto.Model, autoDto.Kleur, autoDto.Aanschafjaar, autoDto.Prijs, "Beschikbaar");
         _context.Voertuigen.Add(auto);
         await _context.SaveChangesAsync();
 
@@ -52,13 +52,13 @@ public class AutoController : ControllerBase, IVoertuigController
     }
 
     [HttpPut("Update Auto / {id}")]
-    public async Task<IActionResult> PutVoertuig(int id, VoertuigDto updatedCamperDto)
+    public async Task<IActionResult> PutVoertuig(int id, VoertuigDto updatedAutoDto)
     {
         IVoertuig? bestaandeAuto = await _context.Voertuigen.FindAsync(id);
         
         if (bestaandeAuto == null) return NotFound();
 
-        Auto updatedAuto = new Auto(updatedCamperDto.Kenteken, updatedCamperDto.Merk, updatedCamperDto.Model, updatedCamperDto.Kleur, updatedCamperDto.Aanschafjaar, updatedCamperDto.Prijs, updatedCamperDto.VoertuigStatus);
+        Auto updatedAuto = new Auto(updatedAutoDto.Kenteken, updatedAutoDto.Merk, updatedAutoDto.Model, updatedAutoDto.Kleur, updatedAutoDto.Aanschafjaar, updatedAutoDto.Prijs, updatedAutoDto.VoertuigStatus);
         
         bestaandeAuto.UpdateVoertuig(updatedAuto);
         await _context.SaveChangesAsync();

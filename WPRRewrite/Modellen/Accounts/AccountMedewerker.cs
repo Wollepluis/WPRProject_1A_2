@@ -13,7 +13,6 @@ public abstract class AccountMedewerker : Account, IAccountMedewerker
 
     protected AccountMedewerker()
     {
-        throw new NotImplementedException();
     }
 
     public override void UpdateAccount(IAccount updatedAccount)

@@ -12,14 +12,15 @@ public class CamperDto : VoertuigDto
         Prijs = prijs;
     }
 
-    public CamperDto(string caravanKenteken, string caravanMerk, string caravanModel, string caravanKleur, int caravanAanschafjaar, int caravanPrijs, string caravanVoertuigStatus)
+    public CamperDto(string kenteken, string merk, string model, string kleur, int aanschafjaar, int prijs, string camperVoertuigStatus)
     {
-        Kenteken = caravanKenteken;
-        Merk = caravanMerk;
-        Model = caravanModel;
-        Kleur = caravanKleur;
-        Aanschafjaar = caravanAanschafjaar;
-        Prijs = caravanPrijs;
-        VoertuigStatus = caravanVoertuigStatus;
+        Kenteken = kenteken;
+        Merk = merk;
+        Model = model;
+        Kleur = kleur;
+        Aanschafjaar = aanschafjaar;
+        Prijs = prijs;
+        VoertuigStatus = camperVoertuigStatus;
     }
+    
 }

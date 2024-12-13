@@ -54,9 +54,6 @@ public class AccountParticulierController : ControllerBase
         await _context.SaveChangesAsync();
         
         
-        
-        if (accountDto == null) return BadRequest("AccountParticulier mag niet 'NULL' zijn");
-        
         AccountParticulier account = new AccountParticulier(accountDto.Email, accountDto.Wachtwoord, accountDto.Naam, adres.AdresId, accountDto.Telefoonnummer, _passwordHasher);
         
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
