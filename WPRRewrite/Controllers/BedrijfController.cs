@@ -25,7 +25,10 @@ public class BedrijfController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Bedrijf>>> GetAlleBedrijven()
     {
-        return await _context.Bedrijven.ToListAsync();
+        var bedrijf = await _context.Bedrijven.Include(b => b.BevoegdeMedewerkers)
+            .ToListAsync();
+
+        return Ok(bedrijf);
     }
 
     [HttpGet("{id}")]
@@ -60,8 +63,6 @@ public class BedrijfController : ControllerBase
         _context.Abonnementen.Add(abonnement);
         _context.Adressen.Add(adres);
         await _context.SaveChangesAsync();
-        
-        
 
         if (adres == null) return NotFound("Het adres is niet gevonden met de bijbehorende postcode en huisnummer...");
         
@@ -108,10 +109,28 @@ public class BedrijfController : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("MaakBedrijf")]
-    public async Task<ActionResult<Bedrijf>> PostMedewerker([FromBody] ZakelijkHuurderDto accountZakelijkDto)
+    [HttpPost("VoegMedewerkerToe")]
+    public async Task<ActionResult<Bedrijf>> PostMedewerker(ZakelijkHuurderDto accountZakelijkDto)
     {
+        var anyEmail = _context.Accounts.Any(a => a.Email == accountZakelijkDto.Email);
+        if (anyEmail) return BadRequest("Een gebruiker met deze email bestaat al");
+        // Zoek het bedrijf op basis van de BedrijfId
+        var bedrijf = await _context.Bedrijven.FindAsync(accountZakelijkDto.BedrijfId);
+        if (bedrijf == null)
+        {
+            return NotFound("Er is geen bedrijf gevonden...");
+        }
+
+        // Maak een nieuw AccountZakelijkHuurder object
+        AccountZakelijk accountZakelijkHuurder = new AccountZakelijkHuurder(accountZakelijkDto.Email, accountZakelijkDto.Wachtwoord, accountZakelijkDto.BedrijfId, new PasswordHasher<Account>());
         
+        _context.Accounts.Add(accountZakelijkHuurder);
+        // Voeg de medewerker toe aan het bedrijf
+        bedrijf.BevoegdeMedewerkers.Add(accountZakelijkHuurder);
+        
+        // Voeg het account toe aan de database en sla de wijzigingen op
+        await _context.SaveChangesAsync();
+
+        return Ok("Account Toegevoegd");
     }
-    
 }

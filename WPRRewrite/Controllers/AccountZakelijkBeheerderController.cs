@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using WPRRewrite.Dtos;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Accounts;
@@ -9,12 +10,12 @@ using WPRRewrite.SysteemFuncties;
 namespace WPRRewrite.Controllers;
 
 [ApiController]
-[Route("api/[Controller]")]
+[Route("api/ZakelijkBeheerder")]
 public class AccountZakelijkBeheerderController : ControllerBase
 {
     
-    private readonly CarAndAllContext _context;
-    private readonly IPasswordHasher<Account> _passwordHasher;
+    private CarAndAllContext _context;
+    private IPasswordHasher<Account> _passwordHasher;
     private readonly EmailSender _emailSender;
 
     public AccountZakelijkBeheerderController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher, EmailSender emailSender)
@@ -43,13 +44,12 @@ public class AccountZakelijkBeheerderController : ControllerBase
     }
     
     [HttpPost("Maak account aan")]
-    public async Task<ActionResult<AccountZakelijkBeheerder>> PostAccount([FromBody] AccountZakelijkBeheerder account)
+    public async Task<ActionResult<AccountZakelijkBeheerder>> PostAccount(ZakelijkBeheerderDto accountDto)
     {
-        if (account == null)
-        {
-            return BadRequest("AccountZakelijkBeheerder mag niet 'NULL' zijn");
-        }
+        if (accountDto == null) return BadRequest("AccountZakelijkBeheerder mag niet 'NULL' zijn");
 
+        AccountZakelijkBeheerder account = new AccountZakelijkBeheerder(accountDto.Email, accountDto.Wachtwoord, accountDto.BedrijfId, _passwordHasher);
+        
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
 
         try

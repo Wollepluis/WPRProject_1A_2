@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using WPRRewrite.Dtos;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.SysteemFuncties;
@@ -8,7 +9,7 @@ using WPRRewrite.SysteemFuncties;
 namespace WPRRewrite.Controllers;
 
 [ApiController]
-[Route("api/[Controller]")]
+[Route("api/ZakelijkHuurder")]
 public class AccountZakelijkHuurderController : ControllerBase
 {
     
@@ -67,12 +68,14 @@ public class AccountZakelijkHuurderController : ControllerBase
     }
     
     [HttpPost("Maak account aan")]
-    public async Task<ActionResult<AccountZakelijkHuurder>> PostAccount([FromBody] AccountZakelijkHuurder account)
+    public async Task<ActionResult<AccountZakelijkHuurder>> PostAccount([FromBody] ZakelijkHuurderDto accountDto)
     {
-        if (account == null)
+        if (accountDto == null)
         {
             return BadRequest("AccountZakelijkHuurder mag niet 'NULL' zijn");
         }
+        
+        AccountZakelijkHuurder account = new AccountZakelijkHuurder(accountDto.Email, accountDto.Wachtwoord, accountDto.BedrijfId ,_passwordHasher);
 
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
 

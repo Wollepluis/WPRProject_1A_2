@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Abonnementen;
 using WPRRewrite.Modellen.Accounts;
 
@@ -15,13 +16,13 @@ public class Bedrijf
     
     [ForeignKey("AbonnementId")]
     public Abonnement Abonnement { get; set; }
+
     public List<AccountZakelijk> BevoegdeMedewerkers { get; set; }
     
     public void UpdateBedrijf(Bedrijf updatedBedrijf)
     {
         Bedrijfsnaam = updatedBedrijf.Bedrijfsnaam;
         Domeinnaam = updatedBedrijf.Domeinnaam;
-        KvkNummer = updatedBedrijf.KvkNummer;
     }
 
     public Bedrijf(int kvkNummer, string bedrijfsnaam, int bedrijfAdres, int abonnementId, string domeinnaam)
@@ -31,13 +32,15 @@ public class Bedrijf
         BedrijfAdres = bedrijfAdres;
         AbonnementId = abonnementId;
         Domeinnaam = domeinnaam;
-        BevoegdeMedewerkers = new List<AccountZakelijk>();
+        BevoegdeMedewerkers= new List<AccountZakelijk>();
+        
     }
 
     public Bedrijf(string bedrijfsnaam, string domeinnaam)
     {
         Bedrijfsnaam = bedrijfsnaam;
         Domeinnaam = domeinnaam;
+        BevoegdeMedewerkers= new List<AccountZakelijk>();
     }
 
     public void VoegMedewerkerToe(AccountZakelijk account)

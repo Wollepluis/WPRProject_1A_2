@@ -6,7 +6,7 @@ namespace WPRRewrite.Modellen.Accounts;
 
 public abstract class AccountZakelijk : Account, IAccountZakelijk
 {
-    public int BedrijfsId { get; set; }
+    public int BedrijfId { get; set; }
     protected AccountZakelijk(IPasswordHasher<Account> passwordHasher)
         : base(passwordHasher)
     {
