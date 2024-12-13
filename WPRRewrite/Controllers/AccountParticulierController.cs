@@ -79,7 +79,7 @@ public class AccountParticulierController : ControllerBase
              return Ok();
          }
 
-    [HttpPut("Update Account")]
+    [HttpPut("updateaccount")]
     public async Task<IActionResult> PutAccount(int id, [FromBody] AccountParticulier updatedAccount)
     {
         if (id != updatedAccount.AccountId)
