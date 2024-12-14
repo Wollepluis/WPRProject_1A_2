@@ -21,5 +21,4 @@ public abstract class Account : IAccount
     public string Wachtwoord { get; set; }
 
     public abstract void UpdateAccount(IAccount account);
-    public abstract PasswordVerificationResult WachtwoordVerify(string password);
 }

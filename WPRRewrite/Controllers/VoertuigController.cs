@@ -7,7 +7,7 @@ using WPRRewrite.SysteemFuncties;
 namespace WPRRewrite.Controllers;
 
 [ApiController]
-[Route("api/[Controller]")]
+[Route("api/Voertuig")]
 public class VoertuigController : ControllerBase
 {
     private readonly CarAndAllContext _context;
@@ -17,13 +17,13 @@ public class VoertuigController : ControllerBase
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
     
-    [HttpGet("Krijg alle voertuigen")]
+    [HttpGet("krijgallevoertuigen")]
     public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen()
     {
         return await _context.Voertuigen.ToListAsync();
     }
 
-    [HttpGet("Krijg specifiek voertuig")]
+    [HttpGet("krijgspecifiekvoertuig")]
     public async Task<ActionResult<Voertuig>> GetVoertuig(int id)
     {
         var voertuig = await _context.Voertuigen.FindAsync(id);

@@ -104,12 +104,13 @@ public class AccountParticulierController : ControllerBase
          public async Task<IActionResult> Login([FromBody] LoginDto accountDto)
          {
              var account = await _context.Accounts.OfType<AccountParticulier>().FirstOrDefaultAsync(a => a.Email == accountDto.Email);
-             string hashedPassword = _passwordHasher.HashPassword(account, accountDto.Wachtwoord);
-             
-             if (account == null) return Unauthorized("Account is niet gevonden");
-             if (_passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, accountDto.Wachtwoord) == PasswordVerificationResult.Failed) return Unauthorized("Verkeerd wachtwoord");
-     
-             return Ok(account.AccountId);
+             if (account == null) return Unauthorized(new { message = "Account is niet gevonden"});
+
+             var result = _passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, accountDto.Wachtwoord);
+
+             if (result == PasswordVerificationResult.Failed) return Unauthorized(new { message = "Verkeerd wachtwoord"});
+        
+             return Ok(new {account.AccountId});
          }
 
          

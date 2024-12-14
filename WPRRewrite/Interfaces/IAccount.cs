@@ -12,5 +12,4 @@ public interface IAccount
     
 
     void UpdateAccount(IAccount account);
-    PasswordVerificationResult WachtwoordVerify(string password);
 }
