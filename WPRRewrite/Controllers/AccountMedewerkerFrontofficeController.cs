@@ -88,13 +88,25 @@ public class AccountMedewerkerFrontofficeController : ControllerBase
         return NoContent();
     }
 
-    [HttpPut("UpdateVoertuigStatus")]
-    public async Task<IActionResult> PutVoertuigStatus(int id, bool voertuigStatus)
+    [HttpPut("updatevoertuigstatus")]
+    public async Task<IActionResult> PutVoertuigStatus([FromQuery]int id)
     {
         var voertuig = await _context.Voertuigen.FindAsync(id);
         if (voertuig == null) return NotFound();
+
+        switch (voertuig.VoertuigStatus)
+        {
+            case "Gereserveerd":
+            case "Beschikbaar":
+                voertuig.VoertuigStatus = "Uitgegeven";
+                break;
+            case "Uitgegeven":
+                voertuig.VoertuigStatus = "Beschikbaar";
+                break;
+            default:
+                return BadRequest("Ongeldige VoertuigStatus");
+        }
         
-        voertuig.UpdateStatus(voertuigStatus);
         await _context.SaveChangesAsync();
         return NoContent();
     }
