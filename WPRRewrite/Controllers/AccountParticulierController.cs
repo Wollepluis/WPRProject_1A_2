@@ -78,7 +78,7 @@ public class AccountParticulierController : ControllerBase
         {
             adres = await _adresService.ZoekAdresAsync(accountDto.Postcode, accountDto.Huisnummer);
             
-            if (adres == null) return NotFound("Address not found for the given postcode and huisnummer.");
+            if (adres == null) return NotFound("Het adres is niet gevonden met de bijbehorende postcode en huisnummer...");
         
             _context.Adressen.Add(adres);
             await _context.SaveChangesAsync();
@@ -91,7 +91,7 @@ public class AccountParticulierController : ControllerBase
         
         _context.Accounts.Add(account);
         await _context.SaveChangesAsync();
-
+        EmailSender.SendEmail(account);
         return Ok(new { AccountId = account.AccountId});
     }
     
@@ -124,24 +124,25 @@ public class AccountParticulierController : ControllerBase
         var existingAccount = await _context.Accounts.OfType<AccountParticulier>().FirstOrDefaultAsync(a => a.AccountId == id);
         if (existingAccount == null) return NotFound();
         
-        var adres = await _context.Adressen.Where(a => a.Huisnummer == accountDto.Huisnummer && a.Postcode == accountDto.Postcode).FirstOrDefaultAsync();
-        if (adres == null)
+        var nieuwAdres = await _context.Adressen.Where(a => a.Huisnummer == accountDto.Huisnummer && a.Postcode == accountDto.Postcode).FirstOrDefaultAsync();
+        if (nieuwAdres == null)
         {
-            adres = await _adresService.ZoekAdresAsync(accountDto.Postcode, accountDto.Huisnummer);
-            if (adres == null) return NotFound("Address niet gevonden voor de gegeven postcode en huisnummer.");
-            _context.Adressen.Add(adres);
-            
-            if (_context.Adressen.Count(a => a.AdresId == existingAccount.AdresId) == 1)
-            {
-                Adres? oudAdres = await _context.Adressen.FindAsync(existingAccount.AdresId);
-                if (oudAdres == null) return NotFound("Adres niet gevonden");
-                _context.Adressen.Remove(oudAdres);
-            }
+            nieuwAdres = await _adresService.ZoekAdresAsync(accountDto.Postcode, accountDto.Huisnummer);
+            if (nieuwAdres == null) return NotFound("Address niet gevonden voor de gegeven postcode en huisnummer.");
+            _context.Adressen.Add(nieuwAdres);
             
             await _context.SaveChangesAsync();
         }
+        var accounts = _context.Accounts.OfType<AccountParticulier>().Count(a => a.AdresId == existingAccount.AdresId);
+        var bedrijven = _context.Bedrijven.Count(a => a.BedrijfAdres == existingAccount.AdresId);
+        if ((accounts + bedrijven) == 1)
+        {
+            Adres? oudAdres = await _context.Adressen.FirstOrDefaultAsync();
+            if (oudAdres == null) return NotFound("Adres niet gevonden");
+            _context.Adressen.Remove(oudAdres);
+        }
         
-        AccountParticulier account = new AccountParticulier(accountDto.Email, accountDto.Wachtwoord, accountDto.Naam, adres.AdresId, accountDto.Telefoonnummer, _passwordHasher);
+        AccountParticulier account = new AccountParticulier(accountDto.Email, accountDto.Wachtwoord, accountDto.Naam, nieuwAdres.AdresId, accountDto.Telefoonnummer, _passwordHasher);
         
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
         existingAccount.UpdateAccount(account);

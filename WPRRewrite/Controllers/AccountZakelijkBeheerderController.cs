@@ -57,8 +57,8 @@ public class AccountZakelijkBeheerderController : ControllerBase
             _context.Accounts.Add(account);
             await _context.SaveChangesAsync();
 
-            /*var bedrijf = await context.Bedrijven.FindAsync(accountZakelijkBeheerder.BedrijfsId);
-            emailSender.SendEmail(bedrijf);*/
+            var bedrijf = await _context.Bedrijven.FindAsync(account.BedrijfId);
+            //emailSender.SendEmail(bedrijf);
 
             return CreatedAtAction(nameof(GetAccount), new { id = account.AccountId }, account);
         }
