@@ -23,6 +23,10 @@ public abstract class Voertuig : IVoertuig
         Kleur = updatedVoertuig.Kleur;
         Aanschafjaar = updatedVoertuig.Aanschafjaar;
         Prijs = updatedVoertuig.Prijs;
-        VoertuigStatus = updatedVoertuig.VoertuigStatus;
+    }
+
+    public void UpdateStatus(bool status)
+    {
+        VoertuigStatus = status ? "Beschikbaar" : "Uitgegeven";
     }
 }

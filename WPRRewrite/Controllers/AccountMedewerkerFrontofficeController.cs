@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Dtos;
 using WPRRewrite.Modellen.Accounts;
+using WPRRewrite.Modellen.Voertuigen;
 
 namespace WPRRewrite.Controllers;
 
 [ApiController]
-[Route("api/[Controller]")]
+[Route("api/Frontoffice")]
 public class AccountMedewerkerFrontofficeController : ControllerBase
 {
     private readonly CarAndAllContext _context;
@@ -55,19 +56,20 @@ public class AccountMedewerkerFrontofficeController : ControllerBase
     }
     
     [HttpPost("Login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto accountDto)
+    public async Task<IActionResult> Login([FromBody]LoginDto accountDto)
     {
         var account = await _context.Accounts.OfType<AccountMedewerkerFrontoffice>().FirstOrDefaultAsync(a => a.Email == accountDto.Email);
-        string hashedPassword = _passwordHasher.HashPassword(account, accountDto.Wachtwoord);
-             
-        if (account == null) return Unauthorized("Account is niet gevonden");
-        if (_passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, accountDto.Wachtwoord) == PasswordVerificationResult.Failed) return Unauthorized("Verkeerd wachtwoord");
-     
-        return Ok(account.AccountId);
+        if (account == null) return Unauthorized(new { message = "Account is niet gevonden"});
+
+        var result = _passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, accountDto.Wachtwoord);
+
+        if (result == PasswordVerificationResult.Failed) return Unauthorized(new { message = "Verkeerd wachtwoord"});
+        
+        return Ok(new {account.AccountId});
     }
 
     [HttpPut("Update Account")]
-    public async Task<IActionResult> PutAccount(int id, [FromBody] AccountMedewerkerFrontoffice updatedAccount)
+    public async Task<IActionResult> PutAccount(int id, [FromBody]AccountMedewerkerFrontoffice updatedAccount)
     {
         if (id != updatedAccount.AccountId)
         {
@@ -82,6 +84,17 @@ public class AccountMedewerkerFrontofficeController : ControllerBase
 
         existingAccount.UpdateAccount(updatedAccount);
 
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpPut("UpdateVoertuigStatus")]
+    public async Task<IActionResult> PutVoertuigStatus(int id, bool voertuigStatus)
+    {
+        var voertuig = await _context.Voertuigen.FindAsync(id);
+        if (voertuig == null) return NotFound();
+        
+        voertuig.UpdateStatus(voertuigStatus);
         await _context.SaveChangesAsync();
         return NoContent();
     }
