@@ -70,23 +70,15 @@ public class AccountZakelijkBeheerderController : ControllerBase
     }
     
     [HttpPost("Login")]
-    public async Task<IActionResult> Login(string email, string password)
+    public async Task<IActionResult> Login([FromBody] LoginDto accountDto)
     {
-        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == email);
-
-        if (account == null)
-        {
-            return Unauthorized();
-        }
-
-        var result = account.WachtwoordVerify(password);
-
-        if (result == PasswordVerificationResult.Failed)
-        {
-            return Unauthorized();
-        }
-
-        return Ok("Inloggen succesvol");
+        var account = await _context.Accounts.OfType<AccountZakelijkBeheerder>().FirstOrDefaultAsync(a => a.Email == accountDto.Email);
+        string hashedPassword = _passwordHasher.HashPassword(account, accountDto.Wachtwoord);
+             
+        if (account == null) return Unauthorized("Account is niet gevonden");
+        if (_passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, accountDto.Wachtwoord) == PasswordVerificationResult.Failed) return Unauthorized("Verkeerd wachtwoord");
+     
+        return Ok(account.AccountId);
     }
 
     [HttpPut("Voeg medewerker toe aan abonnement")]

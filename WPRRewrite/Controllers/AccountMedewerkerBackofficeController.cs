@@ -62,7 +62,7 @@ public class AccountMedewerkerBackofficeController : ControllerBase
         if (account == null) return Unauthorized("Account is niet gevonden");
         if (_passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, accountDto.Wachtwoord) == PasswordVerificationResult.Failed) return Unauthorized("Verkeerd wachtwoord");
      
-        return Ok();
+        return Ok(account.AccountId);
     }
 
     [HttpPut("UpdateAccount")]

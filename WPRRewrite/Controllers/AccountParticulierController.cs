@@ -30,6 +30,10 @@ public class AccountParticulierController : ControllerBase
         return await _context.Accounts.OfType<AccountParticulier>().ToListAsync();
     }
 
+    
+    
+    
+    
     [HttpGet("KrijgSpecifiekAccount")]
     public async Task<ActionResult<AccountParticulier>> GetAccount(int id)
     {
@@ -42,6 +46,25 @@ public class AccountParticulierController : ControllerBase
         return Ok(account);
     }
     
+    
+    
+    
+    
+    
+    [HttpGet("KrijgSpecifiekAccountEmail")]
+    public async Task<ActionResult<AccountParticulier>> GetAccountEmail(string email)
+    {
+        var account = await _context.Accounts.OfType<AccountParticulier>().Where(a => a.Email == email).FirstOrDefaultAsync();
+
+        if (account == null) return NotFound();
+        return Ok(account);
+    }
+    
+    
+    
+    
+    
+    
     [HttpPost("MaakAccount")]
     public async Task<ActionResult<AccountParticulier>> PostAccount([FromBody] ParticulierDto accountDto)
     {
@@ -50,11 +73,16 @@ public class AccountParticulierController : ControllerBase
         if (anyEmail) return BadRequest("Een gebruiker met deze email bestaat al");
         if (accountDto == null) return BadRequest("Accountgegevens mogen niet leeg zijn.");
         
-        Adres adres = await _adresService.ZoekAdresAsync(accountDto.Postcode, accountDto.Huisnummer);
+        var adres = await _context.Adressen.Where(a => a.Huisnummer == accountDto.Huisnummer && a.Postcode == accountDto.Postcode).FirstOrDefaultAsync();
+        if (adres == null)
+        {
+            adres = await _adresService.ZoekAdresAsync(accountDto.Postcode, accountDto.Huisnummer);
+            
+            if (adres == null) return NotFound("Address not found for the given postcode and huisnummer.");
         
-        if (adres == null) return NotFound("Address not found for the given postcode and huisnummer.");
-        
-        _context.Adressen.Add(adres);
+            _context.Adressen.Add(adres);
+            await _context.SaveChangesAsync();
+        }
         await _context.SaveChangesAsync();
                 
         AccountParticulier account = new AccountParticulier(accountDto.Email, accountDto.Wachtwoord, accountDto.Naam, adres.AdresId, accountDto.Telefoonnummer, _passwordHasher);
@@ -64,8 +92,13 @@ public class AccountParticulierController : ControllerBase
         _context.Accounts.Add(account);
         await _context.SaveChangesAsync();
 
-        return Ok(new { AccountId = account.AccountId, Message = "Account succesvol aangemaakt." });
+        return Ok(new { AccountId = account.AccountId});
     }
+    
+    
+    
+    
+    
     
     [HttpPost("Login")]
          public async Task<IActionResult> Login([FromBody] LoginDto accountDto)
@@ -76,33 +109,51 @@ public class AccountParticulierController : ControllerBase
              if (account == null) return Unauthorized("Account is niet gevonden");
              if (_passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, accountDto.Wachtwoord) == PasswordVerificationResult.Failed) return Unauthorized("Verkeerd wachtwoord");
      
-             return Ok();
+             return Ok(account.AccountId);
          }
 
-    [HttpPut("updateaccount")]
-    public async Task<IActionResult> PutAccount([FromQuery]int id, [FromBody]ParticulierDto dto)
+         
+         
+         
+         
+         
+    [HttpPut("UpdateAccount")]
+    public async Task<IActionResult> PutAccount([FromQuery]int id, [FromBody]ParticulierDto accountDto)
     {
-        var existingAccount = await _context.Accounts.FindAsync(id);
-        if (existingAccount == null)
+        var existingAccount = await _context.Accounts.OfType<AccountParticulier>().FirstOrDefaultAsync(a => a.AccountId == id);
+        if (existingAccount == null) return NotFound();
+        
+        var adres = await _context.Adressen.Where(a => a.Huisnummer == accountDto.Huisnummer && a.Postcode == accountDto.Postcode).FirstOrDefaultAsync();
+        if (adres == null)
         {
-            return NotFound();
+            adres = await _adresService.ZoekAdresAsync(accountDto.Postcode, accountDto.Huisnummer);
+            if (adres == null) return NotFound("Address niet gevonden voor de gegeven postcode en huisnummer.");
+            _context.Adressen.Add(adres);
+            
+            if (_context.Adressen.Count(a => a.AdresId == existingAccount.AdresId) == 1)
+            {
+                Adres? oudAdres = await _context.Adressen.FindAsync(existingAccount.AdresId);
+                if (oudAdres == null) return NotFound("Adres niet gevonden");
+                _context.Adressen.Remove(oudAdres);
+            }
+            
+            await _context.SaveChangesAsync();
         }
-
-        Adres adres = await _adresService.ZoekAdresAsync(dto.Postcode, dto.Huisnummer);
-        if (adres == null) return NotFound("Address not found for the given postcode and huisnummer.");
         
-        _context.Adressen.Add(adres);
-        await _context.SaveChangesAsync();
-
-        AccountParticulier updatedAccount = new AccountParticulier(dto.Email, dto.Wachtwoord, dto.Naam, adres.AdresId,
-            dto.Telefoonnummer, _passwordHasher);
+        AccountParticulier account = new AccountParticulier(accountDto.Email, accountDto.Wachtwoord, accountDto.Naam, adres.AdresId, accountDto.Telefoonnummer, _passwordHasher);
         
-        existingAccount.UpdateAccount(updatedAccount);
+        account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
+        existingAccount.UpdateAccount(account);
 
         await _context.SaveChangesAsync();
         return NoContent();
     }
 
+    
+    
+    
+    
+    
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAccount(int id)
     {

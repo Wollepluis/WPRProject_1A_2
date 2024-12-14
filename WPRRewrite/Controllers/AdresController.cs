@@ -35,6 +35,7 @@ public class AdresController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Adres>> PostAdres([FromBody] Adres adres)
     {
+        
         if (adres == null)
         {
             return BadRequest("Adres mag niet 'NULL' zijn");
