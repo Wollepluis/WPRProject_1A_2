@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Mail;
+using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Accounts;
 
@@ -34,13 +35,13 @@ public class EmailSender
         }
     }
     
-    public static void SendEmail(AccountParticulier account)
+    public static void SendEmail(IAccount account)
     {
         MailMessage mailMessage = new MailMessage();
         mailMessage.From = new MailAddress("mark2492@gmail.com");
         mailMessage.To.Add(account.Email);
         mailMessage.Subject = "Account aangemaakt";
-        mailMessage.Body = "Uw account met de naam: " + account.Naam + "is aangemaakt!";
+        mailMessage.Body = "Uw account: " + account.Email + "is aangemaakt!";
 
         SmtpClient smtpClient = new SmtpClient();
         smtpClient.Host = "smtp.gmail.com";

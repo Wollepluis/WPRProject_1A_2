@@ -57,12 +57,19 @@ public class AccountMedewerkerFrontofficeController : ControllerBase
     [HttpPost("Login")]
     public async Task<IActionResult> Login([FromBody] LoginDto accountDto)
     {
-        var account = await _context.Accounts.OfType<AccountMedewerkerFrontoffice>().FirstOrDefaultAsync(a => a.Email == accountDto.Email);
-        string hashedPassword = _passwordHasher.HashPassword(account, accountDto.Wachtwoord);
-             
+        // Zoek het account op basis van het e-mailadres
+        var account = await _context.Accounts.OfType<AccountMedewerkerFrontoffice>()
+            .FirstOrDefaultAsync(a => a.Email == accountDto.Email);
+    
+        // Als het account niet bestaat, geef dan een Unauthorized terug
         if (account == null) return Unauthorized("Account is niet gevonden");
-        if (_passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, accountDto.Wachtwoord) == PasswordVerificationResult.Failed) return Unauthorized("Verkeerd wachtwoord");
-     
+
+        // Vergelijk het ingevoerde wachtwoord met het gehashte wachtwoord uit de database
+        if (_passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, accountDto.Wachtwoord) ==
+            PasswordVerificationResult.Failed)
+            return Unauthorized($"Verkeerd wachtwoord {account.Wachtwoord} en {accountDto.Wachtwoord}");
+
+        // Als het wachtwoord correct is, geef het AccountId terug
         return Ok(account.AccountId);
     }
 

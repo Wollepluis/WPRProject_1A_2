@@ -9,6 +9,11 @@ public class ZakelijkBeheerderDto : AccountDto
         Wachtwoord = wachtwoord;
         BedrijfId = bedrijfsId;
     }
+    public ZakelijkBeheerderDto(string email, string wachtwoord)
+    {
+        Email = email;
+        Wachtwoord = wachtwoord;
+    }
 
     public ZakelijkBeheerderDto()
     {
