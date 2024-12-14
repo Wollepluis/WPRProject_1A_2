@@ -38,19 +38,20 @@ public class AccountMedewerkerFrontofficeController : ControllerBase
     }
 
     [HttpPost("Maak account aan")]
-    public async Task<ActionResult<AccountMedewerkerFrontoffice>> PostAccount([FromBody] AccountMedewerkerFrontoffice account)
+    public async Task<ActionResult<AccountMedewerkerFrontoffice>> PostAccount([FromBody] FrontofficeDto accountDto)
     {
-        if (account == null)
-        {
-            return BadRequest("AccountMedewerkerFrontoffice mag niet 'NULL' zijn");
-        }
+        var anyEmail = _context.Accounts.Any(a => a.Email == accountDto.Email);
+        if (anyEmail) return BadRequest("Een gebruiker met deze email bestaat al");
+        if (accountDto == null) return BadRequest("AccountMedewerkerFrontoffice mag niet 'NULL' zijn");
 
+        AccountMedewerkerFrontoffice account = new AccountMedewerkerFrontoffice(accountDto.Email, accountDto.Wachtwoord, _passwordHasher);
+        
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
 
         _context.Accounts.Add(account);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetAccount), new { id = account.AccountId }, account);
+        return Ok(new { AccountId = account.AccountId, Message = "Account succesvol aangemaakt." });
     }
     
     [HttpPost("Login")]
