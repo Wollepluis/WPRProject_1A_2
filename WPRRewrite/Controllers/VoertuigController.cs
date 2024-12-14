@@ -63,6 +63,28 @@ public class VoertuigController : ControllerBase
 
         return CreatedAtAction(nameof(GetVoertuig), new { id = voertuig.VoertuigId }, voertuig);
     }
+    
+    [HttpPost("reserveer/{id}")]
+    public async Task<IActionResult> ReserveerVoertuig(int id)
+    {
+        var voertuig = await _context.Voertuigen.FindAsync(id);
+
+        if (voertuig == null)
+        {
+            return NotFound("Voertuig niet gevonden.");
+        }
+        
+        if (voertuig.VoertuigStatus == "Uitgegeven")
+        {
+            return BadRequest("Dit voertuig is al gereserveerd.");
+        }
+        
+        voertuig.VoertuigStatus = "Gereserveerd";
+        
+        await _context.SaveChangesAsync();
+
+        return Ok($"Voertuig met ID {id} is succesvol gereserveerd.");
+    }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> PutVoertuig(int id, [FromBody] Voertuig updatedVoertuig)
