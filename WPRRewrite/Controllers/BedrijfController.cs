@@ -87,13 +87,20 @@ public class BedrijfController : ControllerBase
         AccountZakelijkBeheerder account = new AccountZakelijkBeheerder(zakelijkBeheerderDto.Email, zakelijkBeheerderDto.Wachtwoord, bedrijf.BedrijfId, new PasswordHasher<Account>());
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
         bedrijf.BevoegdeMedewerkers.Add(account);
-        
+        _context.Accounts.Add(account);
         _context.Bedrijven.Add(bedrijf);
         await _context.SaveChangesAsync();
 
-        EmailSender.SendEmail(account);
-        
-        return CreatedAtAction(nameof(GetBedrijf), new { id = bedrijf.BedrijfId }, bedrijf);
+        try
+        {
+            EmailSender.SendEmail(bedrijf, account);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Jammer dan, geen email");
+        }
+
+        return Ok(account.AccountId);
     }
 
     [HttpPut("{id}")]
@@ -113,8 +120,21 @@ public class BedrijfController : ControllerBase
     [HttpDelete("VerwijderBedrijf")]
     public async Task<IActionResult> DeleteBedrijf(int id/*, int kvknummer*/)
     {
-        var bedrijf = await _context.Bedrijven.FindAsync(id);
-        if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
+        try
+        {
+            var zakelijkBeheerder = await _context.Accounts.OfType<AccountZakelijkBeheerder>().FirstOrDefaultAsync(a => a.AccountId == id);
+            var bedrijf = await _context.Bedrijven.FindAsync(zakelijkBeheerder.BedrijfId);
+            if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
+            _context.Bedrijven.Remove(bedrijf);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        catch (Exception e)
+        {
+            return Unauthorized("U heeft de rechten niet om het acccount te verwijderen...");
+        }
+
+        
         /*if (bedrijf.KvkNummer != kvknummer) return BadRequest("Kvknummer komt niet overeen...");
         
         Adres adres = await _context.Adressen.FindAsync(bedrijf.BedrijfAdres);
@@ -122,12 +142,10 @@ public class BedrijfController : ControllerBase
         if (adres == null) return NotFound("Er is geen adres gevonden...");
         if (abonnement == null) return NotFound("Geen abonnement gevonden...");*/
         
-        _context.Bedrijven.Remove(bedrijf);
+        
         /*_context.Adressen.Remove(adres);
         _context.Abonnementen.Remove(abonnement);*/
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+        
     }
 
     [HttpPost("VoegMedewerkerToe")]

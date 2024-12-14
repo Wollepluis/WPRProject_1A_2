@@ -10,7 +10,7 @@ using WPRRewrite.SysteemFuncties;
 namespace WPRRewrite.Controllers;
 
 [ApiController]
-[Route("api/ZakelijkBeheerder")]
+[Route("api/Zakelijk")]
 public class AccountZakelijkBeheerderController : ControllerBase
 {
     
@@ -31,15 +31,12 @@ public class AccountZakelijkBeheerderController : ControllerBase
         return await _context.Accounts.OfType<AccountZakelijkBeheerder>().ToListAsync();
     }
 
-    [HttpGet("Krijg specifiek account")]
+    [HttpGet("KrijgSpecifiekAccount")]
     public async Task<ActionResult<AccountZakelijkBeheerder>> GetAccount(int id)
     {
         var account = await _context.Accounts.FindAsync(id);
 
-        if (account == null)
-        {
-            return NotFound();
-        }
+        if (account == null) return NotFound();
         return Ok(account);
     }
     
@@ -124,18 +121,21 @@ public class AccountZakelijkBeheerderController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAccount(int id)
+    [HttpDelete("VerwijderBedrijf")]
+    public async Task<IActionResult> DeleteBedrijf(int id)
     {
-        var account = await _context.Accounts.FindAsync(id);
-        if (account == null)
+        try
         {
-            return NotFound();
+            var account = await _context.Accounts.OfType<AccountZakelijkBeheerder>().FirstOrDefaultAsync(a => a.AccountId == id);
+            var bedrijf = await _context.Bedrijven.FindAsync(account.BedrijfId);
+            if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
+            _context.Bedrijven.Remove(bedrijf);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
-
-        _context.Accounts.Remove(account);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+        catch (Exception e)
+        {
+            return Unauthorized("U heeft de rechten niet om het acccount te verwijderen...");
+        }
     }
 }
