@@ -54,6 +54,7 @@ public class BedrijfController : ControllerBase
         if (bedrijfEnBeheerderDto == null) return BadRequest("Bedrijf moet ingevuld zijn!");
         var bedrijfDto = bedrijfEnBeheerderDto.Bedrijf;
         var zakelijkBeheerderDto = bedrijfEnBeheerderDto.Beheerder;
+        var abonnementDto = bedrijfEnBeheerderDto.Abonnement;
 
         var anyKvk = _context.Bedrijven.Any(a => a.KvkNummer == bedrijfDto.Kvknummer);
         if (anyKvk) return BadRequest("Een bedrijf met dit Kvk-nummer bestaat al...");
@@ -71,14 +72,20 @@ public class BedrijfController : ControllerBase
             await _context.SaveChangesAsync();
         }
         await _context.SaveChangesAsync();
-        
-        Abonnement abonnement = new PayAsYouGo(bedrijfDto.MaxMedewerkers, bedrijfDto.MaxVoertuigen);
+
+        Abonnement abonnement;
+        if (abonnementDto.AbonnementType.Equals("Pay-As-You-Go"))
+        {
+            abonnement = new PayAsYouGo(abonnementDto.MaxMedewerkers, abonnementDto.MaxVoertuigen);
+        }
+        else
+        {
+            abonnement = new UpFront(abonnementDto.MaxMedewerkers, abonnementDto.MaxVoertuigen);
+        }
 
         _context.Abonnementen.Add(abonnement);
         await _context.SaveChangesAsync();
-
-
-
+        
         string domeinnaam = ("@" + bedrijfDto.Bedrijfsnaam + ".com")
             .Replace(" ", "") // Verwijder spaties
             .Replace("..", ".");   // Verwijder punten

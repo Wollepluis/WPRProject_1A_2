@@ -4,7 +4,7 @@ using WPRRewrite.Modellen;
 namespace WPRRewrite.Controllers;
 
 [ApiController]
-[Route("api/[Controller]")]
+[Route("api/Abonnement")]
 public class AbonnementController : ControllerBase
 {
     private readonly CarAndAllContext _context;

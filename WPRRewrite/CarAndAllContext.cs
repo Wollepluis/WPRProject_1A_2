@@ -36,7 +36,7 @@ public class CarAndAllContext : DbContext
         builder.Entity<Abonnement>()
             .HasDiscriminator<String>("AbonnementType")
             .HasValue<Abonnement>("BaseAbonnement")
-            .HasValue<PayAsYouGo>("PayAsYouGo")
+            .HasValue<PayAsYouGo>("Pay-As-You-Go")
             .HasValue<UpFront>("UpFront");
     }
     
