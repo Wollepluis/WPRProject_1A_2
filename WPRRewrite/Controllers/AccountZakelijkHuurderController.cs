@@ -42,7 +42,7 @@ public class AccountZakelijkHuurderController : ControllerBase
         return Ok(account);
     }
     
-    [HttpGet("Krijg alle autos")]
+    [HttpGet("krijgalleautos")]
     public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAutos()
     {
         var autos = await _context.Voertuigen
