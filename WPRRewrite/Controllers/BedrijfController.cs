@@ -186,18 +186,42 @@ public class BedrijfController : ControllerBase
     }
     
     [HttpDelete("BeheerderVerwijdertHuurder")]
-    public async Task<ActionResult<Bedrijf>> DeleteHuurder(int id, string email)
+    public async Task<ActionResult> DeleteHuurder(int id, [FromQuery] string email)
     {
+        // Controleer of het beheerdersaccount bestaat
         var account = await _context.Accounts.OfType<AccountZakelijkBeheerder>().FirstOrDefaultAsync(a => a.AccountId == id);
-        if (account == null) return NotFound("Er is geen beheerdersaccount gevonden...");
-        var bedrijf = await _context.Bedrijven.FindAsync(account.BedrijfId);
-        if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
-        var huurderAccount = bedrijf.BevoegdeMedewerkers.OfType<AccountZakelijkHuurder>().Where(a => a.Email == email).FirstOrDefault();
-        
-        _context.Accounts.Remove(huurderAccount);
-        
-        EmailSender.SendVerwijderEmail(email);
+        if (account == null) 
+            return NotFound("Er is geen beheerdersaccount gevonden...");
+    
+        // Controleer of het bedrijf bestaat
+        var bedrijf = await _context.Bedrijven.Include(b => b.BevoegdeMedewerkers).FirstOrDefaultAsync(a => account.BedrijfId == a.BedrijfId);
+        if (bedrijf == null) 
+            return NotFound("Er is geen bedrijf gevonden...");
 
-        return NoContent();
+        // Controleer of de huurder bestaat
+        if (bedrijf.BevoegdeMedewerkers == null) 
+            return NotFound("Dit bedrijf heeft geen bevoegde medewerkers.");
+        
+        var huurderAccount = bedrijf.BevoegdeMedewerkers.FirstOrDefault(a => a.Email == email);
+        if (huurderAccount == null) 
+            return NotFound("Er is geen huurder met dit emailadres gevonden...");
+
+        // Verwijder de huurder
+        _context.Accounts.Remove(huurderAccount);
+        await _context.SaveChangesAsync();
+
+        // Probeer een email te sturen
+        try
+        {
+            EmailSender.SendVerwijderEmail(email);
+        }
+        catch (Exception ex)
+        {
+            // Log de fout en ga verder
+            Console.WriteLine($"Fout bij het versturen van de email: {ex.Message}");
+        }
+
+        return NoContent(); // Geen extra data nodig
     }
+
 }
