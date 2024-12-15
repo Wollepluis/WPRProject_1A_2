@@ -11,7 +11,7 @@ using WPRRewrite.SysteemFuncties;
 namespace WPRRewrite.Controllers;
 
 [ApiController]
-[Route("api/[Controller]")]
+[Route("api/Bedrijf")]
 public class BedrijfController : ControllerBase
 {
     private readonly CarAndAllContext _context;
@@ -170,20 +170,34 @@ public class BedrijfController : ControllerBase
         }
 
         // Maak een nieuw AccountZakelijkHuurder object
-        AccountZakelijk accountZakelijkHuurder = new AccountZakelijkHuurder(accountZakelijkDto.Email, accountZakelijkDto.Wachtwoord, accountZakelijkDto.BedrijfId, new PasswordHasher<Account>());
+        AccountZakelijkHuurder accountZakelijkHuurder = new AccountZakelijkHuurder(accountZakelijkDto.Email, accountZakelijkDto.Wachtwoord, accountZakelijkDto.BedrijfId, new PasswordHasher<Account>());
+        EmailSender.SendEmail(accountZakelijkHuurder);
         accountZakelijkHuurder.Wachtwoord = _passwordHasher.HashPassword(accountZakelijkHuurder, accountZakelijkDto.Wachtwoord);
         // Voeg de medewerker toe aan het bedrijf
         bedrijf.BevoegdeMedewerkers.Add(accountZakelijkHuurder);
-
-        var value = bedrijf.BevoegdeMedewerkers.OfType<AccountZakelijkBeheerder>().FirstOrDefault();
-        if (value != null)
-        {
-            EmailSender.SendEmail(bedrijf, value);
-        }
+        AccountZakelijkBeheerder account = bedrijf.BevoegdeMedewerkers.OfType<AccountZakelijkBeheerder>().FirstOrDefault();
+        if (account != null) EmailSender.SendEmail(account, accountZakelijkHuurder);
+        
         
         // Voeg het account toe aan de database en sla de wijzigingen op
         await _context.SaveChangesAsync();
 
         return Ok("Account Toegevoegd");
+    }
+    
+    [HttpDelete("BeheerderVerwijdertHuurder")]
+    public async Task<ActionResult<Bedrijf>> DeleteHuurder(int id, string email)
+    {
+        var account = await _context.Accounts.OfType<AccountZakelijkBeheerder>().FirstOrDefaultAsync(a => a.AccountId == id);
+        if (account == null) return NotFound("Er is geen beheerdersaccount gevonden...");
+        var bedrijf = await _context.Bedrijven.FindAsync(account.BedrijfId);
+        if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
+        var huurderAccount = bedrijf.BevoegdeMedewerkers.OfType<AccountZakelijkHuurder>().Where(a => a.Email == email).FirstOrDefault();
+        
+        _context.Accounts.Remove(huurderAccount);
+        
+        EmailSender.SendVerwijderEmail(email);
+
+        return NoContent();
     }
 }

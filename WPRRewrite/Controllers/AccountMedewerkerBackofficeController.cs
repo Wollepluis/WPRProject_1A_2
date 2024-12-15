@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Dtos;
 using WPRRewrite.Modellen.Accounts;
+using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Controllers;
 
@@ -100,4 +101,23 @@ public class AccountMedewerkerBackofficeController : ControllerBase
 
         return NoContent();
     }
+    
+    [HttpGet("Test")]
+    public async Task<IActionResult> Test()
+    {
+        try
+        {
+            // Test de e-mailfunctionaliteit
+            EmailSender.SendVerwijderEmail("Xandervanderhoek@gmail.com");  // Zorg ervoor dat TestMail geen parameters vereist of dat je ze meegeeft
+
+            // Als alles goed gaat, geef een 200 OK response terug
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            // Foutafhandelingsmechanisme als er iets misgaat bij het versturen van de e-mail
+            return StatusCode(500, "Er is een fout opgetreden: " + ex.Message);
+        }
+    }
+
 }
