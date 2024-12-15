@@ -10,7 +10,7 @@ using WPRRewrite.SysteemFuncties;
 namespace WPRRewrite.Controllers;
 
 [ApiController]
-[Route("api/Zakelijk")]
+[Route("api/ZakelijkBeheerder")]
 public class AccountZakelijkBeheerderController : ControllerBase
 {
     

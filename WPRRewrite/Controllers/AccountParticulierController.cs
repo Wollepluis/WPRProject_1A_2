@@ -156,7 +156,7 @@ public class AccountParticulierController : ControllerBase
     
     
     
-    [HttpDelete("{id}")]
+    [HttpDelete("VerwijderParticulier")]
     public async Task<IActionResult> DeleteAccount(int id)
     {
         var account = await _context.Accounts.FindAsync(id);

@@ -35,6 +35,34 @@ public class EmailSender
         }
     }
     
+    public static void SendEmail(AccountZakelijkBeheerder account, AccountZakelijkHuurder accountZakelijkHuurder)
+    {
+        MailMessage mailMessage = new MailMessage();
+        mailMessage.From = new MailAddress("mark2492@gmail.com");
+        mailMessage.To.Add(account.Email);
+        mailMessage.CC.Add(accountZakelijkHuurder.Email);
+        mailMessage.Subject = "Medewerker toegevoegd";
+        mailMessage.Body = "Huurder: " + accountZakelijkHuurder.Email + " is aangemaakt en toegevoegd aan het bedrijf";
+
+        SmtpClient smtpClient = new SmtpClient();
+        smtpClient.Host = "smtp.gmail.com";
+        smtpClient.Port = 587;
+        smtpClient.UseDefaultCredentials = false;
+        smtpClient.Credentials = new NetworkCredential("mark2492@gmail.com", "khfp clab fvmm wgmc");
+        smtpClient.EnableSsl = true;
+
+        try
+        {
+            smtpClient.Send(mailMessage);
+            Console.WriteLine("Email verzonden!");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error: " + e.Message);
+            throw;
+        }
+    }
+    
     public static void SendEmail(IAccount account)
     {
         MailMessage mailMessage = new MailMessage();

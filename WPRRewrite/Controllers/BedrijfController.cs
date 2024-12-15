@@ -24,6 +24,15 @@ public class BedrijfController : ControllerBase
         _adresService = adresService ?? throw new ArgumentNullException(nameof(adresService));
     }
     
+    [HttpGet("KrijgBedrijfDomein")]
+    public async Task<ActionResult<IEnumerable<Bedrijf>>> GetBedrijfDomein(int accountId)
+    {
+        var account = await _context.Accounts.OfType<AccountZakelijkBeheerder>().FirstOrDefaultAsync(i => i.AccountId == accountId);
+        if (account == null) return NotFound("Bedrijf niet gevonden");
+        var bedrijf = await _context.Bedrijven.FindAsync(account.BedrijfId);
+        return Ok(bedrijf.Domeinnaam);
+    }
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Bedrijf>>> GetAlleBedrijven()
     {
@@ -162,10 +171,15 @@ public class BedrijfController : ControllerBase
 
         // Maak een nieuw AccountZakelijkHuurder object
         AccountZakelijk accountZakelijkHuurder = new AccountZakelijkHuurder(accountZakelijkDto.Email, accountZakelijkDto.Wachtwoord, accountZakelijkDto.BedrijfId, new PasswordHasher<Account>());
-        
-        _context.Accounts.Add(accountZakelijkHuurder);
+        accountZakelijkHuurder.Wachtwoord = _passwordHasher.HashPassword(accountZakelijkHuurder, accountZakelijkDto.Wachtwoord);
         // Voeg de medewerker toe aan het bedrijf
         bedrijf.BevoegdeMedewerkers.Add(accountZakelijkHuurder);
+
+        var value = bedrijf.BevoegdeMedewerkers.OfType<AccountZakelijkBeheerder>().FirstOrDefault();
+        if (value != null)
+        {
+            EmailSender.SendEmail(bedrijf, value);
+        }
         
         // Voeg het account toe aan de database en sla de wijzigingen op
         await _context.SaveChangesAsync();
