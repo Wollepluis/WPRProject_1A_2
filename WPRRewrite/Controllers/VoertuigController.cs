@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Voertuigen;
@@ -49,6 +50,24 @@ public class VoertuigController : ControllerBase
 
         return Ok(voertuigen);
     }
+    
+    /*[HttpGet("krijgallereserveringen")]
+    public async Task<ActionResult<IEnumerable<Voertuig>>> GetAlleReserveringen()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized("Gebruiker niet ingelogd.");
+        }
+
+        var reserveringen = await _context.Reserveringen
+            .Where(r => r.UserId == userId)
+            .Include(r => r.Voertuig) // Include het voertuig object
+            .Select(r => r.Voertuig)  // Haal alleen de voertuigen van de reservering op
+            .ToListAsync();
+
+        return Ok(reserveringen);
+    }*/
 
     [HttpPost]
     public async Task<ActionResult<Voertuig>> PostVoertuig([FromBody] Voertuig voertuig)
