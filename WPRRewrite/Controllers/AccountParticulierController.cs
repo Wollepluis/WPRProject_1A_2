@@ -37,7 +37,8 @@ public class AccountParticulierController : ControllerBase
     [HttpGet("KrijgSpecifiekAccount")]
     public async Task<ActionResult<AccountParticulier>> GetAccount(int id)
     {
-        var account = await _context.Accounts.FindAsync(id);
+        var account = await _context.Accounts.OfType<AccountParticulier>().Include(a => a.Adres)
+            .Where(a => a.AccountId == id).FirstOrDefaultAsync();
 
         if (account == null)
         {
