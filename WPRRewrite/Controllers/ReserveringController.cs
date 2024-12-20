@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WPRRewrite.Dtos;
 using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Accounts;
 
 namespace WPRRewrite.Controllers;
 
+[ApiController]
+[Route("api/Reservering")]
 public class ReserveringController : ControllerBase
 {
     private readonly CarAndAllContext _context;
@@ -13,8 +16,15 @@ public class ReserveringController : ControllerBase
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
-    
-    [HttpGet]
+
+
+    [HttpGet("KrijgAlleReserveringen")]
+    public async Task<ActionResult<IEnumerable<Reservering>>> GetAlleReserveringen()
+    {
+        return await _context.Reserveringen.ToListAsync();
+    }
+
+    [HttpGet("KrijgAlleReserveringenPerAccount")]
     public async Task<ActionResult<IEnumerable<Reservering>>> GetAlleReserveringenPerAccount(int accountId)
     {
         var reserveringen = await _context.Reserveringen.Where(r => r.Account.AccountId == accountId).ToListAsync();
@@ -25,7 +35,7 @@ public class ReserveringController : ControllerBase
         return Ok(reserveringen);
     }
 
-    [HttpGet]
+    [HttpGet("KrijgAlleReserveringenPerVoertuig")]
     public async Task<ActionResult<IEnumerable<Reservering>>> GetAlleReserveringenPerVoertuig(int voertuigId)
     {
         var voertuig = await _context.Voertuigen.FindAsync(voertuigId);
@@ -34,24 +44,14 @@ public class ReserveringController : ControllerBase
         return Ok(voertuig);
     }
 
-    [HttpPost]
-    public async Task<ActionResult<IEnumerable<Reservering>>> PostReservering(Reservering reservering)
+    [HttpPost("PostReservering")]
+    public async Task<ActionResult<IEnumerable<Reservering>>> PostReservering(ReserveringDto reserveringDto)
     {
-        if (reservering == null) return BadRequest();
+        if (reserveringDto == null) return BadRequest();
+
+        Reservering reservering = new Reservering(reserveringDto.Begindatum, reserveringDto.Einddatum, reserveringDto.TotaalPrijs, reserveringDto.VoertuigId, reserveringDto.AccountId);
         
-        var account = await _context.Accounts.OfType<AccountZakelijk>()
-            .FirstOrDefaultAsync(a => a.AccountId == reservering.Account.AccountId);
-        
-        if (account == null) return NotFound();
-        
-        account.AddReservering(reservering);
         _context.Reserveringen.Add(reservering);
-        
-        for (int i = 0; reservering.GereserveerdeVoertuigen.Count() > i; i++)
-        {
-            var voertuig = reservering.GereserveerdeVoertuigen.ElementAt(i);
-            voertuig.Reserveringen.Add(reservering);
-        }
         
         await _context.SaveChangesAsync();
         

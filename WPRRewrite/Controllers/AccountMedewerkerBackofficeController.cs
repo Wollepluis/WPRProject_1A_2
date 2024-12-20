@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Dtos;
+using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.SysteemFuncties;
 
@@ -101,6 +102,12 @@ public class AccountMedewerkerBackofficeController : ControllerBase
 
         return NoContent();
     }
+
+    /*[HttpPost("VerhuuraanvraagKeuren")]
+    public async Task<IActionResult> VerhuuraanvraagKeuren([FromBody] HuuraanvraagDto huuraanvraagDto)
+    {
+        return Ok();
+    }*/
     
     [HttpGet("Test")]
     public async Task<IActionResult> Test()
@@ -108,7 +115,7 @@ public class AccountMedewerkerBackofficeController : ControllerBase
         try
         {
             // Test de e-mailfunctionaliteit
-            EmailSender.SendVerwijderEmail("Xandervanderhoek@gmail.com");  // Zorg ervoor dat TestMail geen parameters vereist of dat je ze meegeeft
+            EmailSender.TestMail();  // Zorg ervoor dat TestMail geen parameters vereist of dat je ze meegeeft
 
             // Als alles goed gaat, geef een 200 OK response terug
             return Ok();

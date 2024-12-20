@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using WPRRewrite.Interfaces;
+using WPRRewrite.Dtos;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.Modellen.Voertuigen;
 
-namespace WPRRewrite.Modellen;
+namespace WPRRewrite.Dtos;
 
-public class Reservering
+public class ReserveringDto
 {
     public int ReserveringId { get; set; }
     public DateTime Begindatum { get; set; }
@@ -17,19 +17,16 @@ public class Reservering
     public int TotaalPrijs { get; set; }
     public bool IsBetaald { get; set; }
     public bool IsGoedgekeurd { get; set; }
-    public List<string> comments { get; set; }
+    public List<string> Comments { get; set; }
     public int VoertuigId { get; set; }
     public int AccountId { get; set; }
-    [ForeignKey("AccountId")]
-    public Account Account { get; set; }
-    public string Voertuigstatus { get; set; }
 
-    public Reservering()
+    public ReserveringDto()
     {
-        comments = new List<string>();
+        Comments = new List<string>();
     }
 
-    public Reservering(DateTime begindatum, DateTime einddatum, int totaalPrijs, int voertuigId, int accountId)
+    public ReserveringDto(DateTime begindatum, DateTime einddatum, int totaalPrijs, int voertuigId, int accountId)
     {
         Begindatum = begindatum;
         Einddatum = einddatum;
@@ -38,7 +35,6 @@ public class Reservering
         AccountId = accountId;
         IsGoedgekeurd = false;
         IsBetaald = false;
-        comments = new List<string>();
-        Voertuigstatus = "Gereserveerd";
+        Comments = new List<string>();
     }
 }
