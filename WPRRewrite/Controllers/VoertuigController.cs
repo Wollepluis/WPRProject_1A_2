@@ -29,17 +29,18 @@ public class VoertuigController : ControllerBase
     [HttpGet("krijgallevoertuigenDatum")]
     public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen(DateTime begindatum, DateTime einddatum)
     {
-        var Voertuigen = await _context.Voertuigen.ToListAsync();
-        List<IVoertuig> beschikbareVoertuigen = new List<IVoertuig>();
+        var Voertuigen = await _context.Voertuigen.Include(voertuig => voertuig.Reserveringen).ToListAsync();
+        List<Voertuig> beschikbareVoertuigen = new List<Voertuig>();
         foreach (var voertuig in Voertuigen)
         {
-            var reserveringen = voertuig.GetReserveringen();
-            foreach (var reservering in reserveringen)
+            var reserveringen = voertuig.Reserveringen;
+            if (reserveringen != null)
             {
-                if ((begindatum < reservering.Einddatum && einddatum > reservering.Begindatum))
-                {
-                    beschikbareVoertuigen.Add(voertuig);
-                }
+                    if (!reserveringen.Any(r => begindatum <= r.Einddatum && einddatum >= r.Begindatum))
+                    {
+                        //VoertuigDto voertuigDto = new VoertuigDto(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus, voertuig.VoertuigType, voertuig.BrandstofType);
+                        beschikbareVoertuigen.Add(voertuig);
+                    }
             }
         }
         return Ok(beschikbareVoertuigen);
@@ -87,10 +88,10 @@ public class VoertuigController : ControllerBase
     }
     
     [HttpPost("reserveerVoertuig")]
-    public async Task<IActionResult> ReserveerVoertuig(int id, int accountId, DateTime begindatum, DateTime einddatum)
+    public async Task<IActionResult> ReserveerVoertuig([FromBody] VoertuigReservering voertuigReservering)
     {
         // Zoek het voertuig in de database
-        var voertuig = await _context.Voertuigen.FindAsync(id);
+        var voertuig = await _context.Voertuigen.FindAsync(voertuigReservering.VoertuigId);
 
         if (voertuig == null) return NotFound("Voertuig niet gevonden.");
 
@@ -98,16 +99,16 @@ public class VoertuigController : ControllerBase
         var reserveringen = voertuig.GetReserveringen() ?? new List<Reservering>();
 
         // Controleer of er overlap is met bestaande reserveringen
-        if (reserveringen.Any(r => begindatum < r.Einddatum && einddatum > r.Begindatum))
+        if (reserveringen.Any(r => voertuigReservering.Begindatum < r.Einddatum && voertuigReservering.Einddatum > r.Begindatum))
             return BadRequest("Dit voertuig is al gereserveerd in de opgegeven periode.");
 
         // Maak een nieuwe reservering aan
         var reserveringDto = new Reservering(
-            begindatum,
-            einddatum,
-            100 * ((einddatum - begindatum).Days), // Bereken de kosten
+            voertuigReservering.Begindatum,
+            voertuigReservering.Einddatum,
+            100 * ((voertuigReservering.Einddatum - voertuigReservering.Begindatum).Days), // Bereken de kosten
             voertuig.VoertuigId,
-            accountId
+            voertuigReservering.AccountId
         );
 
         // Voeg de reservering toe
@@ -116,7 +117,7 @@ public class VoertuigController : ControllerBase
         // Sla wijzigingen op in de database
         await _context.SaveChangesAsync();
 
-        return Ok($"Voertuig met ID {id} is succesvol gereserveerd van {begindatum:yyyy-MM-dd} tot {einddatum:yyyy-MM-dd}.");
+        return Ok($"Voertuig met ID {voertuigReservering.VoertuigId} is succesvol gereserveerd van {voertuigReservering.Begindatum:yyyy-MM-dd} tot {voertuigReservering.Einddatum:yyyy-MM-dd}.");
     }
 
     
