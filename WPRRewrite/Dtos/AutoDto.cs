@@ -1,4 +1,4 @@
-﻿using WPRRewrite.Enums;
+﻿
 
 namespace WPRRewrite.Dtos;
 
@@ -14,7 +14,7 @@ public class AutoDto : VoertuigDto
         Prijs = prijs;
     }
 
-    public AutoDto(string kenteken, string merk, string model, string kleur, int aanschafjaar, int prijs, string autoVoertuigStatus, BrandstofType brandstofType)
+    public AutoDto(string kenteken, string merk, string model, string kleur, int aanschafjaar, int prijs, string autoVoertuigStatus, string brandstofType)
     {
         Kenteken = kenteken;
         Merk = merk;

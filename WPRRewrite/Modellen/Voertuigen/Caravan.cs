@@ -1,10 +1,9 @@
-﻿using WPRRewrite.Enums;
-
+﻿
 namespace WPRRewrite.Modellen.Voertuigen;
 
 public class Caravan : Voertuig
 {
-    public Caravan(string kenteken, string merk, string model, string kleur, int aanschafjaar, int prijs, string voertuigstatus, BrandstofType brandstofType) 
+    public Caravan(string kenteken, string merk, string model, string kleur, int aanschafjaar, int prijs, string voertuigstatus, string brandstofType) 
     {
         Kenteken = kenteken;
         Merk = merk;
