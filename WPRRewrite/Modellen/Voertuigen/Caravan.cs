@@ -17,8 +17,5 @@ public class Caravan : Voertuig
     public Caravan() { }
 
     
-    public override List<Reservering> GetReserveringen()
-    {
-        return Reserveringen;
-    }
+    
 }

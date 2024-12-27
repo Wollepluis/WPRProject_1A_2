@@ -18,8 +18,5 @@ public class Camper : Voertuig
     }
     public Camper() { }
     
-    public override List<Reservering> GetReserveringen()
-    {
-        return Reserveringen;
-    }
+    
 }
