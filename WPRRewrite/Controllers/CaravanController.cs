@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Dtos;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Voertuigen;
+using WPRRewrite.Enums;
 
 namespace WPRRewrite.Controllers;
 
@@ -31,7 +32,7 @@ public class CaravanController : ControllerBase, IVoertuigController
         IVoertuig caravan = await _context.Voertuigen.FindAsync(id);
         if (caravan == null) return NotFound();
         
-        CaravanDto caravanDto = new CaravanDto(caravan.Kenteken, caravan.Merk, caravan.Model, caravan.Kleur, caravan.Aanschafjaar, caravan.Prijs, caravan.VoertuigStatus);
+        CaravanDto caravanDto = new CaravanDto(caravan.Kenteken, caravan.Merk, caravan.Model, caravan.Kleur, caravan.Aanschafjaar, caravan.Prijs, caravan.VoertuigStatus, caravan.BrandstofType);
 
         return Ok(caravanDto);
     }
@@ -43,7 +44,7 @@ public class CaravanController : ControllerBase, IVoertuigController
         {
             return BadRequest("Voertuig mag niet 'NULL' zijn");
         }
-        Caravan caravan = new Caravan(caravanDto.Kenteken, caravanDto.Merk, caravanDto.Model, caravanDto.Kleur, caravanDto.Aanschafjaar, caravanDto.Prijs, "Beschikbaar");
+        Caravan caravan = new Caravan(caravanDto.Kenteken, caravanDto.Merk, caravanDto.Model, caravanDto.Kleur, caravanDto.Aanschafjaar, caravanDto.Prijs, "Beschikbaar", caravanDto.BrandstofType);
         _context.Voertuigen.Add(caravan);
         await _context.SaveChangesAsync();
 
@@ -57,7 +58,7 @@ public class CaravanController : ControllerBase, IVoertuigController
         
         if (bestaandeCaravan == null) return NotFound();
 
-        Caravan updatedCaravan = new Caravan(updatedCaravanDto.Kenteken, updatedCaravanDto.Merk, updatedCaravanDto.Model, updatedCaravanDto.Kleur, updatedCaravanDto.Aanschafjaar, updatedCaravanDto.Prijs, updatedCaravanDto.VoertuigStatus);
+        Caravan updatedCaravan = new Caravan(updatedCaravanDto.Kenteken, updatedCaravanDto.Merk, updatedCaravanDto.Model, updatedCaravanDto.Kleur, updatedCaravanDto.Aanschafjaar, updatedCaravanDto.Prijs, updatedCaravanDto.VoertuigStatus, updatedCaravanDto.BrandstofType);
         
         bestaandeCaravan.UpdateVoertuig(updatedCaravan);
         await _context.SaveChangesAsync();
@@ -92,7 +93,7 @@ public class CaravanController : ControllerBase, IVoertuigController
         List<VoertuigDto> voertuigDtos = new List<VoertuigDto>();
         foreach (var voertuig in voertuigen)
         {
-            CaravanDto voertuigDto = new CaravanDto(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus);
+            CaravanDto voertuigDto = new CaravanDto(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus, voertuig.BrandstofType);
             voertuigDtos.Add(voertuigDto);
         }
 
