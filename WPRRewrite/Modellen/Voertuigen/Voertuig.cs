@@ -12,6 +12,7 @@ public abstract class Voertuig : IVoertuig
     public int Aanschafjaar { get; set; }
     public int Prijs { get; set; }
     public string VoertuigStatus { get; set; }
+    public string VoertuigType { get; set; }
 
     public List<Reservering> Reserveringen { get; set; }
     public abstract List<Reservering> GetReserveringen();

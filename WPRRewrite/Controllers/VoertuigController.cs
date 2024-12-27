@@ -18,22 +18,10 @@ public class VoertuigController : ControllerBase
     }
     
     [HttpGet("krijgallevoertuigen")]
-    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen(DateTime begindatum, DateTime einddatum)
+    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen()
     {
         var Voertuigen = await _context.Voertuigen.ToListAsync();
-        List<IVoertuig> beschikbareVoertuig = new List<IVoertuig>();
-        foreach (var voertuig in Voertuigen)
-        {
-            var reserveringen = voertuig.GetReserveringen();
-            foreach (var reservering in reserveringen)
-            {
-                if ((begindatum < reservering.Einddatum && einddatum > reservering.Begindatum))
-                {
-                    beschikbareVoertuig.Add(voertuig);
-                }
-            }
-        }
-        return Ok(beschikbareVoertuig);
+        return Ok(Voertuigen);
     }
 
     [HttpGet("krijgspecifiekvoertuig")]
