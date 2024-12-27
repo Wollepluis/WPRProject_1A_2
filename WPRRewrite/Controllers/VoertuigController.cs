@@ -18,22 +18,10 @@ public class VoertuigController : ControllerBase
     }
     
     [HttpGet("krijgallevoertuigen")]
-    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen(DateTime begindatum, DateTime einddatum)
+    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen()
     {
         var Voertuigen = await _context.Voertuigen.ToListAsync();
-        List<IVoertuig> beschikbareVoertuig = new List<IVoertuig>();
-        foreach (var voertuig in Voertuigen)
-        {
-            var reserveringen = voertuig.GetReserveringen();
-            foreach (var reservering in reserveringen)
-            {
-                if ((begindatum < reservering.Einddatum && einddatum > reservering.Begindatum))
-                {
-                    beschikbareVoertuig.Add(voertuig);
-                }
-            }
-        }
-        return Ok(beschikbareVoertuig);
+        return Ok(Voertuigen);
     }
 
     [HttpGet("krijgspecifiekvoertuig")]
@@ -62,20 +50,20 @@ public class VoertuigController : ControllerBase
 
         return Ok(voertuigen);
     }
-
-    [HttpPost]
-    public async Task<ActionResult<Voertuig>> PostVoertuig([FromBody] Voertuig voertuig)
-    {
-        if (voertuig == null)
-        {
-            return BadRequest("Voertuig mag niet 'NULL' zijn");
-        }
-        
-        _context.Voertuigen.Add(voertuig);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetVoertuig), new { id = voertuig.VoertuigId }, voertuig);
-    }
+    
+    // [HttpPost]
+    // public async Task<ActionResult<Voertuig>> PostVoertuig([FromBody] Voertuig voertuig)
+    // {
+    //     if (voertuig == null)
+    //     {
+    //         return BadRequest("Voertuig mag niet 'NULL' zijn");
+    //     }
+    //     
+    //     _context.Voertuigen.Add(voertuig);
+    //     await _context.SaveChangesAsync();
+    //
+    //     return CreatedAtAction(nameof(GetVoertuig), new { id = voertuig.VoertuigId }, voertuig);
+    // }
     
     [HttpPost("reserveer/{id}")]
     public async Task<IActionResult> ReserveerVoertuig(int id)

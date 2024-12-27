@@ -32,7 +32,7 @@ public class CamperController : ControllerBase, IVoertuigController
         IVoertuig camper = await _context.Voertuigen.FindAsync(id);
         if (camper == null) return NotFound();
         
-        CamperDto camperDto = new CamperDto(camper.Kenteken, camper.Merk, camper.Model, camper.Kleur, camper.Aanschafjaar, camper.Prijs, camper.VoertuigStatus);
+        CamperDto camperDto = new CamperDto(camper.Kenteken, camper.Merk, camper.Model, camper.Kleur, camper.Aanschafjaar, camper.Prijs, camper.VoertuigStatus, camper.BrandstofType);
 
         return Ok(camperDto);
     }
@@ -44,7 +44,7 @@ public class CamperController : ControllerBase, IVoertuigController
         {
             return BadRequest("Voertuig mag niet 'NULL' zijn");
         }
-        Camper camper = new Camper(camperDto.Kenteken, camperDto.Merk, camperDto.Model, camperDto.Kleur, camperDto.Aanschafjaar, camperDto.Prijs, "Beschikbaar");
+        Camper camper = new Camper(camperDto.Kenteken, camperDto.Merk, camperDto.Model, camperDto.Kleur, camperDto.Aanschafjaar, camperDto.Prijs, "Beschikbaar", camperDto.BrandstofType);
         _context.Voertuigen.Add(camper);
         await _context.SaveChangesAsync();
 
@@ -58,7 +58,7 @@ public class CamperController : ControllerBase, IVoertuigController
         
         if (bestaandeCamper == null) return NotFound();
 
-        Camper updatedCamper = new Camper(updatedCamperDto.Kenteken, updatedCamperDto.Merk, updatedCamperDto.Model, updatedCamperDto.Kleur, updatedCamperDto.Aanschafjaar, updatedCamperDto.Prijs, updatedCamperDto.VoertuigStatus);
+        Camper updatedCamper = new Camper(updatedCamperDto.Kenteken, updatedCamperDto.Merk, updatedCamperDto.Model, updatedCamperDto.Kleur, updatedCamperDto.Aanschafjaar, updatedCamperDto.Prijs, updatedCamperDto.VoertuigStatus, updatedCamperDto.BrandstofType);
         
         bestaandeCamper.UpdateVoertuig(updatedCamper);
         await _context.SaveChangesAsync();
@@ -93,7 +93,7 @@ public class CamperController : ControllerBase, IVoertuigController
         List<VoertuigDto> voertuigDtos = new List<VoertuigDto>();
         foreach (var voertuig in voertuigen)
         {
-            CamperDto voertuigDto = new CamperDto(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus);
+            CamperDto voertuigDto = new CamperDto(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus, voertuig.BrandstofType);
             voertuigDtos.Add(voertuigDto);
         }
 

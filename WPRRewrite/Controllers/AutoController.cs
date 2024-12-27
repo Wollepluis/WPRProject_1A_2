@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Dtos;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Voertuigen;
+using WPRRewrite.Enums;
 
 namespace WPRRewrite.Controllers;
 
@@ -32,7 +33,7 @@ public class AutoController : ControllerBase, IVoertuigController
         IVoertuig auto = await _context.Voertuigen.FindAsync(id);
         if (auto == null) return NotFound();
         
-        AutoDto autoDto = new AutoDto(auto.Kenteken, auto.Merk, auto.Model, auto.Kleur, auto.Aanschafjaar, auto.Prijs, auto.VoertuigStatus);
+        AutoDto autoDto = new AutoDto(auto.Kenteken, auto.Merk, auto.Model, auto.Kleur, auto.Aanschafjaar, auto.Prijs, auto.VoertuigStatus, auto.BrandstofType);
 
         return Ok(autoDto);
     }
@@ -44,7 +45,7 @@ public class AutoController : ControllerBase, IVoertuigController
         {
             return BadRequest("Voertuig mag niet 'NULL' zijn");
         }
-        Auto auto = new Auto(autoDto.Kenteken, autoDto.Merk, autoDto.Model, autoDto.Kleur, autoDto.Aanschafjaar, autoDto.Prijs, "Beschikbaar");
+        Auto auto = new Auto(autoDto.Kenteken, autoDto.Merk, autoDto.Model, autoDto.Kleur, autoDto.Aanschafjaar, autoDto.Prijs, "Beschikbaar", autoDto.BrandstofType);
         _context.Voertuigen.Add(auto);
         await _context.SaveChangesAsync();
 
@@ -58,7 +59,7 @@ public class AutoController : ControllerBase, IVoertuigController
         
         if (bestaandeAuto == null) return NotFound();
 
-        Auto updatedAuto = new Auto(updatedAutoDto.Kenteken, updatedAutoDto.Merk, updatedAutoDto.Model, updatedAutoDto.Kleur, updatedAutoDto.Aanschafjaar, updatedAutoDto.Prijs, updatedAutoDto.VoertuigStatus);
+        Auto updatedAuto = new Auto(updatedAutoDto.Kenteken, updatedAutoDto.Merk, updatedAutoDto.Model, updatedAutoDto.Kleur, updatedAutoDto.Aanschafjaar, updatedAutoDto.Prijs, updatedAutoDto.VoertuigStatus, updatedAutoDto.BrandstofType);
         
         bestaandeAuto.UpdateVoertuig(updatedAuto);
         await _context.SaveChangesAsync();
@@ -93,7 +94,7 @@ public class AutoController : ControllerBase, IVoertuigController
         List<VoertuigDto> voertuigDtos = new List<VoertuigDto>();
         foreach (var voertuig in voertuigen)
         {
-            AutoDto voertuigDto = new AutoDto(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus);
+            AutoDto voertuigDto = new AutoDto(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus, voertuig.BrandstofType);
             voertuigDtos.Add(voertuigDto);
         }
 
