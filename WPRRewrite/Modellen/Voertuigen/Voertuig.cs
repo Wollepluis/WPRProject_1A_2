@@ -17,7 +17,11 @@ public abstract class Voertuig : IVoertuig
     public BrandstofType BrandstofType { get; set; }
 
     public List<Reservering> Reserveringen { get; set; }
-    public abstract List<Reservering> GetReserveringen();
+
+    public List<Reservering> GetReserveringen()
+    {
+        return Reserveringen;
+    }
     public void UpdateVoertuig(IVoertuig updatedVoertuig)
     {
         Kenteken = updatedVoertuig.Kenteken;

@@ -21,8 +21,5 @@ public class Auto : Voertuig
     public Auto() { }
 
     
-    public override List<Reservering> GetReserveringen()
-    {
-        return Reserveringen;
-    }
+    
 }
