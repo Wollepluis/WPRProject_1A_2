@@ -133,5 +133,15 @@ public class VoertuigController : ControllerBase
 
         return NoContent();
     }
+    
+    [HttpPut("HuuraanvraagUpdaten")]
+    public async Task<IActionResult> HuuraanvraagUpdaten(int id ,string status)
+    {
+        var voertuig = await _context.Voertuigen.FindAsync(id);
+        if (voertuig == null) return NotFound();
+        voertuig.VoertuigStatus = status;
+        return NoContent();
+    }
+    
 }
 
