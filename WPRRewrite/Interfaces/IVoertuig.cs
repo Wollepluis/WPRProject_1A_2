@@ -1,4 +1,4 @@
-﻿using WPRRewrite.Enums;
+﻿
 using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Voertuigen;
 
@@ -15,7 +15,7 @@ public interface IVoertuig
     public int Prijs { get; set; }
     public string VoertuigStatus { get; set; }
     public string VoertuigType { get; set; }
-    public BrandstofType BrandstofType { get; set; }
+    public string BrandstofType { get; set; }
     List<Reservering> Reserveringen{ get; set; }
     
     public List<Reservering> GetReserveringen();

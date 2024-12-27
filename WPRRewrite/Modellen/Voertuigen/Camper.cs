@@ -1,11 +1,11 @@
-﻿using WPRRewrite.Enums;
+﻿
 using WPRRewrite.Interfaces;
 
 namespace WPRRewrite.Modellen.Voertuigen;
 
 public class Camper : Voertuig
 {
-    public Camper(string kenteken, string merk, string model, string kleur, int aanschafjaar, int prijs, string voertuigstatus, BrandstofType brandstofType) 
+    public Camper(string kenteken, string merk, string model, string kleur, int aanschafjaar, int prijs, string voertuigstatus, string brandstofType) 
     {
         Kenteken = kenteken;
         Merk = merk;
@@ -14,7 +14,7 @@ public class Camper : Voertuig
         Aanschafjaar = aanschafjaar;
         Prijs = prijs;
         VoertuigStatus = voertuigstatus;
-        this.BrandstofType = brandstofType;
+        BrandstofType = brandstofType;
         
         Reserveringen = new List<Reservering>();
     }

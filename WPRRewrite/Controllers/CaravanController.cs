@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Dtos;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Voertuigen;
-using WPRRewrite.Enums;
+
 
 namespace WPRRewrite.Controllers;
 
