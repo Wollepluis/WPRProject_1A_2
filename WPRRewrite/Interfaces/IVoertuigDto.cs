@@ -1,4 +1,7 @@
-﻿namespace WPRRewrite.Interfaces;
+﻿using WPRRewrite.Enums;
+using WPRRewrite.Modellen.Voertuigen;
+
+namespace WPRRewrite.Interfaces;
 
 public interface IVoertuigDto
 {
@@ -9,4 +12,6 @@ public interface IVoertuigDto
     public int Aanschafjaar { get; set; }
     public int Prijs { get; set; }
     public string VoertuigStatus { get; set; }
+    public string VoertuigType { get; set; }
+    public BrandstofType BrandstofType { get; set; }
 }
