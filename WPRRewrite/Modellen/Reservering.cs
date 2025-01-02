@@ -23,6 +23,8 @@ public class Reservering
     [ForeignKey("AccountId")]
     public Account Account { get; set; }
 
+    public bool Herinnering { get; set; }
+
     public Reservering()
     {
     }
@@ -36,7 +38,13 @@ public class Reservering
         AccountId = accountId;
         IsBetaald = false;
         IsGoedgekeurd = false;
+        Herinnering = false;
         Comment = "";
         
+    }
+
+    public void UpdateHerinnering()
+    {
+        Herinnering = true;
     }
 }

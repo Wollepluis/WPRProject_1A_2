@@ -75,7 +75,7 @@ public class AccountZakelijkHuurderController : ControllerBase
             return BadRequest("AccountZakelijkHuurder mag niet 'NULL' zijn");
         }
         
-        AccountZakelijkHuurder account = new AccountZakelijkHuurder(accountDto.Email, accountDto.Wachtwoord, accountDto.BedrijfId ,_passwordHasher);
+        AccountZakelijkHuurder account = new AccountZakelijkHuurder(accountDto.Email, accountDto.Wachtwoord, accountDto.BedrijfId ,_passwordHasher, _context);
 
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
 

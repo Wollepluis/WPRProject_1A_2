@@ -45,7 +45,7 @@ public class AccountMedewerkerBackofficeController : ControllerBase
         if (anyEmail) return BadRequest("Een gebruiker met deze email bestaat al");
         if (accountDto == null) return BadRequest("AccountMedewerkerBackoffice mag niet 'NULL' zijn");
 
-        AccountMedewerkerBackoffice account = new AccountMedewerkerBackoffice(accountDto.Email, accountDto.Wachtwoord, _passwordHasher);
+        AccountMedewerkerBackoffice account = new AccountMedewerkerBackoffice(accountDto.Email, accountDto.Wachtwoord, _passwordHasher, _context);
         
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
 

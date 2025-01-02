@@ -45,7 +45,7 @@ public class AccountZakelijkBeheerderController : ControllerBase
     {
         if (accountDto == null) return BadRequest("AccountZakelijkBeheerder mag niet 'NULL' zijn");
 
-        AccountZakelijkBeheerder account = new AccountZakelijkBeheerder(accountDto.Email, accountDto.Wachtwoord, accountDto.BedrijfId, _passwordHasher);
+        AccountZakelijkBeheerder account = new AccountZakelijkBeheerder(accountDto.Email, accountDto.Wachtwoord, accountDto.BedrijfId, _passwordHasher, _context);
         
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
 

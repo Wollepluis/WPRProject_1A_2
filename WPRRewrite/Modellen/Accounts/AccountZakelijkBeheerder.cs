@@ -5,8 +5,8 @@ namespace WPRRewrite.Modellen.Accounts;
 
 public class AccountZakelijkBeheerder : AccountZakelijk
 {
-    public AccountZakelijkBeheerder(string email, string wachtwoord, int bedrijfId ,IPasswordHasher<Account> passwordHasher)
-        : base(passwordHasher)
+    public AccountZakelijkBeheerder(string email, string wachtwoord, int bedrijfId ,IPasswordHasher<Account> passwordHasher, CarAndAllContext context)
+        : base(passwordHasher, context)
     {
         Email = email;
         Wachtwoord = wachtwoord;

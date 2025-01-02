@@ -93,7 +93,7 @@ public class BedrijfController : ControllerBase
             .Replace("..", ".");   // Verwijder punten
         
         Bedrijf bedrijf = new Bedrijf(bedrijfDto.Kvknummer, bedrijfDto.Bedrijfsnaam, adres.AdresId, abonnement.AbonnementId, domeinnaam);
-        AccountZakelijkBeheerder account = new AccountZakelijkBeheerder(zakelijkBeheerderDto.Email, zakelijkBeheerderDto.Wachtwoord, bedrijf.BedrijfId, new PasswordHasher<Account>());
+        AccountZakelijkBeheerder account = new AccountZakelijkBeheerder(zakelijkBeheerderDto.Email, zakelijkBeheerderDto.Wachtwoord, bedrijf.BedrijfId, new PasswordHasher<Account>(), _context);
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
         bedrijf.BevoegdeMedewerkers.Add(account);
         _context.Accounts.Add(account);
@@ -170,7 +170,7 @@ public class BedrijfController : ControllerBase
         }
 
         // Maak een nieuw AccountZakelijkHuurder object
-        AccountZakelijkHuurder accountZakelijkHuurder = new AccountZakelijkHuurder(accountZakelijkDto.Email, accountZakelijkDto.Wachtwoord, accountZakelijkDto.BedrijfId, new PasswordHasher<Account>());
+        AccountZakelijkHuurder accountZakelijkHuurder = new AccountZakelijkHuurder(accountZakelijkDto.Email, accountZakelijkDto.Wachtwoord, accountZakelijkDto.BedrijfId, new PasswordHasher<Account>(), _context);
         EmailSender.VerstuurBevestigingsEmail(accountZakelijkHuurder.Email, accountZakelijkHuurder.Bedrijf.Bedrijfsnaam);
         accountZakelijkHuurder.Wachtwoord = _passwordHasher.HashPassword(accountZakelijkHuurder, accountZakelijkDto.Wachtwoord);
         // Voeg de medewerker toe aan het bedrijf

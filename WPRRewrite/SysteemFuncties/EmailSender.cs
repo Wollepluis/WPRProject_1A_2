@@ -74,29 +74,34 @@ public class EmailSender
             VerstuurEmail(mailBericht);
         }
 
-        public static void VerstuurBevestigingsEmailMetCC(string ontvangerEmail, string bedrijfsNaam, string ccEmail)
+        public static void VerstuurHerinneringsEmail(string ontvangerEmail, int id, DateTime date)
         {
             string htmlInhoud = $@"
             <html>
             <head>
                 <style>
-                    h1 {{ color: #4CAF50; font-family: Arial, sans-serif; }}
-                    p {{ font-family: Arial, sans-serif; color: #555555; }}
-                    .button {{ background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; border-radius: 5px; }}
+                    body {{ font-family: Arial, sans-serif; background-color: #f4f4f9; color: #333333; line-height: 1.6; margin: 0; padding: 20px; }}
+                    h1 {{ color: #d9534f; text-align: center; }}
+                    p {{ margin: 10px 0; }}
+                    .button {{ display: inline-block; background-color: #0275d8; color: white; padding: 10px 20px; text-align: center; text-decoration: none; border-radius: 5px; margin-top: 20px; font-size: 16px; }}
+                    .footer {{ margin-top: 30px; font-size: 12px; text-align: center; color: #aaaaaa; }}
                 </style>
             </head>
             <body>
-                <h1>Welkom!</h1>
-                <p>Uw account bij <strong>{bedrijfsNaam}</strong> ({ontvangerEmail}) is succesvol aangemaakt!</p>
-                <p>Bedankt voor uw registratie.</p>
-                <p><a href='http://www.example.com' class='button'>Klik hier om in te loggen</a></p>
+                <h1>Uw Reservering staat klaar!</h1>
+                <p>Uw auto met reserverings ID: {id} staat klaar om morgen ({date}) opgehaald te worden.</p>
+                <p>Neem gerust contact met ons op via <a href='mailto:{{EmailAdres}}'>{{EmailAdres}}</a> als u vragen heeft.</p>
+                <p><a href='http://www.example.com/feedback' class='button'>Deel uw feedback</a></p>
+                <div class='footer'>
+                    <p>Met vriendelijke groet,<br>Het Team</p>
+                    <p>&copy; 2024 Bedrijf. Alle rechten voorbehouden.</p>
+                </div>
             </body>
             </html>";
-
-            var mailBericht = MaakMailBericht(ontvangerEmail, "Account Aangemaakt", htmlInhoud, ccEmail);
+            var mailBericht = MaakMailBericht(ontvangerEmail, "Uw reservering staat klaar", htmlInhoud);
             VerstuurEmail(mailBericht);
         }
-
+        
         public static void VerstuurVerwijderEmail(string ontvangerEmail)
         {
             string htmlInhoud = @"
