@@ -46,6 +46,29 @@ public class VoertuigController : ControllerBase
         return Ok(beschikbareVoertuigen);
     }
 
+    [HttpGet("krijgallevoertuigenAccount")]
+    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen(int accountId)
+    {
+        // Haal alle reserveringen op voor het account
+        var reserveringen = await _context.Reserveringen
+            .Where(r => r.AccountId == accountId)
+            .ToListAsync();
+        
+        List<ReserveringVoertuigDto> alleReserveringen = new List<ReserveringVoertuigDto>();
+        foreach (var reservering in reserveringen)
+        {
+            var voertuig = await _context.Voertuigen.FindAsync(reservering.VoertuigId);
+            if (voertuig == null) return NotFound();
+            ReserveringVoertuigDto reserveringje = new ReserveringVoertuigDto(reservering.ReserveringId, voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.VoertuigType, voertuig.BrandstofType, reservering.Begindatum, reservering.Einddatum, reservering.TotaalPrijs, reservering.IsBetaald, reservering.IsGoedgekeurd);
+            alleReserveringen.Add(reserveringje);
+        }
+
+        
+        
+        return Ok(alleReserveringen);
+    }
+
+    
     [HttpGet("krijgspecifiekvoertuig")]
     public async Task<ActionResult<Voertuig>> GetVoertuig(int id)
     {
@@ -106,7 +129,7 @@ public class VoertuigController : ControllerBase
         var reserveringDto = new Reservering(
             voertuigReservering.Begindatum,
             voertuigReservering.Einddatum,
-            100 * ((voertuigReservering.Einddatum - voertuigReservering.Begindatum).Days), // Bereken de kosten
+            100 + 100 * ((voertuigReservering.Einddatum - voertuigReservering.Begindatum).Days), // Bereken de kosten
             voertuig.VoertuigId,
             voertuigReservering.AccountId
         );
