@@ -115,7 +115,7 @@ public class AccountMedewerkerBackofficeController : ControllerBase
         try
         {
             // Test de e-mailfunctionaliteit
-            EmailSender.TestMail();  // Zorg ervoor dat TestMail geen parameters vereist of dat je ze meegeeft
+            //EmailSender.TestMail();  // Zorg ervoor dat TestMail geen parameters vereist of dat je ze meegeeft
 
             // Als alles goed gaat, geef een 200 OK response terug
             return Ok();

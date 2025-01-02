@@ -8,24 +8,33 @@ namespace WPRRewrite.SysteemFuncties;
 
 public class EmailSender
 {
+    private static SmtpClient _smtpClient;
+    public EmailSender(SmtpClient smtpClient)
+    {
+        _smtpClient = smtpClient ?? throw new ArgumentException();
+    }
+    
+    public static void EmailConnector()
+    {
+        _smtpClient.Host = "smtp.gmail.com";
+        _smtpClient.Port = 587;
+        _smtpClient.UseDefaultCredentials = false;
+        _smtpClient.Credentials = new NetworkCredential("carandall.business@gmail.com", "Auto.Project18");
+        _smtpClient.EnableSsl = true; 
+    }
+    
     public static void SendEmail(Bedrijf bedrijf, AccountZakelijkBeheerder account)
     {
+        EmailConnector();
         MailMessage mailMessage = new MailMessage();
         mailMessage.From = new MailAddress("carandall.business@gmail.com"); 
         mailMessage.To.Add(bedrijf.BevoegdeMedewerkers.OfType<AccountZakelijkBeheerder>().First().Email);
         mailMessage.Subject = "Bedrijf Aangemaakt";
         mailMessage.Body = "Het bedrijf met de naam: " + bedrijf.Bedrijfsnaam + "met het zakelijk account met het email " + account.Email + " is aangemaakt!";
 
-        SmtpClient smtpClient = new SmtpClient();
-        smtpClient.Host = "smtp.gmail.com";
-        smtpClient.Port = 587;
-        smtpClient.UseDefaultCredentials = false;
-        smtpClient.Credentials = new NetworkCredential("carandall.business@gmail.com", "Auto.Project18");
-        smtpClient.EnableSsl = true;
-
         try
         {
-            smtpClient.Send(mailMessage);
+            _smtpClient.Send(mailMessage);
             Console.WriteLine("Email verzonden!");
         }
         catch (Exception e)
@@ -37,6 +46,7 @@ public class EmailSender
     
     public static void SendEmail(AccountZakelijkBeheerder beheerderAccount, AccountZakelijkHuurder ToegevoegdAccount)
     {
+        EmailConnector();
         MailMessage mailMessage = new MailMessage();
         mailMessage.From = new MailAddress("carandall.business@gmail.com");
         mailMessage.To.Add(beheerderAccount.Email);
@@ -44,16 +54,9 @@ public class EmailSender
         mailMessage.Subject = "Medewerker toegevoegd";
         mailMessage.Body = "Huurder: " + ToegevoegdAccount.Email + " is aangemaakt en toegevoegd aan het bedrijf";
 
-        SmtpClient smtpClient = new SmtpClient();
-        smtpClient.Host = "smtp.gmail.com";
-        smtpClient.Port = 587;
-        smtpClient.UseDefaultCredentials = false;
-        smtpClient.Credentials = new NetworkCredential("carandall.business@gmail.com", "Auto.Project18");
-        smtpClient.EnableSsl = true;
-
         try
         {
-            smtpClient.Send(mailMessage);
+            _smtpClient.Send(mailMessage);
             Console.WriteLine("Email verzonden!");
         }
         catch (Exception e)
@@ -71,16 +74,9 @@ public class EmailSender
         mailMessage.Subject = "Account aangemaakt";
         mailMessage.Body = "Uw account: " + account.Email + " is aangemaakt!";
 
-        SmtpClient smtpClient = new SmtpClient();
-        smtpClient.Host = "smtp.gmail.com";
-        smtpClient.Port = 587;
-        smtpClient.UseDefaultCredentials = false;
-        smtpClient.Credentials = new NetworkCredential("carandall.business@gmail.com", "Auto.Project18");
-        smtpClient.EnableSsl = true;
-
         try
         {
-            smtpClient.Send(mailMessage);
+            _smtpClient.Send(mailMessage);
             Console.WriteLine("Email verzonden!");
         }
         catch (Exception e)
@@ -132,16 +128,9 @@ public class EmailSender
         mailMessage.Body = htmlBody;
         mailMessage.IsBodyHtml = true;  // Zet de body als HTML
 
-        SmtpClient smtpClient = new SmtpClient();
-        smtpClient.Host = "smtp.gmail.com";
-        smtpClient.Port = 587;
-        smtpClient.UseDefaultCredentials = false;
-        smtpClient.Credentials = new NetworkCredential("carandall.business@gmail.com", "Auto.Project18");
-        smtpClient.EnableSsl = true;
-
         try
         {
-            smtpClient.Send(mailMessage);
+            _smtpClient.Send(mailMessage);
             Console.WriteLine("Email verzonden!");
         }
         catch (Exception e)
@@ -216,16 +205,9 @@ public class EmailSender
         mailMessage.Body = htmlBody;
         mailMessage.IsBodyHtml = true;  // Zet de body als HTML
 
-        SmtpClient smtpClient = new SmtpClient();
-        smtpClient.Host = "smtp.gmail.com";
-        smtpClient.Port = 587;
-        smtpClient.UseDefaultCredentials = false;
-        smtpClient.Credentials = new NetworkCredential("carandall.business@gmail.com", "Auto.Project18");
-        smtpClient.EnableSsl = true;
-
         try
         {
-            smtpClient.Send(mailMessage);
+            _smtpClient.Send(mailMessage);
             Console.WriteLine("Email verzonden!");
         }
         catch (Exception e)
@@ -234,66 +216,4 @@ public class EmailSender
             throw;
         }
     }
-
-    public static void TestMail()
-    {
-        MailMessage mailMessage = new MailMessage();
-        mailMessage.From = new MailAddress("carandall.business@gmail.com");
-        mailMessage.To.Add("Xandervanderhoek@gmail.com");
-        mailMessage.Subject = "Account aangemaakt";
-
-        // HTML voor de e-mail body
-        string htmlBody = @"
-        <html>
-        <head>
-            <style>
-                h1 {
-                    color: #4CAF50;
-                    font-family: Arial, sans-serif;
-                }
-                p {
-                    font-family: Arial, sans-serif;
-                    color: #555555;
-                }
-                .button {
-                    background-color: #4CAF50;
-                    color: white;
-                    padding: 10px 20px;
-                    text-align: center;
-                    text-decoration: none;
-                    border-radius: 5px;
-                }
-            </style>
-        </head>
-        <body>
-            <h1>Welkom!</h1>
-            <p>Uw account <strong> <email> </strong> is succesvol aangemaakt!</p>
-            <p>Bedankt voor uw registratie.</p>
-            <p><a href='http://www.example.com' class='button'>Klik hier om in te loggen</a></p>
-        </body>
-        </html>
-    ";
-
-        mailMessage.Body = htmlBody;
-        mailMessage.IsBodyHtml = true;  // Zet de body als HTML
-
-        SmtpClient smtpClient = new SmtpClient();
-        smtpClient.Host = "smtp.gmail.com";
-        smtpClient.Port = 587;
-        smtpClient.UseDefaultCredentials = false;
-        smtpClient.Credentials = new NetworkCredential("carandall.business@gmail.com", "Auto.Project18");
-        smtpClient.EnableSsl = true;
-
-        try
-        {
-            smtpClient.Send(mailMessage);
-            Console.WriteLine("Email verzonden!");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Error: " + e.Message);
-            throw;
-        }
-    }
-
 }
