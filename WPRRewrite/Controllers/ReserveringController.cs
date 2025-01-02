@@ -57,4 +57,19 @@ public class ReserveringController : ControllerBase
         
         return Ok(reservering);
     }
+    
+    [HttpDelete("VerwijderReservering")]
+    public async Task<IActionResult> DeleteReservering(int reserveringId)
+    {
+        var reservering = await _context.Reserveringen.FindAsync(reserveringId);
+        if (reservering == null)
+        {
+            return NotFound();
+        }
+
+        _context.Reserveringen.Remove(reservering);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
