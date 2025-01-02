@@ -75,7 +75,7 @@ public class AccountZakelijkHuurderController : ControllerBase
             return BadRequest("AccountZakelijkHuurder mag niet 'NULL' zijn");
         }
         
-        AccountZakelijkHuurder account = new AccountZakelijkHuurder(accountDto.Email, accountDto.Wachtwoord, accountDto.BedrijfId ,_passwordHasher);
+        AccountZakelijkHuurder account = new AccountZakelijkHuurder(accountDto.Email, accountDto.Wachtwoord, accountDto.BedrijfId ,_passwordHasher, _context);
 
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
 
@@ -86,7 +86,7 @@ public class AccountZakelijkHuurderController : ControllerBase
 
             /*var bedrijf = await context.Bedrijven.FindAsync(accountZakelijkHuurder.BedrijfsId);
             emailSender.SendEmail(bedrijf);*/
-            EmailSender.SendEmail(account);
+            EmailSender.VerstuurBevestigingsEmail(account.Email, account.Bedrijf.Bedrijfsnaam);
             return CreatedAtAction(nameof(GetAccount), new { id = account.AccountId }, account);
         }
         catch (Exception ex)

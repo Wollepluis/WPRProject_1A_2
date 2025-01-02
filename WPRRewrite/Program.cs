@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,7 @@ public class Program
         builder.Services.AddScoped<IPasswordHasher<Account>, PasswordHasher<Account>>();
         builder.Services.AddScoped<IAdresService, AdresService>();
         builder.Services.AddScoped<EmailSender>();
+        builder.Services.AddScoped<SmtpClient>();
         
         var app = builder.Build();
         app.UseCors("AllowAll");

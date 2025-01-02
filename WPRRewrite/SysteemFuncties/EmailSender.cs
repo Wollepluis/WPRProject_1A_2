@@ -1,219 +1,134 @@
 ﻿using System.Net;
 using System.Net.Mail;
-using WPRRewrite.Interfaces;
-using WPRRewrite.Modellen;
-using WPRRewrite.Modellen.Accounts;
 
 namespace WPRRewrite.SysteemFuncties;
 
 public class EmailSender
 {
-    private static SmtpClient _smtpClient;
-    public EmailSender(SmtpClient smtpClient)
-    {
-        _smtpClient = smtpClient ?? throw new ArgumentException();
-    }
+    private static string MailAddress = "carandall.business@gmail.com";
+    private static string MailPassword = "niuu gghq qfop vyiz";
     
-    public static void EmailConnector()
-    {
-        _smtpClient.Host = "smtp.gmail.com";
-        _smtpClient.Port = 587;
-        _smtpClient.UseDefaultCredentials = false;
-        _smtpClient.Credentials = new NetworkCredential("carandall.business@gmail.com", "Auto.Project18");
-        _smtpClient.EnableSsl = true; 
-    }
-    
-    public static void SendEmail(Bedrijf bedrijf, AccountZakelijkBeheerder account)
-    {
-        EmailConnector();
-        MailMessage mailMessage = new MailMessage();
-        mailMessage.From = new MailAddress("carandall.business@gmail.com"); 
-        mailMessage.To.Add(bedrijf.BevoegdeMedewerkers.OfType<AccountZakelijkBeheerder>().First().Email);
-        mailMessage.Subject = "Bedrijf Aangemaakt";
-        mailMessage.Body = "Het bedrijf met de naam: " + bedrijf.Bedrijfsnaam + "met het zakelijk account met het email " + account.Email + " is aangemaakt!";
-
-        try
+    private static readonly SmtpClient SmtpClient = new()
         {
-            _smtpClient.Send(mailMessage);
-            Console.WriteLine("Email verzonden!");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Error: " + e.Message);
-            throw;
-        }
-    }
-    
-    public static void SendEmail(AccountZakelijkBeheerder beheerderAccount, AccountZakelijkHuurder ToegevoegdAccount)
-    {
-        EmailConnector();
-        MailMessage mailMessage = new MailMessage();
-        mailMessage.From = new MailAddress("carandall.business@gmail.com");
-        mailMessage.To.Add(beheerderAccount.Email);
-        mailMessage.CC.Add(ToegevoegdAccount.Email);
-        mailMessage.Subject = "Medewerker toegevoegd";
-        mailMessage.Body = "Huurder: " + ToegevoegdAccount.Email + " is aangemaakt en toegevoegd aan het bedrijf";
+            Host = "smtp.gmail.com",
+            Port = 587,
+            UseDefaultCredentials = false,
+            Credentials = new NetworkCredential(MailAddress, MailPassword),
+            EnableSsl = true
+        };
 
-        try
+        private static void VerstuurEmail(MailMessage mailBericht)
         {
-            _smtpClient.Send(mailMessage);
-            Console.WriteLine("Email verzonden!");
+            try
+            {
+                SmtpClient.Send(mailBericht);
+                Console.WriteLine("Email succesvol verzonden!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Fout bij het verzenden van email: " + ex.Message);
+                throw;
+            }
         }
-        catch (Exception e)
+
+        private static MailMessage MaakMailBericht(string ontvangerEmail, string onderwerp, string htmlInhoud, string? ccEmail = null)
         {
-            Console.WriteLine("Error: " + e.Message);
-            throw;
-        }
-    }
-    
-    public static void SendEmail(IAccount account)
-    {
-        MailMessage mailMessage = new MailMessage();
-        mailMessage.From = new MailAddress("carandall.business@gmail.com");
-        mailMessage.To.Add(account.Email);
-        mailMessage.Subject = "Account aangemaakt";
-        mailMessage.Body = "Uw account: " + account.Email + " is aangemaakt!";
+            var mailBericht = new MailMessage
+            {
+                From = new MailAddress(MailAddress),
+                Subject = onderwerp,
+                Body = htmlInhoud,
+                IsBodyHtml = true
+            };
 
-        try
+            mailBericht.To.Add(ontvangerEmail);
+
+            if (!string.IsNullOrEmpty(ccEmail))
+            {
+                mailBericht.CC.Add(ccEmail);
+            }
+
+            return mailBericht;
+        }
+
+        public static void VerstuurBevestigingsEmail(string ontvangerEmail, string? bedrijfsNaam = null)
         {
-            _smtpClient.Send(mailMessage);
-            Console.WriteLine("Email verzonden!");
+            string htmlInhoud = $@"
+            <html>
+            <head>
+                <style>
+                    h1 {{ color: #4CAF50; font-family: Arial, sans-serif; }}
+                    p {{ font-family: Arial, sans-serif; color: #555555; }}
+                    .button {{ background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; border-radius: 5px; }}
+                </style>
+            </head>
+            <body>
+                <h1>Welkom!</h1>
+                <p>Uw account bij <strong>{bedrijfsNaam}</strong> ({ontvangerEmail}) is succesvol aangemaakt!</p>
+                <p>Bedankt voor uw registratie.</p>
+                <p><a href='http://www.example.com' class='button'>Klik hier om in te loggen</a></p>
+            </body>
+            </html>";
+
+            var mailBericht = MaakMailBericht(ontvangerEmail, "Account Aangemaakt", htmlInhoud);
+            VerstuurEmail(mailBericht);
         }
-        catch (Exception e)
+
+        public static void VerstuurHerinneringsEmail(string ontvangerEmail, int id, DateTime date)
         {
-            Console.WriteLine("Error: " + e.Message);
-            throw;
+            string htmlInhoud = $@"
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: Arial, sans-serif; background-color: #f4f4f9; color: #333333; line-height: 1.6; margin: 0; padding: 20px; }}
+                    h1 {{ color: #d9534f; text-align: center; }}
+                    p {{ margin: 10px 0; }}
+                    .button {{ display: inline-block; background-color: #0275d8; color: white; padding: 10px 20px; text-align: center; text-decoration: none; border-radius: 5px; margin-top: 20px; font-size: 16px; }}
+                    .footer {{ margin-top: 30px; font-size: 12px; text-align: center; color: #aaaaaa; }}
+                </style>
+            </head>
+            <body>
+                <h1>Uw Reservering staat klaar!</h1>
+                <p>Uw auto met reserverings ID: {id} staat klaar om morgen ({date}) opgehaald te worden.</p>
+                <p>Neem gerust contact met ons op via <a href='mailto:{{EmailAdres}}'>{{EmailAdres}}</a> als u vragen heeft.</p>
+                <p><a href='http://www.example.com/feedback' class='button'>Deel uw feedback</a></p>
+                <div class='footer'>
+                    <p>Met vriendelijke groet,<br>Het Team</p>
+                    <p>&copy; 2024 Bedrijf. Alle rechten voorbehouden.</p>
+                </div>
+            </body>
+            </html>";
+            var mailBericht = MaakMailBericht(ontvangerEmail, "Uw reservering staat klaar", htmlInhoud);
+            VerstuurEmail(mailBericht);
         }
-    }
-    
-    public static void SendEmail(AccountZakelijkHuurder account)
-    {
-        MailMessage mailMessage = new MailMessage();
-        mailMessage.From = new MailAddress("carandall.business@gmail.com");
-        mailMessage.To.Add(account.Email);
-        mailMessage.Subject = "Account aangemaakt";
-
-        // HTML voor de e-mail body
-        string htmlBody = @"
-        <html>
-        <head>
-            <style>
-                h1 {
-                    color: #4CAF50;
-                    font-family: Arial, sans-serif;
-                }
-                p {
-                    font-family: Arial, sans-serif;
-                    color: #555555;
-                }
-                .button {
-                    background-color: #4CAF50;
-                    color: white;
-                    padding: 10px 20px;
-                    text-align: center;
-                    text-decoration: none;
-                    border-radius: 5px;
-                }
-            </style>
-        </head>
-        <body>
-            <h1>Welkom!</h1>
-            <p>Uw account <strong>" + account.Email + @"</strong> is succesvol aangemaakt!</p>
-            <p>Bedankt voor uw registratie.</p>
-            <p><a href='http://www.example.com' class='button'>Klik hier om in te loggen</a></p>
-        </body>
-        </html>
-    ";
-
-        mailMessage.Body = htmlBody;
-        mailMessage.IsBodyHtml = true;  // Zet de body als HTML
-
-        try
+        
+        public static void VerstuurVerwijderEmail(string ontvangerEmail)
         {
-            _smtpClient.Send(mailMessage);
-            Console.WriteLine("Email verzonden!");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Error: " + e.Message);
-            throw;
-        }
-    }
-    
-    public static void SendVerwijderEmail(string email)
-    {
-        MailMessage mailMessage = new MailMessage();
-        mailMessage.From = new MailAddress("carandall.business@gmail.com");
-        mailMessage.To.Add(email);
-        mailMessage.Subject = "Jammer dat je gaat";
+            string htmlInhoud = @"
+            <html>
+            <head>
+                <style>
+                    body { font-family: Arial, sans-serif; background-color: #f4f4f9; color: #333333; line-height: 1.6; margin: 0; padding: 20px; }
+                    h1 { color: #d9534f; text-align: center; }
+                    p { margin: 10px 0; }
+                    .button { display: inline-block; background-color: #0275d8; color: white; padding: 10px 20px; text-align: center; text-decoration: none; border-radius: 5px; margin-top: 20px; font-size: 16px; }
+                    .footer { margin-top: 30px; font-size: 12px; text-align: center; color: #aaaaaa; }
+                </style>
+            </head>
+            <body>
+                <h1>Jammer dat u vertrekt!</h1>
+                <p>We hebben ervan genoten om u als gebruiker te hebben. Als we iets beter hadden kunnen doen, horen we dat graag.</p>
+                <p>Mocht u van gedachten veranderen, bent u altijd welkom om terug te keren.</p>
+                <p>Neem gerust contact met ons op via <a href='mailto:{EmailAdres}'>{EmailAdres}</a> als u vragen heeft.</p>
+                <p><a href='http://www.example.com/feedback' class='button'>Deel uw feedback</a></p>
+                <div class='footer'>
+                    <p>Met vriendelijke groet,<br>Het Team</p>
+                    <p>&copy; 2024 Bedrijf. Alle rechten voorbehouden.</p>
+                </div>
+            </body>
+            </html>";
 
-        // HTML voor de e-mail body
-        string htmlBody = @"
-<html>
-<head>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            color: #333333;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
+            var mailBericht = MaakMailBericht(ontvangerEmail, "Jammer dat u vertrekt", htmlInhoud);
+            VerstuurEmail(mailBericht);
         }
-        h1 {
-            color: #d9534f;
-            text-align: center;
-        }
-        p {
-            margin: 10px 0;
-        }
-        .button {
-            display: inline-block;
-            background-color: #0275d8;
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-top: 20px;
-            font-size: 16px;
-        }
-        .footer {
-            margin-top: 30px;
-            font-size: 12px;
-            text-align: center;
-            color: #aaaaaa;
-        }
-    </style>
-</head>
-<body>
-    <h1>Jammer dat je gaat!</h1>
-    <p>Beste gebruiker,</p>
-    <p>We hebben met veel plezier je account beheerd. Het spijt ons dat je ervoor hebt gekozen om afscheid te nemen. Als we iets beter hadden kunnen doen, horen we dat graag!</p>
-    <p>Als je van gedachten verandert, ben je altijd welkom om terug te keren.</p>
-    <p>Neem gerust contact met ons op via <a href='mailto:support@bedrijf.com'>carandall.business@gmail.com</a> als je vragen hebt.</p>
-    <p><a href='http://www.example.com/feedback' class='button'>Deel je feedback</a></p>
-    <div class='footer'>
-        <p>Met vriendelijke groet,<br>Het Bedrijfsteam (Niet abhishrek)</p>
-        <p>&copy; 2024 Bedrijf. Alle rechten voorbehouden.</p>
-    </div>
-</body>
-</html>
-";
-
-
-        mailMessage.Body = htmlBody;
-        mailMessage.IsBodyHtml = true;  // Zet de body als HTML
-
-        try
-        {
-            _smtpClient.Send(mailMessage);
-            Console.WriteLine("Email verzonden!");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Error: " + e.Message);
-            throw;
-        }
-    }
 }

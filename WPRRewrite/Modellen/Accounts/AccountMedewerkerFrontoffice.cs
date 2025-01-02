@@ -5,8 +5,8 @@ namespace WPRRewrite.Modellen.Accounts;
 
 public class AccountMedewerkerFrontoffice : AccountMedewerker
 {
-    public AccountMedewerkerFrontoffice(string email, string wachtwoord, IPasswordHasher<Account> passwordHasher)
-        : base(passwordHasher)
+    public AccountMedewerkerFrontoffice(string email, string wachtwoord, IPasswordHasher<Account> passwordHasher, CarAndAllContext context)
+        : base(passwordHasher, context)
     {
         Email = email;
         Wachtwoord = wachtwoord;

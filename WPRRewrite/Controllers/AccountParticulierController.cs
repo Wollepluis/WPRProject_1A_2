@@ -85,13 +85,13 @@ public class AccountParticulierController : ControllerBase
         }
         await _context.SaveChangesAsync();
                 
-        AccountParticulier account = new AccountParticulier(accountDto.Email, accountDto.Wachtwoord, accountDto.Naam, adres.AdresId, accountDto.Telefoonnummer, _passwordHasher);
+        AccountParticulier account = new AccountParticulier(accountDto.Email, accountDto.Wachtwoord, accountDto.Naam, adres.AdresId, accountDto.Telefoonnummer, _passwordHasher, _context);
         
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
         
         _context.Accounts.Add(account);
         await _context.SaveChangesAsync();
-        EmailSender.SendEmail(account);
+        EmailSender.VerstuurBevestigingsEmail(account.Email);
         return Ok(new { AccountId = account.AccountId});
     }
     
@@ -109,7 +109,23 @@ public class AccountParticulierController : ControllerBase
              var result = _passwordHasher.VerifyHashedPassword(account, account.Wachtwoord, accountDto.Wachtwoord);
 
              if (result == PasswordVerificationResult.Failed) return Unauthorized(new { message = "Verkeerd wachtwoord"});
-        
+
+             var reservering = await _context.Reserveringen.FirstOrDefaultAsync(r => r.AccountId == account.AccountId);
+             if (reservering != null)
+             {
+                 // Get only the date part (no time)
+                 var reserveringDate = reservering.Begindatum.Date;
+                 var currentDate = DateTime.Now.Date;
+
+                 // Check if the reservation is tomorrow
+                 if (reserveringDate == currentDate.AddDays(1) && reservering.Herinnering == false)
+                 {
+                     EmailSender.VerstuurHerinneringsEmail(account.Email, reservering.VoertuigId, reservering.Begindatum);
+                     reservering.UpdateHerinnering();
+                     await _context.SaveChangesAsync();
+                 }
+             }
+             
              return Ok(new {account.AccountId});
          }
 
@@ -142,7 +158,7 @@ public class AccountParticulierController : ControllerBase
             _context.Adressen.Remove(oudAdres);
         }
         
-        AccountParticulier account = new AccountParticulier(accountDto.Email, accountDto.Wachtwoord, accountDto.Naam, nieuwAdres.AdresId, accountDto.Telefoonnummer, _passwordHasher);
+        AccountParticulier account = new AccountParticulier(accountDto.Email, accountDto.Wachtwoord, accountDto.Naam, nieuwAdres.AdresId, accountDto.Telefoonnummer, _passwordHasher, _context);
         
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
         existingAccount.UpdateAccount(account);

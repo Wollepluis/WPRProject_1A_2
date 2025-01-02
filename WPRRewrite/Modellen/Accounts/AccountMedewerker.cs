@@ -5,8 +5,8 @@ namespace WPRRewrite.Modellen.Accounts;
 
 public abstract class AccountMedewerker : Account, IAccountMedewerker
 {
-    protected AccountMedewerker(IPasswordHasher<Account> passwordHasher)
-        : base(passwordHasher)
+    protected AccountMedewerker(IPasswordHasher<Account> passwordHasher, CarAndAllContext context)
+        : base(passwordHasher, context)
     {
         
     }
