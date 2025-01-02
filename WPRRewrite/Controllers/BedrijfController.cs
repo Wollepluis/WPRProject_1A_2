@@ -102,7 +102,7 @@ public class BedrijfController : ControllerBase
 
         try
         {
-            EmailSender.BevestigingsEmail(account);
+            EmailSender.VerstuurBevestigingsEmail(account.Email, account.Bedrijf.Bedrijfsnaam);
         }
         catch (Exception e)
         {
@@ -171,12 +171,12 @@ public class BedrijfController : ControllerBase
 
         // Maak een nieuw AccountZakelijkHuurder object
         AccountZakelijkHuurder accountZakelijkHuurder = new AccountZakelijkHuurder(accountZakelijkDto.Email, accountZakelijkDto.Wachtwoord, accountZakelijkDto.BedrijfId, new PasswordHasher<Account>());
-        EmailSender.BevestigingsEmail(accountZakelijkHuurder);
+        EmailSender.VerstuurBevestigingsEmail(accountZakelijkHuurder.Email, accountZakelijkHuurder.Bedrijf.Bedrijfsnaam);
         accountZakelijkHuurder.Wachtwoord = _passwordHasher.HashPassword(accountZakelijkHuurder, accountZakelijkDto.Wachtwoord);
         // Voeg de medewerker toe aan het bedrijf
         bedrijf.BevoegdeMedewerkers.Add(accountZakelijkHuurder);
         AccountZakelijkBeheerder account = bedrijf.BevoegdeMedewerkers.OfType<AccountZakelijkBeheerder>().FirstOrDefault();
-        if (account != null) EmailSender.BevestigingsEmail(account, accountZakelijkHuurder);
+        if (account != null) EmailSender.VerstuurBevestigingsEmail(account.Email, account.Bedrijf.Bedrijfsnaam);
         
         
         // Voeg het account toe aan de database en sla de wijzigingen op
@@ -213,7 +213,7 @@ public class BedrijfController : ControllerBase
         // Probeer een email te sturen
         try
         {
-            EmailSender.SendVerwijderEmail(email);
+            EmailSender.VerstuurVerwijderEmail(email);
         }
         catch (Exception ex)
         {
