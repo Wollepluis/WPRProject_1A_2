@@ -8,126 +8,59 @@ namespace WPRRewrite.SysteemFuncties;
 
 public class EmailSender
 {
+    private static string _mailAdress = "carandall.business@gmail.com";
+    
     private static SmtpClient _smtpClient;
     public EmailSender(SmtpClient smtpClient)
     {
         _smtpClient = smtpClient ?? throw new ArgumentException();
     }
-    
-    public static void EmailConnector()
-    {
-        _smtpClient.Host = "smtp.gmail.com";
-        _smtpClient.Port = 587;
-        _smtpClient.UseDefaultCredentials = false;
-        _smtpClient.Credentials = new NetworkCredential("carandall.business@gmail.com", "Auto.Project18");
-        _smtpClient.EnableSsl = true; 
-    }
-    
-    public static void SendEmail(Bedrijf bedrijf, AccountZakelijkBeheerder account)
-    {
-        EmailConnector();
-        MailMessage mailMessage = new MailMessage();
-        mailMessage.From = new MailAddress("carandall.business@gmail.com"); 
-        mailMessage.To.Add(bedrijf.BevoegdeMedewerkers.OfType<AccountZakelijkBeheerder>().First().Email);
-        mailMessage.Subject = "Bedrijf Aangemaakt";
-        mailMessage.Body = "Het bedrijf met de naam: " + bedrijf.Bedrijfsnaam + "met het zakelijk account met het email " + account.Email + " is aangemaakt!";
 
-        try
-        {
-            _smtpClient.Send(mailMessage);
-            Console.WriteLine("Email verzonden!");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Error: " + e.Message);
-            throw;
-        }
-    }
-    
-    public static void SendEmail(AccountZakelijkBeheerder beheerderAccount, AccountZakelijkHuurder ToegevoegdAccount)
-    {
-        EmailConnector();
-        MailMessage mailMessage = new MailMessage();
-        mailMessage.From = new MailAddress("carandall.business@gmail.com");
-        mailMessage.To.Add(beheerderAccount.Email);
-        mailMessage.CC.Add(ToegevoegdAccount.Email);
-        mailMessage.Subject = "Medewerker toegevoegd";
-        mailMessage.Body = "Huurder: " + ToegevoegdAccount.Email + " is aangemaakt en toegevoegd aan het bedrijf";
-
-        try
-        {
-            _smtpClient.Send(mailMessage);
-            Console.WriteLine("Email verzonden!");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Error: " + e.Message);
-            throw;
-        }
-    }
-    
-    public static void SendEmail(IAccount account)
-    {
-        MailMessage mailMessage = new MailMessage();
-        mailMessage.From = new MailAddress("carandall.business@gmail.com");
-        mailMessage.To.Add(account.Email);
-        mailMessage.Subject = "Account aangemaakt";
-        mailMessage.Body = "Uw account: " + account.Email + " is aangemaakt!";
-
-        try
-        {
-            _smtpClient.Send(mailMessage);
-            Console.WriteLine("Email verzonden!");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Error: " + e.Message);
-            throw;
-        }
-    }
-    
-    public static void SendEmail(AccountZakelijkHuurder account)
-    {
-        MailMessage mailMessage = new MailMessage();
-        mailMessage.From = new MailAddress("carandall.business@gmail.com");
-        mailMessage.To.Add(account.Email);
-        mailMessage.Subject = "Account aangemaakt";
-
-        // HTML voor de e-mail body
-        string htmlBody = @"
+    private static string _bedrijfString = "";
+    private static string _emailString = "";
+    private static string _htmlBody = @"
         <html>
         <head>
             <style>
-                h1 {
+                h1 {{
                     color: #4CAF50;
                     font-family: Arial, sans-serif;
-                }
-                p {
+                }}
+                p {{
                     font-family: Arial, sans-serif;
                     color: #555555;
-                }
-                .button {
+                }}
+                .button {{
                     background-color: #4CAF50;
                     color: white;
                     padding: 10px 20px;
                     text-align: center;
                     text-decoration: none;
                     border-radius: 5px;
-                }
+                }}
             </style>
         </head>
         <body>
             <h1>Welkom!</h1>
-            <p>Uw account <strong>" + account.Email + @"</strong> is succesvol aangemaakt!</p>
+            <p>Uw account " + _bedrijfString + "<strong> " + _emailString + @" </strong> is succesvol aangemaakt!</p>
             <p>Bedankt voor uw registratie.</p>
             <p><a href='http://www.example.com' class='button'>Klik hier om in te loggen</a></p>
         </body>
         </html>
     ";
+    
+    
+    private static void EmailConnector()
+    {
+        _smtpClient.Host = "smtp.gmail.com";
+        _smtpClient.Port = 587;
+        _smtpClient.UseDefaultCredentials = false;
+        _smtpClient.Credentials = new NetworkCredential(_mailAdress, "Auto.Project18");
+        _smtpClient.EnableSsl = true; 
+    }
 
-        mailMessage.Body = htmlBody;
-        mailMessage.IsBodyHtml = true;  // Zet de body als HTML
-
+    private static void SendEmail(MailMessage mailMessage)
+    {
         try
         {
             _smtpClient.Send(mailMessage);
@@ -138,6 +71,43 @@ public class EmailSender
             Console.WriteLine("Error: " + e.Message);
             throw;
         }
+    }
+
+    private static MailMessage MessageCrafter(IAccount account)
+    {
+        MailMessage mailMessage = new MailMessage();
+        mailMessage.From = new MailAddress("carandall.business@gmail.com");
+        mailMessage.To.Add(account.Email);
+        mailMessage.Subject = "Account aangemaakt";
+
+        if (account is AccountZakelijkHuurder)
+        {
+            var zakelijkAccount = (AccountZakelijkHuurder)account;
+            _bedrijfString = zakelijkAccount.Bedrijf.Bedrijfsnaam;
+        }
+
+        _emailString = account.Email;
+        mailMessage.Body = _htmlBody;
+        mailMessage.IsBodyHtml = true; 
+        
+        return mailMessage;
+    }
+    
+    public static void BevestigingsEmail(IAccount account)
+    {
+        EmailConnector();
+        MailMessage mailMessage = MessageCrafter(account);
+        
+        SendEmail(mailMessage);
+    }
+    
+    public static void BevestigingsEmail(AccountZakelijkBeheerder beheerderAccount, AccountZakelijkHuurder toegevoegdAccount)
+    {
+        EmailConnector();
+        MailMessage mailMessage = MessageCrafter(toegevoegdAccount);
+        mailMessage.CC.Add(beheerderAccount.Email);
+
+        SendEmail(mailMessage);
     }
     
     public static void SendVerwijderEmail(string email)
@@ -205,15 +175,6 @@ public class EmailSender
         mailMessage.Body = htmlBody;
         mailMessage.IsBodyHtml = true;  // Zet de body als HTML
 
-        try
-        {
-            _smtpClient.Send(mailMessage);
-            Console.WriteLine("Email verzonden!");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Error: " + e.Message);
-            throw;
-        }
+        SendEmail(mailMessage);
     }
 }

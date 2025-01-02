@@ -86,7 +86,7 @@ public class AccountZakelijkHuurderController : ControllerBase
 
             /*var bedrijf = await context.Bedrijven.FindAsync(accountZakelijkHuurder.BedrijfsId);
             emailSender.SendEmail(bedrijf);*/
-            EmailSender.SendEmail(account);
+            EmailSender.BevestigingsEmail(account);
             return CreatedAtAction(nameof(GetAccount), new { id = account.AccountId }, account);
         }
         catch (Exception ex)
