@@ -103,8 +103,13 @@ public class ReserveringController : ControllerBase
         reservering.Begindatum = voertuigReserveringDto.Begindatum;
         reservering.Einddatum = voertuigReserveringDto.Einddatum;
         reservering.VoertuigId = voertuigReserveringDto.VoertuigId;
-        await _context.SaveChangesAsync();
-        //EmailSender.VerstuurWijzigReserveringEmail(reservering.Account.Email);
+        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountId == reservering.AccountId);
+        if (account != null)
+        {
+            EmailSender.VerstuurWijzigReserveringEmail(account.Email);
+            await _context.SaveChangesAsync();    
+        }
+        
         return NoContent();
     }
     
@@ -118,8 +123,13 @@ public class ReserveringController : ControllerBase
         }
 
         _context.Reserveringen.Remove(reservering);
-        await _context.SaveChangesAsync();
-        //EmailSender.VerstuurVerwijderReserveringEmail(reservering.Account.Email);
+
+        var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountId == reservering.AccountId);
+        if (account != null)
+        {
+            EmailSender.VerstuurVerwijderReserveringEmail(account.Email);
+            await _context.SaveChangesAsync();
+        }
 
         return NoContent();
     }
