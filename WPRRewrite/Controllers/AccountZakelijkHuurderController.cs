@@ -106,6 +106,22 @@ public class AccountZakelijkHuurderController : ControllerBase
 
         if (result == PasswordVerificationResult.Failed) return Unauthorized(new { message = "Verkeerd wachtwoord"});
         
+        var reservering = await _context.Reserveringen.FirstOrDefaultAsync(r => r.AccountId == account.AccountId);
+        if (reservering != null)
+        {
+            // Get only the date part (no time)
+            var reserveringDate = reservering.Begindatum.Date;
+            var currentDate = DateTime.Now.Date;
+
+            // Check if the reservation is tomorrow
+            if (reserveringDate == currentDate.AddDays(1) && reservering.Herinnering == false)
+            {
+                EmailSender.VerstuurHerinneringsEmail(account.Email, reservering.VoertuigId, reservering.Begindatum);
+                reservering.UpdateHerinnering();
+                await _context.SaveChangesAsync();
+            }
+        }
+        
         return Ok(new {account.AccountId});
     }
 
