@@ -7,6 +7,7 @@ namespace WPRRewrite.Modellen;
 
 public class Reservering
 {
+
     public int ReserveringId { get; set; }
     public DateTime Begindatum { get; set; }
     public DateTime Einddatum { get; set; }
