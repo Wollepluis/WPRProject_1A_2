@@ -158,15 +158,12 @@ public class BedrijfController : ControllerBase
         var anyEmail = _context.Accounts.Any(a => a.Email == accountZakelijkDto.Email);
         if (anyEmail) return BadRequest("Een gebruiker met deze email bestaat al");
         // Zoek het bedrijf op basis van de BedrijfId
-        var bedrijf = await _context.Bedrijven.FindAsync(accountZakelijkDto.BedrijfId);
-        if (bedrijf == null)
-        {
-            return NotFound("Er is geen bedrijf gevonden...");
-        }
+        var bedrijf = await _context.Bedrijven.Include(a => a.BevoegdeMedewerkers).FirstOrDefaultAsync(a => a.BedrijfId == accountZakelijkDto.BedrijfId);
+        if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
 
         // Maak een nieuw AccountZakelijkHuurder object
         AccountZakelijkHuurder accountZakelijkHuurder = new AccountZakelijkHuurder(accountZakelijkDto.Email, accountZakelijkDto.Wachtwoord, accountZakelijkDto.BedrijfId, new PasswordHasher<Account>(), _context);
-        EmailSender.VerstuurBevestigingsEmail(accountZakelijkHuurder.Email, accountZakelijkHuurder.Bedrijf.Bedrijfsnaam);
+        //EmailSender.VerstuurBevestigingsEmail(accountZakelijkHuurder.Email, accountZakelijkHuurder.Bedrijf.Bedrijfsnaam);
         accountZakelijkHuurder.Wachtwoord = _passwordHasher.HashPassword(accountZakelijkHuurder, accountZakelijkDto.Wachtwoord);
         // Voeg de medewerker toe aan het bedrijf
         bedrijf.BevoegdeMedewerkers.Add(accountZakelijkHuurder);

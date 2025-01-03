@@ -33,12 +33,9 @@ public class AccountZakelijkHuurderController : ControllerBase
     [HttpGet("Krijg specifiek account")]
     public async Task<ActionResult<AccountZakelijkHuurder>> GetAccount(int id)
     {
-        var account = await _context.Accounts.FindAsync(id);
+        var account = await _context.Accounts.OfType<AccountZakelijkHuurder>().Include(a => a.Reserveringen).FirstOrDefaultAsync(a => a.AccountId == id);
 
-        if (account == null)
-        {
-            return NotFound();
-        }
+        if (account == null) return NotFound();
         return Ok(account);
     }
     
