@@ -11,6 +11,8 @@ public class Bedrijf
     public int KvkNummer { get; set; }
     public string Bedrijfsnaam { get; set; }
     public int BedrijfAdres { get; set; }
+    [ForeignKey("BedrijfAdres")]
+    public Adres Adres { get; set; }
     public string Domeinnaam { get; set; }
     public int AbonnementId { get; set; }
     

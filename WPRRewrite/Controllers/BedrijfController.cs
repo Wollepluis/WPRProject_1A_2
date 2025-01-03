@@ -139,6 +139,7 @@ public class BedrijfController : ControllerBase
         }
 
         
+        
         /*if (bedrijf.KvkNummer != kvknummer) return BadRequest("Kvknummer komt niet overeen...");
         
         Adres adres = await _context.Adressen.FindAsync(bedrijf.BedrijfAdres);
@@ -150,6 +151,32 @@ public class BedrijfController : ControllerBase
         /*_context.Adressen.Remove(adres);
         _context.Abonnementen.Remove(abonnement);*/
         
+    }
+
+    
+    
+    
+    [HttpGet("KrijgAlleBedrijfstatistieken")]
+    public async Task<ActionResult<AccountZakelijkBeheerder>> GetKosten(int bedrijfsId)
+    {
+        var bedrijf = await _context.Bedrijven.Include(a => a.BevoegdeMedewerkers).Include(a => a.Adres).Include(bedrijf => bedrijf.Abonnement).FirstOrDefaultAsync(b => b.BedrijfId == bedrijfsId);
+        if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
+        var accounts = await _context.Accounts.OfType<AccountZakelijk>().Where(a => a.BedrijfId == bedrijfsId).Include(a => a.Reserveringen).ToListAsync();
+        double kosten = 0;
+        foreach (var account in accounts)
+        {
+            var reserveringen = await _context.Reserveringen.Where(a => a.AccountId == account.AccountId).ToListAsync();
+            foreach (var reservering in reserveringen)
+            {
+                kosten += reservering.TotaalPrijs;
+            }
+        }
+        var abonnementType = _context.Entry(bedrijf.Abonnement).Property("AbonnementType").CurrentValue?.ToString();
+        if (abonnementType == null) abonnementType = "Poep";
+        var hoeveelheidGehuurdeAutos = await _context.Reserveringen.Include(a => a.Account).Select(a => a.Account).OfType<AccountZakelijk>().Where(a => a.BedrijfId == bedrijfsId).CountAsync();
+        int aantalMedewerkers = bedrijf.BevoegdeMedewerkers.Count;
+        BedrijfstatistiekenDto statistieken = new BedrijfstatistiekenDto(kosten, hoeveelheidGehuurdeAutos, aantalMedewerkers, abonnementType, bedrijf.Bedrijfsnaam, bedrijf.Adres);
+        return Ok(statistieken);
     }
 
     [HttpPost("VoegMedewerkerToe")]

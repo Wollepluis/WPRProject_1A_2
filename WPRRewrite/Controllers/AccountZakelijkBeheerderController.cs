@@ -31,21 +31,7 @@ public class AccountZakelijkBeheerderController : ControllerBase
         return await _context.Accounts.OfType<AccountZakelijkBeheerder>().ToListAsync();
     }
 
-    [HttpGet("KrijgAlleKostenVanAlleGehuurdeVoertuigen")]
-    public async Task<ActionResult<AccountZakelijkBeheerder>> GetKosten(int BedrijfsId)
-    {
-        var accounts = await _context.Accounts.OfType<AccountZakelijk>().Where(a => a.BedrijfId == BedrijfsId).Include(a => a.Reserveringen).ToListAsync();
-        double kosten = 0;
-        foreach (var account in accounts)
-        {
-            var reserveringen = await _context.Reserveringen.Where(a => a.AccountId == account.AccountId).ToListAsync();
-            foreach (var reservering in reserveringen)
-            {
-                kosten += reservering.TotaalPrijs;
-            }
-        }
-        return Ok(kosten);
-    }
+    
     [HttpGet("KrijgSpecifiekAccount")]
     public async Task<ActionResult<AccountZakelijkBeheerder>> GetAccount(int id)
     {
