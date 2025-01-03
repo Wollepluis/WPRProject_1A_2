@@ -74,6 +74,50 @@ public class EmailSender
             VerstuurEmail(mailBericht);
         }
 
+        public static void VerstuurWijzigReserveringEmail(string ontvangerEmail, string? bedrijfsNaam = null)
+        {
+            string htmlInhoud = $@"
+            <html>
+            <head>
+                <style>
+                    h1 {{ color: #4CAF50; font-family: Arial, sans-serif; }}
+                    p {{ font-family: Arial, sans-serif; color: #555555; }}
+                    .button {{ background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; border-radius: 5px; }}
+                </style>
+            </head>
+            <body>
+                <h1>Uw datum van reservering is gewijzigd!</h1>
+                <p>Toch niet de gewenste datum?</p>
+                <p><a href='http://www.example.com' class='button'>Klik hier om in te loggen</a></p>
+            </body>
+            </html>";
+
+            var mailBericht = MaakMailBericht(ontvangerEmail, "Account Aangemaakt", htmlInhoud);
+            VerstuurEmail(mailBericht);
+        }
+        
+        public static void VerstuurVerwijderReserveringEmail(string ontvangerEmail, string? bedrijfsNaam = null)
+        {
+            string htmlInhoud = $@"
+            <html>
+            <head>
+                <style>
+                    h1 {{ color: #4CAF50; font-family: Arial, sans-serif; }}
+                    p {{ font-family: Arial, sans-serif; color: #555555; }}
+                    .button {{ background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; border-radius: 5px; }}
+                </style>
+            </head>
+            <body>
+                <h1>Uw reservering is geannuleerd!</h1>
+                <p>Nieuwe datum reservering inplannen?</p>
+                <p><a href='http://www.example.com' class='button'>Klik hier om in te loggen</a></p>
+            </body>
+            </html>";
+
+            var mailBericht = MaakMailBericht(ontvangerEmail, "Account Aangemaakt", htmlInhoud);
+            VerstuurEmail(mailBericht);
+        }
+        
         public static void VerstuurHerinneringsEmail(string ontvangerEmail, int id, DateTime date)
         {
             string htmlInhoud = $@"

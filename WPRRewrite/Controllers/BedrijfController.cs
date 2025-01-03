@@ -53,7 +53,7 @@ public class BedrijfController : ControllerBase
         var abonnement = await _context.Abonnementen.FindAsync(bedrijf.AbonnementId);
         var adres = await _context.Adressen.FindAsync(bedrijf.BedrijfAdres);
         
-        BedrijfDto bedrijfDto = new BedrijfDto(bedrijf.KvkNummer, bedrijf.Bedrijfsnaam, adres.Postcode, adres.Huisnummer, abonnement.MaxMedewerkers, abonnement.MaxVoertuigen);
+        BedrijfDto bedrijfDto = new BedrijfDto(bedrijf.KvkNummer, bedrijf.Bedrijfsnaam, bedrijf.Domeinnaam, adres.Postcode, adres.Huisnummer, abonnement.MaxMedewerkers, abonnement.MaxVoertuigen);
         return Ok(bedrijf);
     }
 
@@ -63,6 +63,7 @@ public class BedrijfController : ControllerBase
         if (bedrijfEnBeheerderDto == null) return BadRequest("Bedrijf moet ingevuld zijn!");
         var bedrijfDto = bedrijfEnBeheerderDto.Bedrijf;
         var zakelijkBeheerderDto = bedrijfEnBeheerderDto.Beheerder;
+        
 
         var anyKvk = _context.Bedrijven.Any(a => a.KvkNummer == bedrijfDto.Kvknummer);
         if (anyKvk) return BadRequest("Een bedrijf met dit Kvk-nummer bestaat al...");
@@ -85,14 +86,8 @@ public class BedrijfController : ControllerBase
 
         _context.Abonnementen.Add(abonnement);
         await _context.SaveChangesAsync();
-
-
-
-        string domeinnaam = ("@" + bedrijfDto.Bedrijfsnaam + ".com")
-            .Replace(" ", "") // Verwijder spaties
-            .Replace("..", ".");   // Verwijder punten
         
-        Bedrijf bedrijf = new Bedrijf(bedrijfDto.Kvknummer, bedrijfDto.Bedrijfsnaam, adres.AdresId, abonnement.AbonnementId, domeinnaam);
+        Bedrijf bedrijf = new Bedrijf(bedrijfDto.Kvknummer, bedrijfDto.Bedrijfsnaam, adres.AdresId, abonnement.AbonnementId, bedrijfDto.Domeinnaam);
         AccountZakelijkBeheerder account = new AccountZakelijkBeheerder(zakelijkBeheerderDto.Email, zakelijkBeheerderDto.Wachtwoord, bedrijf.BedrijfId, new PasswordHasher<Account>(), _context);
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
         bedrijf.BevoegdeMedewerkers.Add(account);

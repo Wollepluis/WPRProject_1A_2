@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Dtos;
 using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Accounts;
+using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Controllers;
 
@@ -103,6 +104,7 @@ public class ReserveringController : ControllerBase
         reservering.Einddatum = voertuigReserveringDto.Einddatum;
         reservering.VoertuigId = voertuigReserveringDto.VoertuigId;
         await _context.SaveChangesAsync();
+        //EmailSender.VerstuurWijzigReserveringEmail(reservering.Account.Email);
         return NoContent();
     }
     
@@ -117,6 +119,7 @@ public class ReserveringController : ControllerBase
 
         _context.Reserveringen.Remove(reservering);
         await _context.SaveChangesAsync();
+        //EmailSender.VerstuurVerwijderReserveringEmail(reservering.Account.Email);
 
         return NoContent();
     }
