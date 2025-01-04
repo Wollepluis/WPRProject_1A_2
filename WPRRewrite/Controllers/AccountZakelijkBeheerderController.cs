@@ -16,13 +16,11 @@ public class AccountZakelijkBeheerderController : ControllerBase
     
     private CarAndAllContext _context;
     private IPasswordHasher<Account> _passwordHasher;
-    private readonly EmailSender _emailSender;
 
-    public AccountZakelijkBeheerderController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher, EmailSender emailSender)
+    public AccountZakelijkBeheerderController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
-        _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
     }
     
     [HttpGet("Krijg alle accounts")]
@@ -72,7 +70,7 @@ public class AccountZakelijkBeheerderController : ControllerBase
             await _context.SaveChangesAsync();
 
             var bedrijf = await _context.Bedrijven.FindAsync(account.BedrijfId);
-            //emailSender.SendEmail(bedrijf);
+            EmailSender.VerstuurBevestigingsEmail(account.Email, bedrijf.Bedrijfsnaam);
 
             return CreatedAtAction(nameof(GetAccount), new { id = account.AccountId }, account);
         }
