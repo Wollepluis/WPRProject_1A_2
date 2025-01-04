@@ -68,7 +68,37 @@ public class VoertuigController : ControllerBase
         return Ok(alleReserveringen);
     }
 
-    
+    [HttpGet("GetAlleVoertuigenMetReserveringen")]
+    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigenMetReserveringen()
+    {
+        // Haal alle reserveringen op
+        var reserveringen = await _context.Reserveringen.ToListAsync();
+        
+        // Controleer of er reserveringen zijn
+        if (reserveringen.Count == 0)
+        {
+            return Ok(new { Message = "Er zijn geen reserveringen gevonden." });
+        }
+
+        List<ReserveringVoertuigDto> alleReserveringen = new List<ReserveringVoertuigDto>();
+
+        foreach (var reservering in reserveringen)
+        {
+            // Zoek het voertuig op basis van de VoertuigId van de reservering
+            var voertuig = await _context.Voertuigen.FindAsync(reservering.VoertuigId);
+
+            // Als het voertuig niet gevonden kan worden, geef een foutmelding
+            if (voertuig == null) return NotFound();
+            ReserveringVoertuigDto reservering2 = new ReserveringVoertuigDto(reservering.ReserveringId, voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.VoertuigType, voertuig.BrandstofType, reservering.Begindatum, reservering.Einddatum, reservering.TotaalPrijs, reservering.IsBetaald, reservering.IsGoedgekeurd);
+            alleReserveringen.Add(reservering2);
+        }
+
+        // Retourneer de lijst van reserveringen met voertuigen
+        return Ok(alleReserveringen);
+    }
+
+
+
     [HttpGet("krijgspecifiekvoertuig")]
     public async Task<ActionResult<Voertuig>> GetVoertuig(int id)
     {
@@ -178,6 +208,7 @@ public class VoertuigController : ControllerBase
 
         return NoContent();
     }
+    
     
     [HttpPut("HuuraanvraagUpdaten")]
     public async Task<IActionResult> HuuraanvraagUpdaten(int id ,string status)
