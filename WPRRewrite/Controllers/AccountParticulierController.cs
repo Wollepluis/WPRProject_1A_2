@@ -143,7 +143,14 @@ public class AccountParticulierController : ControllerBase
         var nieuwAdres = await _context.Adressen.Where(a => a.Huisnummer == accountDto.Huisnummer && a.Postcode == accountDto.Postcode).FirstOrDefaultAsync();
         if (nieuwAdres == null)
         {
-            nieuwAdres = await _adresService.ZoekAdresAsync(accountDto.Postcode, accountDto.Huisnummer);
+            try
+            {
+                nieuwAdres = await _adresService.ZoekAdresAsync(accountDto.Postcode, accountDto.Huisnummer);
+            }
+            catch (Exception e)
+            {
+                return NotFound("Het adres is niet gevonden met de bijbehorende postcode en huisnummer...");
+            }
             if (nieuwAdres == null) return NotFound("Address niet gevonden voor de gegeven postcode en huisnummer.");
             _context.Adressen.Add(nieuwAdres);
             
@@ -158,7 +165,7 @@ public class AccountParticulierController : ControllerBase
             _context.Adressen.Remove(oudAdres);
         }
         
-        AccountParticulier account = new AccountParticulier(accountDto.Email, accountDto.Wachtwoord, accountDto.Naam, nieuwAdres.AdresId, accountDto.Telefoonnummer, _passwordHasher, _context);
+        AccountParticulier account = new AccountParticulier(existingAccount.Email, accountDto.Wachtwoord, accountDto.Naam, nieuwAdres.AdresId, accountDto.Telefoonnummer, _passwordHasher, _context);
         
         account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
         existingAccount.UpdateAccount(account);

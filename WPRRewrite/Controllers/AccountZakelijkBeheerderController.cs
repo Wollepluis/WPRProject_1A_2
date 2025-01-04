@@ -31,6 +31,13 @@ public class AccountZakelijkBeheerderController : ControllerBase
         return await _context.Accounts.OfType<AccountZakelijkBeheerder>().ToListAsync();
     }
 
+    [HttpGet("KrijgBedrijfId")]
+    public async Task<ActionResult<AccountZakelijkBeheerder>> GetBedrijfsId(int accountId)
+    {
+        var account = await _context.Accounts.OfType<AccountZakelijkBeheerder>().FirstOrDefaultAsync(a => a.AccountId == accountId);
+        if (account == null) return NotFound("Account niet gevonden.");
+        return Ok(account.BedrijfId);
+    }
     
     [HttpGet("KrijgSpecifiekAccount")]
     public async Task<ActionResult<AccountZakelijkBeheerder>> GetAccount(int id)

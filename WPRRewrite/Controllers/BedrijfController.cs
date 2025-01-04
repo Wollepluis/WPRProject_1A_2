@@ -70,10 +70,17 @@ public class BedrijfController : ControllerBase
         var anyEmail = _context.Accounts.Any(a => a.Email == zakelijkBeheerderDto.Email);
         if (anyEmail) return BadRequest("Een gebruiker met deze email bestaat al...");
         
-        var adres = await _context.Adressen.Where(a => a.Huisnummer == bedrijfDto.Huisnummer && a.Postcode == bedrijfDto.Postcode).FirstOrDefaultAsync();
+        Adres adres = await _context.Adressen.Where(a => a.Huisnummer == bedrijfDto.Huisnummer && a.Postcode == bedrijfDto.Postcode).FirstOrDefaultAsync();
         if (adres == null)
         {
-            adres = await _adresService.ZoekAdresAsync(bedrijfDto.Postcode, bedrijfDto.Huisnummer);
+            try
+            {
+                adres = await _adresService.ZoekAdresAsync(bedrijfDto.Postcode, bedrijfDto.Huisnummer);
+            }
+            catch (Exception e)
+            {
+                return NotFound("Het adres is niet gevonden met de bijbehorende postcode en huisnummer...");
+            }
             
             if (adres == null) return NotFound("Het adres is niet gevonden met de bijbehorende postcode en huisnummer...");
         
