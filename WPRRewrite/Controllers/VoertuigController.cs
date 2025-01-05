@@ -133,6 +133,8 @@ public class VoertuigController : ControllerBase
             voertuig.VoertuigId,
             voertuigReservering.AccountId
         );
+        
+        voertuig.updateVoertuigStatus(voertuigReservering.VoertuigStatus);
 
         // Voeg de reservering toe
         _context.Reserveringen.Add(reserveringDto);

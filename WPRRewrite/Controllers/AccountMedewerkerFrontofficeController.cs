@@ -89,7 +89,7 @@ public class AccountMedewerkerFrontofficeController : ControllerBase
     }
 
     [HttpPut("updatevoertuigstatus")]
-    public async Task<IActionResult> PutVoertuigStatus([FromQuery]int id)
+    public async Task<IActionResult> PutVoertuigStatus([FromQuery]int id, [FromQuery]DateTime begindatum, [FromQuery] DateTime einddatum)
     {
         var voertuig = await _context.Voertuigen.FindAsync(id);
         if (voertuig == null) return NotFound();
@@ -97,6 +97,8 @@ public class AccountMedewerkerFrontofficeController : ControllerBase
         switch (voertuig.VoertuigStatus)
         {
             case "Gereserveerd":
+                voertuig.VoertuigStatus = "uitgegeven";
+                break;
             case "Beschikbaar":
                 voertuig.VoertuigStatus = "Uitgegeven";
                 break;
