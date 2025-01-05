@@ -39,23 +39,40 @@ public class AbonnementController : ControllerBase
     }
 
     [HttpPost("Create")]
-    public async Task<ActionResult> CreateAbonnement([FromBody] Abonnement abonnement, int bedrijfId)
+    public async Task<ActionResult> CreateAbonnement([FromQuery]int accountId, [FromBody] Abonnement abonnement)
     {
-        if (abonnement == null)
-            return BadRequest("Abonnement gegevens zijn niet ingevuld.");
+        try
+        {
+            // Ensure abonnement is not null
+            if (abonnement == null)
+                return BadRequest("Abonnement gegevens zijn niet ingevuld.");
 
-        var bedrijf = await _context.Bedrijven.FindAsync(bedrijfId);
-        if (bedrijf == null)
-            return NotFound("Bedrijf niet gevonden.");
+            // Find the bedrijf from the database
+            var account = await _context.Accounts.OfType<AccountZakelijk>()
+                .FirstOrDefaultAsync(a => a.AccountId == accountId);
+            
+            var bedrijf = await _context.Bedrijven.FindAsync(account.BedrijfId);
+            if (bedrijf == null)
+                return NotFound("Bedrijf niet gevonden.");
 
-        _context.Abonnementen.Add(abonnement);
-        await _context.SaveChangesAsync();
+            // Add the new abonnement to the database
+            _context.Abonnementen.Add(abonnement);
+            await _context.SaveChangesAsync();
 
-        bedrijf.AbonnementId = abonnement.AbonnementId;
-        await _context.SaveChangesAsync();
+            // Update the bedrijf's abonnementId
+            bedrijf.AbonnementId = abonnement.AbonnementId;
+            await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetAbonnementById), new { id = abonnement.AbonnementId }, abonnement);
+            // Return the newly created abonnement
+            return CreatedAtAction(nameof(GetAbonnementById), new { id = abonnement.AbonnementId }, abonnement);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+            return StatusCode(500, "Er is een interne serverfout opgetreden.");
+        }
     }
+
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateAbonnement(int id, [FromBody] Abonnement updatedAbonnement, int bedrijfId)
