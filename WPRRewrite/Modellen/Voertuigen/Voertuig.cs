@@ -30,4 +30,9 @@ public abstract class Voertuig : IVoertuig
         Aanschafjaar = updatedVoertuig.Aanschafjaar;
         Prijs = updatedVoertuig.Prijs;
     }
+
+    public void updateVoertuigStatus(string status)
+    {
+        VoertuigStatus = status;
+    }
 }
