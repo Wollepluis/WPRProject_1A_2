@@ -45,7 +45,14 @@ public class AccountZakelijkBeheerderController : ControllerBase
         if (account == null) return NotFound();
         return Ok(account);
     }
-    
+    [HttpGet("KrijgAccountEmail")]
+    public async Task<ActionResult<string>> GetAccountnaam(int accountId)
+    {
+        var account =  await _context.Accounts.OfType<AccountZakelijkBeheerder>()
+            .FirstOrDefaultAsync(a => a.AccountId == accountId);
+        return Ok(account.Email);
+
+    }
     [HttpGet("KrijgSpecifiekAccountEmail")]
     public async Task<ActionResult<AccountZakelijkBeheerder>> GetAccountEmail(string email)
     {

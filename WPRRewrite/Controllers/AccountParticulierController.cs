@@ -29,6 +29,16 @@ public class AccountParticulierController : ControllerBase
     {
         return await _context.Accounts.OfType<AccountParticulier>().ToListAsync();
     }
+    
+    [HttpGet("KrijgAccountnaam")]
+    public async Task<ActionResult<string>> GetAccountnaam(int accountId)
+    {
+        var account =  await _context.Accounts.OfType<AccountParticulier>()
+                .FirstOrDefaultAsync(a => a.AccountId == accountId);
+        return account.Naam;
+
+    }
+
 
     
     
