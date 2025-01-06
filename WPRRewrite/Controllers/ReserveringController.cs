@@ -37,7 +37,7 @@ public class ReserveringController : ControllerBase
         var voertuig = await _context.Voertuigen.FindAsync(reservering.VoertuigId);
         
         
-        ReserveringVoertuigDto reserveringVoertuigDto = new ReserveringVoertuigDto(reservering.ReserveringId, voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.VoertuigType, voertuig.BrandstofType, reservering.Begindatum, reservering.Einddatum, reservering.TotaalPrijs, reservering.IsBetaald, reservering.IsGoedgekeurd);
+        ReserveringVoertuigDto reserveringVoertuigDto = new ReserveringVoertuigDto(reservering.VoertuigId, reservering.ReserveringId, voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.VoertuigType, voertuig.BrandstofType, reservering.Begindatum, reservering.Einddatum, reservering.TotaalPrijs, reservering.IsBetaald, reservering.IsGoedgekeurd);
         
         return Ok(reserveringVoertuigDto);
     }
@@ -99,10 +99,25 @@ public class ReserveringController : ControllerBase
     public async Task<IActionResult> UpdateReservering(int reserveringId, VoertuigReservering voertuigReserveringDto)
     {
         if (voertuigReserveringDto == null) return BadRequest();
-        var reservering = _context.Reserveringen.Find(reserveringId);
+        Reservering reservering = _context.Reserveringen.Find(reserveringId);
+        var voertuig = _context.Voertuigen.Find(voertuigReserveringDto.VoertuigId);
         reservering.Begindatum = voertuigReserveringDto.Begindatum;
         reservering.Einddatum = voertuigReserveringDto.Einddatum;
         reservering.VoertuigId = voertuigReserveringDto.VoertuigId;
+        var days = (voertuigReserveringDto.Einddatum - voertuigReserveringDto.Begindatum).Days;
+        var bijkomendeKosten = 0;
+        if(voertuig.VoertuigType == "Auto")
+        {
+            bijkomendeKosten = 100 + 100 * days; // Zorg ervoor dat `totaalPrijs` bestaat
+        } else if (voertuig.VoertuigType == "Caravan")
+        {
+            bijkomendeKosten = 200 + 200 * days; // Zorg ervoor dat `totaalPrijs` bestaat
+        } else if (voertuig.VoertuigType == "Camper")
+        {
+            bijkomendeKosten = 300 + 300 * days; // Zorg ervoor dat `totaalPrijs` bestaat
+        }
+        if (bijkomendeKosten < 1) return BadRequest("Geen bijkomende kosten");
+        reservering.TotaalPrijs = bijkomendeKosten;
         var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountId == reservering.AccountId);
         if (account != null)
         {
@@ -110,7 +125,7 @@ public class ReserveringController : ControllerBase
             await _context.SaveChangesAsync();    
         }
         
-        return NoContent();
+        return Ok(bijkomendeKosten);
     }
     
     [HttpDelete("VerwijderReservering")]

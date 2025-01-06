@@ -5,6 +5,7 @@ namespace WPRRewrite.Dtos;
 
 public class ReserveringVoertuigDto
 {
+    public int VoertuigId { get; set; }
     public int ReserveringsId { get; set; }
     public string Kenteken { get; set; }
     public string Merk { get; set; }
@@ -13,17 +14,17 @@ public class ReserveringVoertuigDto
     public int Aanschafjaar { get; set; }
     public string VoertuigType { get; set; }
     public string BrandstofType { get; set; }
-    
     public DateTime Begindatum { get; set; }
     public DateTime Einddatum { get; set; }
     public double TotaalPrijs { get; set; }
     public bool IsBetaald { get; set; }
     public bool IsGoedgekeurd { get; set; }
 
-    public ReserveringVoertuigDto(int ReserveringsId, string Kenteken, string Merk, string Model, string Kleur, int Aanschafjaar,
+    public ReserveringVoertuigDto(int VoertuigId, int ReserveringsId, string Kenteken, string Merk, string Model, string Kleur, int Aanschafjaar,
         string VoertuigType, string BrandstofType, DateTime Begindatum, DateTime Einddatum, double TotaalPrijs,
         bool IsBetaald, bool IsGoedgekeurd)
     {
+        this.VoertuigId = VoertuigId;
         this.ReserveringsId = ReserveringsId;
         this.Kenteken = Kenteken;
         this.Merk = Merk;

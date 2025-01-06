@@ -59,7 +59,7 @@ public class VoertuigController : ControllerBase
         {
             var voertuig = await _context.Voertuigen.FindAsync(reservering.VoertuigId);
             if (voertuig == null) return NotFound();
-            ReserveringVoertuigDto reserveringje = new ReserveringVoertuigDto(reservering.ReserveringId, voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.VoertuigType, voertuig.BrandstofType, reservering.Begindatum, reservering.Einddatum, reservering.TotaalPrijs, reservering.IsBetaald, reservering.IsGoedgekeurd);
+            ReserveringVoertuigDto reserveringje = new ReserveringVoertuigDto(reservering.VoertuigId, reservering.ReserveringId, voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.VoertuigType, voertuig.BrandstofType, reservering.Begindatum, reservering.Einddatum, reservering.TotaalPrijs, reservering.IsBetaald, reservering.IsGoedgekeurd);
             alleReserveringen.Add(reserveringje);
         }
 
@@ -125,11 +125,24 @@ public class VoertuigController : ControllerBase
         if (reserveringen.Any(r => voertuigReservering.Begindatum < r.Einddatum && voertuigReservering.Einddatum > r.Begindatum))
             return BadRequest("Dit voertuig is al gereserveerd in de opgegeven periode.");
 
+        var days = (voertuigReservering.Einddatum - voertuigReservering.Begindatum).Days;
+        var bijkomendeKosten = 0;
+        if (voertuig.VoertuigType == "Auto")
+        {
+            bijkomendeKosten = 100 + 100 * days; // Zorg ervoor dat `totaalPrijs` bestaat
+        } else if (voertuig.VoertuigType == "Caravan")
+        {
+            bijkomendeKosten = 200 + 200 * days; // Zorg ervoor dat `totaalPrijs` bestaat
+        } else if (voertuig.VoertuigType == "Camper")
+        {
+            bijkomendeKosten = 300 + 300 * days; // Zorg ervoor dat `totaalPrijs` bestaat
+        }
+        
         // Maak een nieuwe reservering aan
         var reserveringDto = new Reservering(
             voertuigReservering.Begindatum,
             voertuigReservering.Einddatum,
-            100 + 100 * ((voertuigReservering.Einddatum - voertuigReservering.Begindatum).Days), // Bereken de kosten
+            bijkomendeKosten,
             voertuig.VoertuigId,
             voertuigReservering.AccountId
         );
@@ -142,7 +155,7 @@ public class VoertuigController : ControllerBase
         // Sla wijzigingen op in de database
         await _context.SaveChangesAsync();
 
-        return Ok($"Voertuig met ID {voertuigReservering.VoertuigId} is succesvol gereserveerd van {voertuigReservering.Begindatum:yyyy-MM-dd} tot {voertuigReservering.Einddatum:yyyy-MM-dd}.");
+        return Ok($"Voertuig met ID {voertuigReservering.VoertuigId} is succesvol gereserveerd van {voertuigReservering.Begindatum:yyyy-MM-dd} tot {voertuigReservering.Einddatum:yyyy-MM-dd}. {reserveringDto.TotaalPrijs}");
     }
 
     
