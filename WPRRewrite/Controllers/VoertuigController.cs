@@ -72,7 +72,9 @@ public class VoertuigController : ControllerBase
     public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigenMetReserveringen()
     {
         // Haal alle reserveringen op
-        var reserveringen = await _context.Reserveringen.ToListAsync();
+        var reserveringen = await _context.Reserveringen
+            .Where(r => r.IsGoedgekeurd == false)
+            .ToListAsync();
         
         // Controleer of er reserveringen zijn
         if (reserveringen.Count == 0)

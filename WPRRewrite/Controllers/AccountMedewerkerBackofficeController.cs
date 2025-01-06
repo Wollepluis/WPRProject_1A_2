@@ -131,6 +131,11 @@ public class AccountMedewerkerBackofficeController : ControllerBase
             aanvraag.IsGoedgekeurd = huuraanvraagDto.Keuze;
             aanvraag.Comment = huuraanvraagDto.Comment?? aanvraag.Comment;
             
+            if (!aanvraag.IsGoedgekeurd)
+            {
+                _context.Reserveringen.Remove(aanvraag);
+            }
+
             await _context.SaveChangesAsync();
 
             return Ok(new
