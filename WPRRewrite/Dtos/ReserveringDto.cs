@@ -17,16 +17,16 @@ public class ReserveringDto
     public int TotaalPrijs { get; set; }
     public bool IsBetaald { get; set; }
     public bool IsGoedgekeurd { get; set; }
-    public List<string> Comments { get; set; }
+    public string Comment { get; set; }
     public int VoertuigId { get; set; }
     public int AccountId { get; set; }
 
     public ReserveringDto()
     {
-        Comments = new List<string>();
+        
     }
 
-    public ReserveringDto(DateTime begindatum, DateTime einddatum, int totaalPrijs, int voertuigId, int accountId)
+    public ReserveringDto(DateTime begindatum, DateTime einddatum, int totaalPrijs, int voertuigId, int accountId, string comment)
     {
         Begindatum = begindatum;
         Einddatum = einddatum;
@@ -35,6 +35,7 @@ public class ReserveringDto
         AccountId = accountId;
         IsGoedgekeurd = false;
         IsBetaald = false;
-        Comments = new List<string>();
+        Comment = comment;
     }
+    
 }

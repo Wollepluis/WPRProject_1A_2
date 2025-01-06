@@ -103,11 +103,48 @@ public class AccountMedewerkerBackofficeController : ControllerBase
         return NoContent();
     }
 
-    /*[HttpPost("VerhuuraanvraagKeuren")]
-    public async Task<IActionResult> VerhuuraanvraagKeuren([FromBody] HuuraanvraagDto huuraanvraagDto)
+    [HttpPut("verhuuraanvraagkeuren")]
+    public async Task<ActionResult> VerhuuraanvraagKeuren([FromBody] HuuraanvraagDto huuraanvraagDto)
     {
-        return Ok();
-    }*/
+        if (huuraanvraagDto == null)
+        {
+            return BadRequest("Huuraanvraaggegevens ontbreken.");
+        }
+
+        try
+        {
+            // Validatie van de data
+            if (string.IsNullOrEmpty(huuraanvraagDto.ReserveringId.ToString()))
+            {
+                return BadRequest("ReserveringsId is verplicht.");
+            }
+
+            // Ophalen van de bestaande aanvraag in de database
+            var aanvraag = await _context.Reserveringen
+                .FirstOrDefaultAsync(a => a.ReserveringId == huuraanvraagDto.ReserveringId);
+
+            if (aanvraag == null)
+            {
+                return NotFound("Huuraanvraag niet gevonden.");
+            }
+            
+            aanvraag.IsGoedgekeurd = huuraanvraagDto.Keuze;
+            aanvraag.Comment = huuraanvraagDto.Comment?? aanvraag.Comment;
+            
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                Message = "Huuraanvraag is bijgewerkt.",
+                ReserveringsId = aanvraag.ReserveringId,
+                Status = aanvraag.IsGoedgekeurd ? "Goedgekeurd" : "Afgekeurd"
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Interne serverfout: {ex.Message}");
+        }
+    }
     
     [HttpGet("Test")]
     public async Task<IActionResult> Test()
