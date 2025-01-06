@@ -97,7 +97,7 @@ public class AccountMedewerkerFrontofficeController : ControllerBase
         switch (voertuig.VoertuigStatus)
         {
             case "Gereserveerd":
-                voertuig.VoertuigStatus = "uitgegeven";
+                voertuig.VoertuigStatus = "Uitgegeven";
                 break;
             case "Beschikbaar":
                 voertuig.VoertuigStatus = "Uitgegeven";
