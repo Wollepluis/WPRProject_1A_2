@@ -5,6 +5,7 @@ namespace WPRRewrite.Dtos;
 
 public class VoertuigDto
 {
+    public int VoertuigId { get; set; }
     public string Kenteken { get; set; }
     public string Merk { get; set; }
     public string Model { get; set; }
@@ -14,6 +15,7 @@ public class VoertuigDto
     public string VoertuigStatus { get; set; }
     public string VoertuigType { get; set; }
     public string BrandstofType { get; set; }
+    public List<ReserveringDto> Reserveringen { get; set; }
 
     public VoertuigDto()
     {

@@ -3,6 +3,6 @@
 public class HuuraanvraagDto
 {
     public int ReserveringId { get; set; }
-    public string comment { get; set; }
-    public bool keuze { get; set; }
+    public string Comment { get; set; }
+    public bool Keuze { get; set; }
 }
