@@ -122,18 +122,26 @@ public class AccountMedewerkerBackofficeController : ControllerBase
             // Ophalen van de bestaande aanvraag in de database
             var aanvraag = await _context.Reserveringen
                 .FirstOrDefaultAsync(a => a.ReserveringId == huuraanvraagDto.ReserveringId);
-
+           
             if (aanvraag == null)
             {
                 return NotFound("Huuraanvraag niet gevonden.");
             }
-            
+            var account = await _context.Accounts
+                .FirstOrDefaultAsync(a => a.AccountId == aanvraag.AccountId);
+            var voertuig = await _context.Voertuigen
+                .FirstOrDefaultAsync(a => a.VoertuigId == aanvraag.VoertuigId);
             aanvraag.IsGoedgekeurd = huuraanvraagDto.Keuze;
             aanvraag.Comment = huuraanvraagDto.Comment?? aanvraag.Comment;
             
             if (!aanvraag.IsGoedgekeurd)
             {
+                EmailSender.AanvraagAfgekeurd(account.Email, aanvraag.Begindatum, aanvraag.Einddatum, voertuig.Merk, voertuig.Model,voertuig.VoertuigType, aanvraag.Comment);
                 _context.Reserveringen.Remove(aanvraag);
+            }
+            else
+            {
+                EmailSender.AanvraagGoedgekeurd(account.Email, aanvraag.Begindatum, aanvraag.Einddatum, voertuig.Merk, voertuig.Model, voertuig.VoertuigType, aanvraag.Comment);
             }
 
             await _context.SaveChangesAsync();

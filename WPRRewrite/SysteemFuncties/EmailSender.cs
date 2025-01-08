@@ -131,4 +131,48 @@ public class EmailSender
             var mailBericht = MaakMailBericht(ontvangerEmail, "Jammer dat u vertrekt", htmlInhoud);
             VerstuurEmail(mailBericht);
         }
+        public static void AanvraagGoedgekeurd(string ontvangerEmail, DateTime begindatum, DateTime einddatum, string merk, string model, string voertuigtype, string comment)
+        {
+            string htmlInhoud = $@"
+            <html>
+            <head>
+                <style>
+                    h1 {{ color: #4CAF50; font-family: Arial, sans-serif; }}
+                    p {{ font-family: Arial, sans-serif; color: #555555; }}
+                    .button {{ background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; border-radius: 5px; }}
+                </style>
+            </head>
+            <body>
+                <h1>CarAndAll</h1>
+                <p>Uw aanvraag voor de {voertuigtype}: {merk} {model} van {begindatum} tot {einddatum} is goedgekeurd.</p>
+                <p>De reden daarvoor is: {comment}</p>
+                <p><a href='http://www.example.com' class='button'>Klik hier om in te loggen</a></p>
+            </body>
+            </html>";
+
+            var mailBericht = MaakMailBericht(ontvangerEmail, "Aanvraaggoedgekeurd", htmlInhoud);
+            VerstuurEmail(mailBericht);
+        }
+        public static void AanvraagAfgekeurd(string ontvangerEmail, DateTime begindatum, DateTime einddatum, string merk, string model, string voertuigtype, string comment)
+        {
+            string htmlInhoud = $@"
+            <html>
+            <head>
+                <style>
+                    h1 {{ color: #4CAF50; font-family: Arial, sans-serif; }}
+                    p {{ font-family: Arial, sans-serif; color: #555555; }}
+                    .button {{ background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; border-radius: 5px; }}
+                </style>
+            </head>
+            <body>
+                <h1>CarAndAll</h1>
+                <p>Uw aanvraag voor de {voertuigtype}: {merk} {model} van {begindatum} tot {einddatum} is afgekeurd.</p>
+                <p>De reden daarvoor is: {comment}</p>
+                <p><a href='http://www.example.com' class='button'>Klik hier om in te loggen</a></p>
+            </body>
+            </html>";
+
+            var mailBericht = MaakMailBericht(ontvangerEmail, "Aanvraagafgekeurd", htmlInhoud);
+            VerstuurEmail(mailBericht);
+        }
 }
