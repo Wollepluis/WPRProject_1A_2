@@ -67,7 +67,7 @@ public class VoertuigController : ControllerBase
         
         return Ok(alleReserveringen);
     }
-
+//new
     [HttpGet("GetAlleVoertuigenMetReserveringen")]
     public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigenMetReserveringen()
     {
@@ -91,7 +91,7 @@ public class VoertuigController : ControllerBase
 
             // Als het voertuig niet gevonden kan worden, geef een foutmelding
             if (voertuig == null) return NotFound();
-            ReserveringVoertuigDto reservering2 = new ReserveringVoertuigDto(reservering.ReserveringId, voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.VoertuigType, voertuig.BrandstofType, reservering.Begindatum, reservering.Einddatum, reservering.TotaalPrijs, reservering.IsBetaald, reservering.IsGoedgekeurd);
+            ReserveringVoertuigDto reservering2 = new ReserveringVoertuigDto(reservering.VoertuigId, reservering.ReserveringId, voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.VoertuigType, voertuig.BrandstofType, reservering.Begindatum, reservering.Einddatum, reservering.TotaalPrijs, reservering.IsBetaald, reservering.IsGoedgekeurd);
             alleReserveringen.Add(reservering2);
         }
 
