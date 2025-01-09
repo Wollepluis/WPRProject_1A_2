@@ -48,7 +48,7 @@ public class AccountZakelijkBeheerderController : ControllerBase
     [HttpGet("KrijgAccountEmail")]
     public async Task<ActionResult<string>> GetAccountnaam(int accountId)
     {
-        var account =  await _context.Accounts.OfType<AccountZakelijkBeheerder>()
+        var account =  await _context.Accounts.OfType<AccountZakelijk>()
             .FirstOrDefaultAsync(a => a.AccountId == accountId);
         return Ok(account.Email);
 
