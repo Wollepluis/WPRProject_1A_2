@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Dtos;
 using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Accounts;
+using WPRRewrite.Modellen.Voertuigen;
 using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Controllers;
@@ -147,5 +148,19 @@ public class ReserveringController : ControllerBase
         }
 
         return NoContent();
+    }
+    
+    [HttpGet("KrijgGehuurdeBedrijfsreserveringen")]
+    public async Task<ActionResult<Voertuig>> GetReserveringen(List<AccountZakelijk> medewerkers)
+    {
+        var reserveringen = new List<Reservering>();
+        foreach (var medewerker in medewerkers)
+        {
+            foreach (var reservering in medewerker.Reserveringen)
+            {
+                reserveringen.Add(reservering);
+            }
+        }
+        return Ok(reserveringen);
     }
 }

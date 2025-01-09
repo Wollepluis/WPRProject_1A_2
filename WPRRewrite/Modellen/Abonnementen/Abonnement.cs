@@ -12,7 +12,7 @@ public class Abonnement
     {
         
     }
-    public Abonnement(int maxVoertuigen, int maxMedewerkers)
+    public Abonnement(int maxVoertuigen, int maxMedewerkers, string abonnementType)
     {
         MaxVoertuigen = maxVoertuigen;
         MaxMedewerkers = maxMedewerkers;

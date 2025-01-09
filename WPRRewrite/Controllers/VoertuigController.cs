@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Dtos;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen;
+using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.Modellen.Voertuigen;
 using WPRRewrite.SysteemFuncties;
 
@@ -62,12 +63,23 @@ public class VoertuigController : ControllerBase
             ReserveringVoertuigDto reserveringje = new ReserveringVoertuigDto(reservering.VoertuigId, reservering.ReserveringId, voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.VoertuigType, voertuig.BrandstofType, reservering.Begindatum, reservering.Einddatum, reservering.TotaalPrijs, reservering.IsBetaald, reservering.IsGoedgekeurd);
             alleReserveringen.Add(reserveringje);
         }
-
-        
-        
         return Ok(alleReserveringen);
     }
-
+    
+    
+    [HttpGet("KrijgGehuurdeBedrijfsvoertuigen")]
+    public async Task<ActionResult<Voertuig>> GetVoertuig(List<AccountZakelijk> medewerkers)
+    {
+        var reserveringen = new List<Reservering>();
+        foreach (var medewerker in medewerkers)
+        {
+            foreach (var reservering in medewerker.Reserveringen)
+            {
+                reserveringen.Add(reservering);
+            }
+        }
+        return Ok(reserveringen);
+    }
     
     [HttpGet("krijgspecifiekvoertuig")]
     public async Task<ActionResult<Voertuig>> GetVoertuig(int id)

@@ -42,18 +42,17 @@ public class BedrijfController : ControllerBase
         return Ok(bedrijf);
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<BedrijfDto>> GetBedrijf(int id, int kvknummer)
+    [HttpGet("KrijgBedrijf")]
+    public async Task<ActionResult<BedrijfDto>> GetBedrijf(int id)
     {
-        Bedrijf bedrijf = await _context.Bedrijven.FindAsync(id);
+        Bedrijf bedrijf = await _context.Bedrijven.Include(a => a.BevoegdeMedewerkers).ThenInclude(b => b.Reserveringen).FirstOrDefaultAsync(b => b.BedrijfId == id);
 
         if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
-        if (bedrijf.KvkNummer != kvknummer) return BadRequest("Kvknummer komt niet overeen...");
 
         var abonnement = await _context.Abonnementen.FindAsync(bedrijf.AbonnementId);
         var adres = await _context.Adressen.FindAsync(bedrijf.BedrijfAdres);
         
-        BedrijfDto bedrijfDto = new BedrijfDto(bedrijf.KvkNummer, bedrijf.Bedrijfsnaam, bedrijf.Domeinnaam, adres.Postcode, adres.Huisnummer, abonnement.MaxMedewerkers, abonnement.MaxVoertuigen);
+        //BedrijfDto bedrijfDto = new BedrijfDto(bedrijf.KvkNummer, bedrijf.Bedrijfsnaam, bedrijf.Domeinnaam, adres.Postcode, adres.Huisnummer);
         return Ok(bedrijf);
     }
 
@@ -63,6 +62,7 @@ public class BedrijfController : ControllerBase
         if (bedrijfEnBeheerderDto == null) return BadRequest("Bedrijf moet ingevuld zijn!");
         var bedrijfDto = bedrijfEnBeheerderDto.Bedrijf;
         var zakelijkBeheerderDto = bedrijfEnBeheerderDto.Beheerder;
+        var AbonnementDto = bedrijfEnBeheerderDto.Abonnement;
         
 
         var anyKvk = _context.Bedrijven.Any(a => a.KvkNummer == bedrijfDto.Kvknummer);
@@ -70,7 +70,7 @@ public class BedrijfController : ControllerBase
         var anyEmail = _context.Accounts.Any(a => a.Email == zakelijkBeheerderDto.Email);
         if (anyEmail) return BadRequest("Een gebruiker met deze email bestaat al...");
         
-        Adres adres = await _context.Adressen.Where(a => a.Huisnummer == bedrijfDto.Huisnummer && a.Postcode == bedrijfDto.Postcode).FirstOrDefaultAsync();
+        var adres = await _context.Adressen.Where(a => a.Huisnummer == bedrijfDto.Huisnummer && a.Postcode == bedrijfDto.Postcode).FirstOrDefaultAsync();
         if (adres == null)
         {
             try
@@ -89,7 +89,15 @@ public class BedrijfController : ControllerBase
         }
         await _context.SaveChangesAsync();
         
-        Abonnement abonnement = new PayAsYouGo(bedrijfDto.MaxMedewerkers, bedrijfDto.MaxVoertuigen);
+        //Nieuw
+        Abonnement abonnement;
+        if (AbonnementDto.AbonnementType == "Pay-As-You-Go")
+        {
+            abonnement = new PayAsYouGo(AbonnementDto.MaxMedewerkers, AbonnementDto.MaxVoertuigen);
+        } else 
+        {
+            abonnement = new UpFront(AbonnementDto.MaxMedewerkers, AbonnementDto.MaxVoertuigen);
+        }
 
         _context.Abonnementen.Add(abonnement);
         await _context.SaveChangesAsync();
@@ -178,12 +186,13 @@ public class BedrijfController : ControllerBase
                 kosten += reservering.TotaalPrijs;
             }
         }
+        
         var abonnementType = _context.Entry(bedrijf.Abonnement).Property("AbonnementType").CurrentValue?.ToString();
-        if (abonnementType == null) abonnementType = "Poep";
+        if (abonnementType == null) abonnementType = "Geen";
         var hoeveelheidGehuurdeAutos = await _context.Reserveringen.Include(a => a.Account).Select(a => a.Account).OfType<AccountZakelijk>().Where(a => a.BedrijfId == bedrijfsId).CountAsync();
         int aantalMedewerkers = bedrijf.BevoegdeMedewerkers.Count;
         BedrijfstatistiekenDto statistieken = new BedrijfstatistiekenDto(kosten, hoeveelheidGehuurdeAutos, aantalMedewerkers, abonnementType, bedrijf.Bedrijfsnaam, bedrijf.Adres);
-        return Ok(statistieken);
+        return Ok(new { Statistieken = statistieken, Abonnement = bedrijf.Abonnement });
     }
 
     [HttpPost("VoegMedewerkerToe")]

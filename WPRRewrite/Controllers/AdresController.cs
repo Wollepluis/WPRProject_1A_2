@@ -38,7 +38,7 @@ public class AdresController : ControllerBase
         
         if (adres == null)
         {
-            return BadRequest("Adres mag niet 'NULL' zijn");
+            return BadRequest("Adres moet ingevuld zijn");
         }
 
         _context.Adressen.Add(adres);
