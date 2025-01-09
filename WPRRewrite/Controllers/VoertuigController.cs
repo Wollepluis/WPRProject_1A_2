@@ -23,7 +23,7 @@ public class VoertuigController : ControllerBase
     [HttpGet("krijgallevoertuigen")]
     public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen()
     {
-        var Voertuigen = await _context.Voertuigen.Include(a => a.Reserveringen).ToListAsync();
+        var Voertuigen = await _context.Voertuigen.ToListAsync();
         return Ok(Voertuigen);
     }
     

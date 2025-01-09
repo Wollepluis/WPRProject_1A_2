@@ -151,8 +151,12 @@ public class ReserveringController : ControllerBase
     }
     
     [HttpGet("KrijgGehuurdeBedrijfsreserveringen")]
-    public async Task<ActionResult<Voertuig>> GetReserveringen(List<AccountZakelijk> medewerkers)
+    public async Task<ActionResult<Voertuig>> GetReserveringen(int bedrijfsId)
     {
+        var reserveringen = _context.Accounts.OfType<AccountZakelijk>().Where(b => b.BedrijfId == bedrijfsId).SelectMany(m => m.Reserveringen).Include(r => r.Voertuig).ToList().OrderBy(a => a.Begindatum);
+
+        /*return Ok(reserveringen);
+
         var reserveringen = new List<Reservering>();
         foreach (var medewerker in medewerkers)
         {
@@ -160,7 +164,7 @@ public class ReserveringController : ControllerBase
             {
                 reserveringen.Add(reservering);
             }
-        }
+        }*/
         return Ok(reserveringen);
     }
 }
