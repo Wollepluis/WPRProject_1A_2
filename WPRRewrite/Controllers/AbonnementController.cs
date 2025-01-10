@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Abonnementen;
 using WPRRewrite.Modellen.Accounts;
+using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Controllers;
 
@@ -96,6 +97,7 @@ public class AbonnementController : ControllerBase
 
         bedrijf.AbonnementId = existingAbonnement.AbonnementId;
         await _context.SaveChangesAsync();
+        EmailSender.BevestigingAbonnementWijzigen(account.Email, existingAbonnement, updatedAbonnement);
 
         return Ok(existingAbonnement);
     }
