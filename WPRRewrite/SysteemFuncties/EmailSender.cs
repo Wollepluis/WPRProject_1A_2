@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Mail;
+using WPRRewrite.Modellen.Abonnementen;
 
 namespace WPRRewrite.SysteemFuncties;
 
@@ -219,4 +220,30 @@ public class EmailSender
             var mailBericht = MaakMailBericht(ontvangerEmail, "Aanvraagafgekeurd", htmlInhoud);
             VerstuurEmail(mailBericht);
         }
+        
+        public static void BevestigingAbonnementWijzigen(string ontvangerEmail, Abonnement oudeAbonnement, Abonnement nieuweAbonnement)
+        {
+            string htmlInhoud = $@"
+            <html>
+            <head>
+                <style>
+                    h1 {{ color: #4CAF50; font-family: Arial, sans-serif; }}
+                    p {{ font-family: Arial, sans-serif; color: #555555; }}
+                    .button {{ background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; border-radius: 5px; }}
+                </style>
+            </head>
+            <body>
+                <h1>CarAndAll</h1>
+                <p>U heeft uw abonnement geweizigd van:</p>
+                <p>{oudeAbonnement.AbonnementType} met {oudeAbonnement.MaxMedewerkers} medewerkers en {oudeAbonnement.MaxVoertuigen} voertuigen.</p>
+                <p>Naar:</p>
+                <p>{nieuweAbonnement.AbonnementType} met {nieuweAbonnement.MaxMedewerkers} medewerkers en {nieuweAbonnement.MaxVoertuigen} voertuigen. </p>
+                <p><a href='http://www.example.com' class='button'>Klik hier om in te loggen</a></p>
+            </body>
+            </html>";
+
+            var mailBericht = MaakMailBericht(ontvangerEmail, "Aanvraagafgekeurd", htmlInhoud);
+            VerstuurEmail(mailBericht);
+        }
+        
 }
