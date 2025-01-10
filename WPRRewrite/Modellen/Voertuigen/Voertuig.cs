@@ -1,4 +1,5 @@
-﻿using WPRRewrite.Interfaces;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using WPRRewrite.Interfaces;
 
 namespace WPRRewrite.Modellen.Voertuigen;
 
@@ -14,7 +15,10 @@ public abstract class Voertuig : IVoertuig
     public string VoertuigStatus { get; set; }
     public string VoertuigType { get; set; }
     public string BrandstofType{ get; set; }
-    public Schadeclaim Schadeclaim  { get; set; }
+    
+    public int? Schadeclaim { get; set; }
+    
+    
 
     public List<Reservering> Reserveringen { get; set; }
 

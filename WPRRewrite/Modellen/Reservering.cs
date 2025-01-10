@@ -20,11 +20,14 @@ public class Reservering
     public bool IsGoedgekeurd { get; set; }
     public string Comment { get; set; }
     public int VoertuigId { get; set; }
+    [ForeignKey("VoertuigId")]
+    public Voertuig Voertuig { get; set; }
     public int AccountId { get; set; }
     [ForeignKey("AccountId")]
     public Account Account { get; set; }
 
     public bool Herinnering { get; set; }
+    
 
     public Reservering()
     {
