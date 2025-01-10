@@ -150,21 +150,18 @@ public class ReserveringController : ControllerBase
         return NoContent();
     }
     
+    //Nieuw
     [HttpGet("KrijgGehuurdeBedrijfsreserveringen")]
     public async Task<ActionResult<Voertuig>> GetReserveringen(int bedrijfsId)
     {
-        var reserveringen = _context.Accounts.OfType<AccountZakelijk>().Where(b => b.BedrijfId == bedrijfsId).SelectMany(m => m.Reserveringen).Include(r => r.Voertuig).ToList().OrderBy(a => a.Begindatum);
-
-        /*return Ok(reserveringen);
-
+        var accounts = await _context.Accounts.OfType<AccountZakelijk>().Where(b => b.BedrijfId == bedrijfsId).ToListAsync();
         var reserveringen = new List<Reservering>();
-        foreach (var medewerker in medewerkers)
+        foreach (var medewerker in accounts)
         {
-            foreach (var reservering in medewerker.Reserveringen)
-            {
-                reserveringen.Add(reservering);
-            }
-        }*/
-        return Ok(reserveringen);
+            var reservering = await _context.Reserveringen.Where(r => r.Account.AccountId == medewerker.AccountId).Include(a => a.Voertuig).Include(a => a.Account).ToListAsync();
+            reserveringen.AddRange(reservering);
+        }
+        var gesorteerdeReserveringen = reserveringen.OrderBy(a => a.Begindatum);
+        return Ok(gesorteerdeReserveringen);
     }
 }
