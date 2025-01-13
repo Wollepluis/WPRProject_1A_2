@@ -78,6 +78,8 @@ public class AbonnementController : ControllerBase
     [HttpPut("UpdateAbonnement")]
     public async Task<IActionResult> UpdateAbonnement(int abonnementId, int accountId, [FromBody] Abonnement updatedAbonnement)
     {
+        
+
         if (accountId == null) return BadRequest();
         var account = await _context.Accounts.OfType<AccountZakelijk>().FirstOrDefaultAsync(a => a.AccountId == accountId);
         var bedrijf = await _context.Bedrijven.FindAsync(account.BedrijfId);
@@ -86,10 +88,10 @@ public class AbonnementController : ControllerBase
             return BadRequest("ID mismatch.");
         
         var existingAbonnement = await _context.Abonnementen.FindAsync(abonnementId);
-        if (existingAbonnement == null) return NotFound("Abonnement niet gevonden.");
-
+        if (existingAbonnement == null) return NotFound("Abonnement niet gevonden."); 
         
         
+        EmailSender.BevestigingAbonnementWijzigen(account.Email, existingAbonnement, updatedAbonnement);
         //existingAbonnement.AbonnementType = updatedAbonnement.AbonnementType;
         existingAbonnement.MaxVoertuigen = updatedAbonnement.MaxVoertuigen;
         existingAbonnement.MaxMedewerkers = updatedAbonnement.MaxMedewerkers;
@@ -97,7 +99,7 @@ public class AbonnementController : ControllerBase
 
         bedrijf.AbonnementId = existingAbonnement.AbonnementId;
         await _context.SaveChangesAsync();
-        EmailSender.BevestigingAbonnementWijzigen(account.Email, existingAbonnement, updatedAbonnement);
+        
 
         return Ok(existingAbonnement);
     }
