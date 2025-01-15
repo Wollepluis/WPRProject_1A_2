@@ -16,5 +16,6 @@ public class Abonnement
     {
         MaxVoertuigen = maxVoertuigen;
         MaxMedewerkers = maxMedewerkers;
+        AbonnementType = abonnementType;
     }
 }

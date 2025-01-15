@@ -18,9 +18,9 @@ public class Bedrijf
     [ForeignKey("AbonnementId")]
     public Abonnement Abonnement { get; set; }
 
-    public int ToekomstigAbonnementId {get; set;}
-    [ForeignKey("ToekomstigAbonnementId")]
-    public Abonnement ToekomstigAbonnement { get; set; }
+    public int? ToekomstigAbonnement {get; set;}
+    [ForeignKey("ToekomstigAbonnement")]
+    public Abonnement ToekomstigAbonnementje { get; set; }
 
     public List<AccountZakelijk> BevoegdeMedewerkers { get; set; }
     
