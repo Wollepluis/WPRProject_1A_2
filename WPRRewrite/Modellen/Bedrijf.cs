@@ -15,9 +15,12 @@ public class Bedrijf
     public Adres Adres { get; set; }
     public string Domeinnaam { get; set; }
     public int AbonnementId { get; set; }
-    
     [ForeignKey("AbonnementId")]
     public Abonnement Abonnement { get; set; }
+
+    public int ToekomstigAbonnementId {get; set;}
+    [ForeignKey("ToekomstigAbonnementId")]
+    public Abonnement ToekomstigAbonnement { get; set; }
 
     public List<AccountZakelijk> BevoegdeMedewerkers { get; set; }
     

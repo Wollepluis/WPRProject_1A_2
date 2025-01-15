@@ -30,12 +30,18 @@ public class AbonnementController : ControllerBase
     {
         var account = await _context.Accounts.OfType<AccountZakelijk>().FirstOrDefaultAsync(a => a.AccountId == id);
         if (account == null) return Unauthorized(new { message = "Account is niet gevonden"});
-        var bedrijf = await _context.Bedrijven.FirstOrDefaultAsync(b => b.BedrijfId == account.BedrijfId);
-        if (bedrijf == null) return NotFound("Bedrijf niet gevondem");
+        var bedrijf = await _context.Bedrijven.Include(bedrijf => bedrijf.ToekomstigAbonnementId).FirstOrDefaultAsync(b => b.BedrijfId == account.BedrijfId);
+        if (bedrijf == null) return NotFound("Bedrijf niet gevonden");
+        
+        var toekomstigAbonnement = await _context.Abonnementen.FindAsync(bedrijf.ToekomstigAbonnementId);
+        if (toekomstigAbonnement != null && toekomstigAbonnement.Begindatum <= DateTime.Now)
+        {
+            bedrijf.AbonnementId = bedrijf.ToekomstigAbonnementId;
+            await _context.SaveChangesAsync();
+        }
         var abonnement = await _context.Abonnementen.FindAsync(bedrijf.AbonnementId);
-        if (abonnement == null)
-            return NotFound("Abonnement niet gevonden.");
-
+        if (abonnement == null) return NotFound("Abonnement niet gevonden.");
+        
         return Ok(abonnement);
     }
 
@@ -76,32 +82,31 @@ public class AbonnementController : ControllerBase
 
 //neiwu
     [HttpPut("UpdateAbonnement")]
-    public async Task<IActionResult> UpdateAbonnement(int abonnementId, int accountId, [FromBody] Abonnement updatedAbonnement)
+    public async Task<IActionResult> UpdateAbonnement(int abonnementId, int accountId, [FromBody] Abonnement toekomstigAbonnement)
     {
-        
-
         if (accountId == null) return BadRequest();
+
         var account = await _context.Accounts.OfType<AccountZakelijk>().FirstOrDefaultAsync(a => a.AccountId == accountId);
         var bedrijf = await _context.Bedrijven.FindAsync(account.BedrijfId);
         if (bedrijf == null) return NotFound("Bedrijf niet gevonden.");
+    
         if (abonnementId != bedrijf.AbonnementId)
             return BadRequest("ID mismatch.");
-        
+    
         var existingAbonnement = await _context.Abonnementen.FindAsync(abonnementId);
-        if (existingAbonnement == null) return NotFound("Abonnement niet gevonden."); 
+        if (existingAbonnement == null) return NotFound("Abonnement niet gevonden.");
         
-        
-        EmailSender.BevestigingAbonnementWijzigen(account.Email, existingAbonnement, updatedAbonnement);
-        //existingAbonnement.AbonnementType = updatedAbonnement.AbonnementType;
-        existingAbonnement.MaxVoertuigen = updatedAbonnement.MaxVoertuigen;
-        existingAbonnement.MaxMedewerkers = updatedAbonnement.MaxMedewerkers;
-        //existingAbonnement.Begindatum = updatedAbonnement.Begindatum;
+        // Voeg het nieuwe abonnement toe aan de database
+        _context.Abonnementen.Add(toekomstigAbonnement);
+        await _context.SaveChangesAsync();
 
-        bedrijf.AbonnementId = existingAbonnement.AbonnementId;
+        // Update het bedrijf met het nieuwe ToekomstigAbonnementId
+        bedrijf.ToekomstigAbonnementId = toekomstigAbonnement.AbonnementId;
         await _context.SaveChangesAsync();
         
-
-        return Ok(existingAbonnement);
+        EmailSender.BevestigingAbonnementWijzigen(account.Email, existingAbonnement, toekomstigAbonnement);
+        
+        return Ok(toekomstigAbonnement);
     }
 
     [HttpDelete("{id}")]

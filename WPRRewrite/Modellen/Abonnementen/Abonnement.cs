@@ -6,7 +6,7 @@ public class Abonnement
     public int MaxVoertuigen { get; set; }
     public int MaxMedewerkers { get; set; }
     public string AbonnementType { get; set; }
-    //public DateTime Begindatum { get; set; }
+    public DateTime? Begindatum { get; set; }
 
     public Abonnement()
     {
