@@ -14,10 +14,10 @@ namespace WPRRewrite.Controllers;
 public class AccountZakelijkBeheerderController : ControllerBase
 {
     
-    private CarAndAllContext _context;
+    private Context _context;
     private IPasswordHasher<Account> _passwordHasher;
 
-    public AccountZakelijkBeheerderController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher)
+    public AccountZakelijkBeheerderController(Context context, IPasswordHasher<Account> passwordHasher)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));

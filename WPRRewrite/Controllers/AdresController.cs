@@ -10,9 +10,9 @@ namespace WPRRewrite.Controllers;
 [Route("api/[Controller]")]
 public class AdresController : ControllerBase
 {
-    private readonly CarAndAllContext _context;
+    private readonly Context _context;
 
-    public AdresController(CarAndAllContext context)
+    public AdresController(Context context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }

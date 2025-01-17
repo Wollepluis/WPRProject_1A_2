@@ -13,11 +13,11 @@ namespace WPRRewrite.Controllers;
 public class AccountZakelijkHuurderController : ControllerBase
 {
     
-    private readonly CarAndAllContext _context;
+    private readonly Context _context;
     private readonly IPasswordHasher<Account> _passwordHasher;
     private readonly EmailSender _emailSender;
 
-    public AccountZakelijkHuurderController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher, EmailSender emailSender)
+    public AccountZakelijkHuurderController(Context context, IPasswordHasher<Account> passwordHasher, EmailSender emailSender)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
