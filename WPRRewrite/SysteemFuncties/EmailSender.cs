@@ -234,7 +234,8 @@ public class EmailSender
             </head>
             <body>
                 <h1>CarAndAll</h1>
-                <p>U heeft uw abonnement geweizigd van:</p>
+                <p>U heeft uw abonnement gewijzigd </p>
+                <p>van:</p>
                 <p>{oudeAbonnement.AbonnementType} met {oudeAbonnement.MaxMedewerkers} medewerkers en {oudeAbonnement.MaxVoertuigen} voertuigen.</p>
                 <p>Naar:</p>
                 <p>{nieuweAbonnement.AbonnementType} met {nieuweAbonnement.MaxMedewerkers} medewerkers en {nieuweAbonnement.MaxVoertuigen} voertuigen. </p>
@@ -242,7 +243,7 @@ public class EmailSender
             </body>
             </html>";
 
-            var mailBericht = MaakMailBericht(ontvangerEmail, "Aanvraagafgekeurd", htmlInhoud);
+            var mailBericht = MaakMailBericht(ontvangerEmail, "Abonnement gewijzigd", htmlInhoud);
             VerstuurEmail(mailBericht);
         }
         

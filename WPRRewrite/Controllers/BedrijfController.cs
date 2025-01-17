@@ -57,70 +57,93 @@ public class BedrijfController : ControllerBase
     }
 
     [HttpPost("MaakBedrijf")]
-    public async Task<ActionResult<Bedrijf>> PostBedrijf([FromBody] BedrijfEnBeheerderDto bedrijfEnBeheerderDto)
-    {
-        if (bedrijfEnBeheerderDto == null) return BadRequest("Bedrijf moet ingevuld zijn!");
-        var bedrijfDto = bedrijfEnBeheerderDto.Bedrijf;
-        var zakelijkBeheerderDto = bedrijfEnBeheerderDto.Beheerder;
-        var AbonnementDto = bedrijfEnBeheerderDto.Abonnement;
-        
+public async Task<ActionResult<Bedrijf>> PostBedrijf([FromBody] BedrijfEnBeheerderDto bedrijfEnBeheerderDto)
+{
+    if (bedrijfEnBeheerderDto == null) return BadRequest("Bedrijf moet ingevuld zijn!");
+    var bedrijfDto = bedrijfEnBeheerderDto.Bedrijf;
+    var zakelijkBeheerderDto = bedrijfEnBeheerderDto.Beheerder;
+    var AbonnementDto = bedrijfEnBeheerderDto.Abonnement;
 
-        var anyKvk = _context.Bedrijven.Any(a => a.KvkNummer == bedrijfDto.Kvknummer);
-        if (anyKvk) return BadRequest("Een bedrijf met dit Kvk-nummer bestaat al...");
-        var anyEmail = _context.Accounts.Any(a => a.Email == zakelijkBeheerderDto.Email);
-        if (anyEmail) return BadRequest("Een gebruiker met deze email bestaat al...");
-        
-        var adres = await _context.Adressen.Where(a => a.Huisnummer == bedrijfDto.Huisnummer && a.Postcode == bedrijfDto.Postcode).FirstOrDefaultAsync();
-        if (adres == null)
+    // Controleer of het KVK-nummer al bestaat
+    var anyKvk = _context.Bedrijven.Any(a => a.KvkNummer == bedrijfDto.Kvknummer);
+    if (anyKvk) return BadRequest("Een bedrijf met dit Kvk-nummer bestaat al...");
+
+    // Controleer of de gebruiker al bestaat op basis van email
+    var anyEmail = _context.Accounts.Any(a => a.Email == zakelijkBeheerderDto.Email);
+    if (anyEmail) return BadRequest("Een gebruiker met deze email bestaat al...");
+
+    // Zoek het adres op basis van postcode en huisnummer
+    var adres = await _context.Adressen.Where(a => a.Huisnummer == bedrijfDto.Huisnummer && a.Postcode == bedrijfDto.Postcode).FirstOrDefaultAsync();
+    if (adres == null)
+    {
+        try
         {
-            try
-            {
-                adres = await _adresService.ZoekAdresAsync(bedrijfDto.Postcode, bedrijfDto.Huisnummer);
-            }
-            catch (Exception e)
-            {
-                return NotFound("Het adres is niet gevonden met de bijbehorende postcode en huisnummer...");
-            }
-            
-            if (adres == null) return NotFound("Het adres is niet gevonden met de bijbehorende postcode en huisnummer...");
-        
-            _context.Adressen.Add(adres);
-            await _context.SaveChangesAsync();
+            adres = await _adresService.ZoekAdresAsync(bedrijfDto.Postcode, bedrijfDto.Huisnummer);
         }
+        catch (Exception e)
+        {
+            return NotFound("Het adres is niet gevonden met de bijbehorende postcode en huisnummer...");
+        }
+
+        if (adres == null) return NotFound("Het adres is niet gevonden met de bijbehorende postcode en huisnummer...");
+
+        _context.Adressen.Add(adres);
         await _context.SaveChangesAsync();
-        
-        //Nieuw
-        Abonnement abonnement;
-        if (AbonnementDto.AbonnementType == "Pay-As-You-Go")
+    }
+    await _context.SaveChangesAsync();
+
+    // Controleer of het abonnement al bestaat
+    var bestaandAbonnement = await _context.Abonnementen
+        .FirstOrDefaultAsync(a => a.AbonnementType == AbonnementDto.AbonnementType && 
+                                   a.MaxMedewerkers == AbonnementDto.MaxMedewerkers && 
+                                   a.MaxVoertuigen == AbonnementDto.MaxVoertuigen);
+
+    Abonnement abonnement;
+
+    if (bestaandAbonnement != null)
+    {
+        // Als het abonnement al bestaat, gebruik dan het bestaande abonnement
+        abonnement = bestaandAbonnement;
+    }
+    else
+    {
+        // Maak een nieuw abonnement als het nog niet bestaat
+        if (AbonnementDto.AbonnementType == "PayAsYouGo")
         {
             abonnement = new PayAsYouGo(AbonnementDto.MaxMedewerkers, AbonnementDto.MaxVoertuigen);
-        } else 
+        }
+        else
         {
             abonnement = new UpFront(AbonnementDto.MaxMedewerkers, AbonnementDto.MaxVoertuigen);
         }
 
+        // Voeg het nieuwe abonnement toe
         _context.Abonnementen.Add(abonnement);
         await _context.SaveChangesAsync();
-        
-        Bedrijf bedrijf = new Bedrijf(bedrijfDto.Kvknummer, bedrijfDto.Bedrijfsnaam, adres.AdresId, abonnement.AbonnementId, bedrijfDto.Domeinnaam);
-        AccountZakelijkBeheerder account = new AccountZakelijkBeheerder(zakelijkBeheerderDto.Email, zakelijkBeheerderDto.Wachtwoord, bedrijf.BedrijfId, new PasswordHasher<Account>(), _context);
-        account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
-        bedrijf.BevoegdeMedewerkers.Add(account);
-        _context.Accounts.Add(account);
-        _context.Bedrijven.Add(bedrijf);
-        await _context.SaveChangesAsync();
-
-        try
-        {
-            EmailSender.VerstuurBevestigingsEmail(account.Email, account.Bedrijf.Bedrijfsnaam);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Jammer dan, geen email");
-        }
-
-        return Ok(account.AccountId);
     }
+
+    // Maak het nieuwe bedrijf aan en koppel het abonnement
+    Bedrijf bedrijf = new Bedrijf(bedrijfDto.Kvknummer, bedrijfDto.Bedrijfsnaam, adres.AdresId, abonnement.AbonnementId, bedrijfDto.Domeinnaam);
+    AccountZakelijkBeheerder account = new AccountZakelijkBeheerder(zakelijkBeheerderDto.Email, zakelijkBeheerderDto.Wachtwoord, bedrijf.BedrijfId, new PasswordHasher<Account>(), _context);
+    account.Wachtwoord = _passwordHasher.HashPassword(account, account.Wachtwoord);
+    bedrijf.BevoegdeMedewerkers.Add(account);
+
+    // Voeg de account en het bedrijf toe aan de database
+    _context.Accounts.Add(account);
+    _context.Bedrijven.Add(bedrijf);
+    await _context.SaveChangesAsync();
+
+    try
+    {
+        EmailSender.VerstuurBevestigingsEmail(account.Email, account.Bedrijf.Bedrijfsnaam);
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine("Jammer dan, geen email");
+    }
+
+    return Ok(account.AccountId);
+}
 
     [HttpPut("{id}")]
     public async Task<IActionResult> PutBedrijf(int id, [FromBody] BedrijfDto updatedBedrijfDto)
@@ -136,6 +159,7 @@ public class BedrijfController : ControllerBase
         return NoContent();
     }
 
+    //niewu
     [HttpDelete("VerwijderBedrijf")]
     public async Task<IActionResult> DeleteBedrijf(int id/*, int kvknummer*/)
     {
@@ -144,6 +168,28 @@ public class BedrijfController : ControllerBase
             var zakelijkBeheerder = await _context.Accounts.OfType<AccountZakelijkBeheerder>().FirstOrDefaultAsync(a => a.AccountId == id);
             var bedrijf = await _context.Bedrijven.FindAsync(zakelijkBeheerder.BedrijfId);
             if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
+            // Zoek het abonnement op basis van id
+            var abonnement = await _context.Abonnementen.FindAsync(id);
+                        if (abonnement == null)
+                        {
+                            return NotFound("Abonnement niet gevonden.");
+                        }
+            bedrijf.AbonnementId = 0;
+            await _context.SaveChangesAsync();
+            
+            // Controleer of het abonnement nog in gebruik is
+            var bedrijfMetAbonnement = await _context.Bedrijven
+                .FirstOrDefaultAsync(b => b.AbonnementId == abonnement.AbonnementId);
+        
+            if (bedrijfMetAbonnement == null)
+            {
+                // Als het abonnement niet in gebruik is, verwijder het dan
+                _context.Abonnementen.Remove(abonnement);
+                await _context.SaveChangesAsync();          
+            }
+
+            
+            
             _context.Bedrijven.Remove(bedrijf);
             await _context.SaveChangesAsync();
             return NoContent();
@@ -152,19 +198,6 @@ public class BedrijfController : ControllerBase
         {
             return Unauthorized("U heeft de rechten niet om het acccount te verwijderen...");
         }
-
-        
-        
-        /*if (bedrijf.KvkNummer != kvknummer) return BadRequest("Kvknummer komt niet overeen...");
-        
-        Adres adres = await _context.Adressen.FindAsync(bedrijf.BedrijfAdres);
-        var abonnement = await _context.Abonnementen.FindAsync(bedrijf.AbonnementId);
-        if (adres == null) return NotFound("Er is geen adres gevonden...");
-        if (abonnement == null) return NotFound("Geen abonnement gevonden...");*/
-        
-        
-        /*_context.Adressen.Remove(adres);
-        _context.Abonnementen.Remove(abonnement);*/
         
     }
 
