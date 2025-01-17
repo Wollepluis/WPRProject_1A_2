@@ -228,7 +228,7 @@ public class VoertuigController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("Delete")]
     public async Task<IActionResult> DeleteVoertuig(int id)
     {
         var voertuig = await _context.Voertuigen.FindAsync(id);
