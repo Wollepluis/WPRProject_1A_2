@@ -31,34 +31,48 @@ public class AbonnementController : ControllerBase
     public async Task<ActionResult<Abonnement>> GetAbonnementById([FromQuery]int id)
     {
         var account = await _context.Accounts.OfType<AccountZakelijk>().FirstOrDefaultAsync(a => a.AccountId == id);
-        if (account == null) return Unauthorized(new { message = "Account is niet gevonden"});
-        
-        var bedrijf = await _context.Bedrijven.Include(bedrijf => bedrijf.ToekomstigAbonnementje).FirstOrDefaultAsync(b => b.BedrijfId == account.BedrijfId);
-        if (bedrijf == null) return NotFound("Bedrijf niet gevonden");
-        
-        var toekomstigAbonnement = await _context.Abonnementen.FindAsync(bedrijf.ToekomstigAbonnement);
-        if (toekomstigAbonnement != null && toekomstigAbonnement.Begindatum >= DateTime.Now.Date)
-        {
-            Console.WriteLine("Begindatum is vandaag of later, abonnement wordt aangepast.");
-            var oudAbonnement = await _context.Abonnementen.FindAsync(bedrijf.AbonnementId);
-            bedrijf.AbonnementId = (int)bedrijf.ToekomstigAbonnement;
-            await _context.SaveChangesAsync();
+        if (account == null) return Unauthorized(new { message = "Account is niet gevonden" });
 
-            if (bedrijf.AbonnementId != oudAbonnement.AbonnementId)
+        var bedrijf = await _context.Bedrijven
+            .Include(b => b.ToekomstigAbonnementje)
+            .FirstOrDefaultAsync(b => b.BedrijfId == account.BedrijfId);
+        if (bedrijf == null) return NotFound("Bedrijf niet gevonden");
+
+        // Checken of het toekomstig abonnement bestaat en of het al ingegaan is
+        if (bedrijf.ToekomstigAbonnement != null)
+        {
+            var toekomstigAbonnement = await _context.Abonnementen.FindAsync(bedrijf.ToekomstigAbonnement);
+            if (toekomstigAbonnement != null && (toekomstigAbonnement.Begindatum <= DateTime.Now.Date || toekomstigAbonnement.Begindatum == null))
             {
-                Console.WriteLine("Oud abonnement wordt verwijderd.");
-                if (oudAbonnement != null)
-                {
-                    _context.Abonnementen.Remove(oudAbonnement);
-                }
+                Console.WriteLine("Begindatum is vandaag of later, abonnement wordt aangepast.");
+                
+                // Ophalen van oud abonnement
+                var oudAbonnement = await _context.Abonnementen.FindAsync(bedrijf.AbonnementId);
+                if (oudAbonnement == null) return NotFound("Abonnement niet gevonden");
+
+                toekomstigAbonnement.Begindatum = null;
+                bedrijf.AbonnementId = (int)bedrijf.ToekomstigAbonnement;
+                bedrijf.ToekomstigAbonnement = null;
+                
                 await _context.SaveChangesAsync();
+
+                var boolean = _context.Bedrijven.Any(w => w.AbonnementId == oudAbonnement.AbonnementId || w.ToekomstigAbonnement == oudAbonnement.AbonnementId);
+                // Oud abonnement verwijderen als het is aangepast
+                if (!boolean)
+                {
+                    Console.WriteLine("Oud abonnement wordt verwijderd.");
+                    _context.Abonnementen.Remove(oudAbonnement);
+                    await _context.SaveChangesAsync();
+                }
             }
         }
+
         var abonnement = await _context.Abonnementen.FindAsync(bedrijf.AbonnementId);
         if (abonnement == null) return NotFound("Abonnement niet gevonden.");
-        
+
         return Ok(abonnement);
     }
+
 
     [HttpPost("Create")]
     public async Task<ActionResult> CreateAbonnement([FromQuery]int accountId, [FromBody] Abonnement abonnement)
@@ -130,12 +144,15 @@ public async Task<IActionResult> UpdateAbonnement(int abonnementId, int accountI
     var bestaandToekomstigAbonnement = await _context.Abonnementen
         .FirstOrDefaultAsync(a => a.MaxMedewerkers == toekomstigAbonnement.MaxMedewerkers &&
                                   a.MaxVoertuigen == toekomstigAbonnement.MaxVoertuigen &&
-                                  a.AbonnementType == toekomstigAbonnement.AbonnementType);
+                                  a.AbonnementType == toekomstigAbonnement.AbonnementType &&
+                                  (a.Begindatum == null || a.Begindatum == toekomstigAbonnement.Begindatum));
 
     // Als het toekomstigAbonnement al bestaat, koppel het dan aan het bedrijf
     if (bestaandToekomstigAbonnement != null)
     {
+        bestaandToekomstigAbonnement.Begindatum = toekomstigAbonnement.Begindatum;
         bedrijf.ToekomstigAbonnement = bestaandToekomstigAbonnement.AbonnementId;
+        
     }
     else
     {
