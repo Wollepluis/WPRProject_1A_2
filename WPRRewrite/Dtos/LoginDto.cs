@@ -1,13 +1,7 @@
 ﻿namespace WPRRewrite.Dtos;
 
-public class LoginDto
+public class LoginDto(string email, string wachtwoord)
 {
-    public string Email { get; set; }
-    public string Wachtwoord { get; set; }
-
-    public LoginDto(string email, string wachtwoord)
-    {
-        Email = email;
-        Wachtwoord = wachtwoord;
-    }
+    public string Email { get; } = email;
+    public string Wachtwoord { get; } = wachtwoord;
 }

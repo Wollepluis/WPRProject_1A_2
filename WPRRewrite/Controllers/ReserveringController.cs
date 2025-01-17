@@ -12,9 +12,9 @@ namespace WPRRewrite.Controllers;
 [Route("api/Reservering")]
 public class ReserveringController : ControllerBase
 {
-    private readonly CarAndAllContext _context;
+    private readonly Context _context;
 
-    public ReserveringController(CarAndAllContext context)
+    public ReserveringController(Context context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }

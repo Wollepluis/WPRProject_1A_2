@@ -11,10 +11,10 @@ namespace WPRRewrite.Controllers;
 [Route("api/Frontoffice")]
 public class AccountMedewerkerFrontofficeController : ControllerBase
 {
-    private readonly CarAndAllContext _context;
+    private readonly Context _context;
     private readonly IPasswordHasher<Account> _passwordHasher;
 
-    public AccountMedewerkerFrontofficeController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher)
+    public AccountMedewerkerFrontofficeController(Context context, IPasswordHasher<Account> passwordHasher)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));

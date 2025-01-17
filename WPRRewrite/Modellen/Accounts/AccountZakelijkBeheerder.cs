@@ -1,21 +1,19 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using WPRRewrite.Dtos;
 using WPRRewrite.Interfaces;
 
 namespace WPRRewrite.Modellen.Accounts;
 
 public class AccountZakelijkBeheerder : AccountZakelijk
 {
-    public AccountZakelijkBeheerder(string email, string wachtwoord, int bedrijfId ,IPasswordHasher<Account> passwordHasher, CarAndAllContext context)
-        : base(passwordHasher, context)
+    public AccountZakelijkBeheerder() { }
+    public AccountZakelijkBeheerder(string email, string wachtwoord, int bedrijfId)
+        : base (email,wachtwoord, bedrijfId) { }
+    
+    public override void UpdateAccount(AccountDto nieuweGegevens)
     {
-        Email = email;
-        Wachtwoord = wachtwoord;
-        BedrijfId = bedrijfId;
+        Email = nieuweGegevens.Email;
+        Wachtwoord = nieuweGegevens.Wachtwoord;
+        BedrijfId = nieuweGegevens.Nummer;
     }
-
-    public AccountZakelijkBeheerder()
-    {
-    }
-
-  
 }

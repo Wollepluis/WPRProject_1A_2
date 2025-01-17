@@ -12,10 +12,10 @@ namespace WPRRewrite.Controllers;
 [Route("api/Backoffice")] 
 public class AccountMedewerkerBackofficeController : ControllerBase
 {
-    private readonly CarAndAllContext _context;
+    private readonly Context _context;
     private IPasswordHasher<Account> _passwordHasher = new PasswordHasher<Account>();
 
-    public AccountMedewerkerBackofficeController(CarAndAllContext context)
+    public AccountMedewerkerBackofficeController(Context context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }

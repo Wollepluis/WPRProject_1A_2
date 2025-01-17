@@ -11,9 +11,9 @@ namespace WPRRewrite.Controllers;
 [Route("api/[Controller]")]
 public class CaravanController : ControllerBase, IVoertuigController
 {
-    private readonly CarAndAllContext _context;
+    private readonly Context _context;
 
-    public CaravanController(CarAndAllContext context)
+    public CaravanController(Context context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }

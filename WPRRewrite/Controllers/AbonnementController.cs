@@ -11,9 +11,9 @@ namespace WPRRewrite.Controllers;
 [Route("api/[Controller]")]
 public class AbonnementController : ControllerBase
 {
-    private readonly CarAndAllContext _context;
+    private readonly Context _context;
 
-    public AbonnementController(CarAndAllContext context)
+    public AbonnementController(Context context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }

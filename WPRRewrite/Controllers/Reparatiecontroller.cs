@@ -8,9 +8,9 @@ namespace WPRRewrite.Controllers;
 [Route("api/[Controller]")]
 public class ReparatieController : ControllerBase
 {
-    private readonly CarAndAllContext _context;
+    private readonly Context _context;
 
-    public ReparatieController(CarAndAllContext context)
+    public ReparatieController(Context context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }

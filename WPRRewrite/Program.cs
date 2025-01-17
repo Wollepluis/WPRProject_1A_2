@@ -1,10 +1,9 @@
 using System.Net.Mail;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.SysteemFuncties;
+using WPRRewrite2;
 
 namespace WPRRewrite;
 
@@ -14,7 +13,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddDbContext<CarAndAllContext>(options =>
+        builder.Services.AddDbContext<Context>(options =>
             options.UseSqlServer(@"Server=tcp:wprproject.database.windows.net,1433;Initial Catalog=CarAndAll;Persist Security Info=False;User ID=BoterhamZakje;Password=Banaan123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
                                  
         builder.Services.AddCors(options =>
@@ -34,7 +33,7 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddScoped<IPasswordHasher<Account>, PasswordHasher<Account>>();
-        builder.Services.AddScoped<IAdresService, AdresService>();
+        builder.Services.AddScoped<AdresService>();
         builder.Services.AddScoped<EmailSender>();
         builder.Services.AddScoped<SmtpClient>();
         

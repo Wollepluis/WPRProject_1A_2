@@ -13,11 +13,11 @@ namespace WPRRewrite.Controllers;
 [Route("api/Particulier")]
 public class AccountParticulierController : ControllerBase
 {
-    private readonly CarAndAllContext _context;
+    private readonly Context _context;
     private readonly IPasswordHasher<Account> _passwordHasher;
     private readonly IAdresService _adresService;
 
-    public AccountParticulierController(CarAndAllContext context, IPasswordHasher<Account> passwordHasher, IAdresService adresService)
+    public AccountParticulierController(Context context, IPasswordHasher<Account> passwordHasher, IAdresService adresService)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));

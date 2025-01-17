@@ -1,10 +1,9 @@
 ﻿using Newtonsoft.Json.Linq;
-using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen;
 
 namespace WPRRewrite.SysteemFuncties;
 
-public class AdresService : IAdresService
+public class AdresService
 {
     public async Task<Adres?> ZoekAdresAsync(string postcode, int huisnummer)
     {
@@ -13,36 +12,31 @@ public class AdresService : IAdresService
             throw new ArgumentException("Postcode and huisnummer must be valid.");
         }
 
-        string apiUrl =
+        var apiUrl =
             $"https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?q=postcode:{postcode} AND huisnummer:{huisnummer}";
 
         try
         {
-            using (HttpClient client = new HttpClient())
+            using var client = new HttpClient();
+            var response = await client.GetAsync(apiUrl);
+
+            if (response.IsSuccessStatusCode)
             {
-                // Make HTTP GET call
-                HttpResponseMessage response = await client.GetAsync(apiUrl);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var json = JObject.Parse(jsonResponse);
 
-                if (response.IsSuccessStatusCode)
+                var adresData = json["response"]?["docs"]?[0];
+                if (adresData != null)
                 {
-                    // Parse JSON response
-                    string jsonResponse = await response.Content.ReadAsStringAsync();
-                    JObject json = JObject.Parse(jsonResponse);
-
-                    var adresData = json["response"]?["docs"]?[0]; // First result
-                    if (adresData != null)
+                    return new Adres()
                     {
-                        // Map JSON response to Adres object
-                        return new Adres()
-                        {
-                            Straatnaam = (string?)adresData["straatnaam"],
-                            Huisnummer = (int?)adresData["huisnummer"] ?? 0,
-                            Postcode = (string?)adresData["postcode"],
-                            Woonplaats = (string?)adresData["woonplaatsnaam"],
-                            Gemeente = (string?)adresData["gemeentenaam"],
-                            Provincie = (string?)adresData["provincienaam"]
-                        };
-                    }
+                        Straatnaam = (string?)adresData["straatnaam"],
+                        Huisnummer = (int?)adresData["huisnummer"] ?? 0,
+                        Postcode = (string?)adresData["postcode"],
+                        Woonplaats = (string?)adresData["woonplaatsnaam"],
+                        Gemeente = (string?)adresData["gemeentenaam"],
+                        Provincie = (string?)adresData["provincienaam"]
+                    };
                 }
             }
         }

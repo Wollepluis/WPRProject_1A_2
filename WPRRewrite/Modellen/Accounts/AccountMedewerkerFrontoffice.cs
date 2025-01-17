@@ -1,18 +1,16 @@
-﻿using Microsoft.AspNetCore.Identity;
-using WPRRewrite.Interfaces;
+﻿using WPRRewrite.Dtos;
 
 namespace WPRRewrite.Modellen.Accounts;
 
 public class AccountMedewerkerFrontoffice : AccountMedewerker
 {
-    public AccountMedewerkerFrontoffice(string email, string wachtwoord, IPasswordHasher<Account> passwordHasher, CarAndAllContext context)
-        : base(passwordHasher, context)
+    public AccountMedewerkerFrontoffice() { }
+    public AccountMedewerkerFrontoffice(string email, string wachtwoord) 
+        : base(email, wachtwoord) { }
+    
+    public override void UpdateAccount(AccountDto nieuweGegevens)
     {
-        Email = email;
-        Wachtwoord = wachtwoord;
-    }
-
-    public AccountMedewerkerFrontoffice()
-    {
+        Email = nieuweGegevens.Email;
+        Wachtwoord = nieuweGegevens.Wachtwoord;
     }
 }
