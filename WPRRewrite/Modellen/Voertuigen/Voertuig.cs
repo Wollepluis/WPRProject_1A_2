@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WPRRewrite.Dtos;
 using WPRRewrite.Enums;
 using WPRRewrite.Interfaces;
 
@@ -20,7 +21,21 @@ public abstract class Voertuig : IVoertuig
     public int? SchadeclaimId { get; set; }
     [ForeignKey(nameof(Schadeclaim))] public Schadeclaim Schadeclaim { get; set; }
     
-    public void UpdateVoertuig(IVoertuig updatedVoertuig)
+    protected Voertuig() { }
+    protected Voertuig(string kenteken, string merk, string model, string kleur, int aanschafjaar, int prijs,
+        VoertuigStatusEnum voertuigStatus, VoertuigTypeEnum voertuigType)
+    {
+        Kenteken = kenteken;
+        Merk = merk;
+        Model = model;
+        Kleur = kleur;
+        Aanschafjaar = aanschafjaar;
+        Prijs = prijs;
+        VoertuigStatus = voertuigStatus;
+        VoertuigType = voertuigType;
+    }
+    
+    public void UpdateVoertuig(VoertuigDto updatedVoertuig)
     {
         Kenteken = updatedVoertuig.Kenteken;
         Merk = updatedVoertuig.Merk;
@@ -33,5 +48,43 @@ public abstract class Voertuig : IVoertuig
     public void UpdateVoertuigStatus(VoertuigStatusEnum status)
     {
         VoertuigStatus = status;
+    }
+
+    public static Voertuig MaakVoertuig(VoertuigDto gegevens)
+    {
+        return gegevens.VoertuigType switch
+        {
+            VoertuigTypeEnum.Auto => new Auto(
+                gegevens.Kenteken, 
+                gegevens.Merk, 
+                gegevens.Model,
+                gegevens.Kleur, 
+                gegevens.Aanschafjaar,
+                gegevens.Prijs,
+                VoertuigStatusEnum.Beschikbaar,
+                gegevens.VoertuigType
+            ),
+            VoertuigTypeEnum.Camper => new Camper(
+                gegevens.Kenteken, 
+                gegevens.Merk, 
+                gegevens.Model,
+                gegevens.Kleur, 
+                gegevens.Aanschafjaar,
+                gegevens.Prijs,
+                VoertuigStatusEnum.Beschikbaar,
+                gegevens.VoertuigType
+            ),
+            VoertuigTypeEnum.Caravan => new Caravan(
+                gegevens.Kenteken, 
+                gegevens.Merk, 
+                gegevens.Model,
+                gegevens.Kleur, 
+                gegevens.Aanschafjaar,
+                gegevens.Prijs,
+                VoertuigStatusEnum.Beschikbaar,
+                gegevens.VoertuigType
+            ),
+            _ => throw new ArgumentException($"Onbekend account type: {gegevens.VoertuigType}")
+        };
     }
 }

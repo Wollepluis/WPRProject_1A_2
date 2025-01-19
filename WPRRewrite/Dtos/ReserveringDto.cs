@@ -1,41 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using WPRRewrite.Dtos;
-using WPRRewrite.Modellen.Accounts;
-using WPRRewrite.Modellen.Voertuigen;
+﻿using WPRRewrite.Enums;
 
 namespace WPRRewrite.Dtos;
 
-public class ReserveringDto
+public class ReserveringDto(DateOnly begindatum, DateOnly einddatum, int totaalPrijs, int voertuigId, int accountId,
+    VoertuigStatusEnum voertuigStatus)
 {
-    public int ReserveringId { get; set; }
-    public DateTime Begindatum { get; set; }
-    public DateTime Einddatum { get; set; }
-    /*public string AardVanReis { get; set; }
-    public string VersteBestemming { get; set; }
-    public int VerwachteHoeveelheidkm { get; set; }
-    public int Rijbewijsnummer { get; set; }*/
-    public int TotaalPrijs { get; set; }
-    public bool IsBetaald { get; set; }
-    public bool IsGoedgekeurd { get; set; }
-    public string Comment { get; set; }
-    public int VoertuigId { get; set; }
-    public int AccountId { get; set; }
-
-    public ReserveringDto()
-    {
-        
-    }
-
-    public ReserveringDto(DateTime begindatum, DateTime einddatum, int totaalPrijs, int voertuigId, int accountId, string comment)
-    {
-        Begindatum = begindatum;
-        Einddatum = einddatum;
-        TotaalPrijs = totaalPrijs;
-        VoertuigId = voertuigId;
-        AccountId = accountId;
-        IsGoedgekeurd = false;
-        IsBetaald = false;
-        Comment = comment;
-    }
-    
+    public DateOnly Begindatum { get; set; } = begindatum;
+    public DateOnly Einddatum { get; set; } = einddatum;
+    public int TotaalPrijs { get; set; } = totaalPrijs;
+    public int VoertuigId { get; set; } = voertuigId;
+    public int AccountId { get; set; } = accountId;
+    public VoertuigStatusEnum VoertuigStatus { get; set; } = voertuigStatus;
 }

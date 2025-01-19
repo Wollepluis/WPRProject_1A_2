@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Mail;
 
-namespace WPRRewrite2;
+namespace WPRRewrite.SysteemFuncties;
 
 public class EmailSender
 {

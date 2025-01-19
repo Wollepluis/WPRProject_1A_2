@@ -1,5 +1,5 @@
-﻿using WPRRewrite.Enums;
-using WPRRewrite.Modellen;
+﻿using WPRRewrite.Dtos;
+using WPRRewrite.Enums;
 
 namespace WPRRewrite.Interfaces;
 
@@ -16,5 +16,5 @@ public interface IVoertuig
     public VoertuigStatusEnum VoertuigStatus { get; set; }
     public VoertuigTypeEnum VoertuigType { get; set; }
     
-    public void UpdateVoertuig(IVoertuig updatedVoertuig);
+    public void UpdateVoertuig(VoertuigDto updatedVoertuig);
 }

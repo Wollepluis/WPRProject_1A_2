@@ -44,17 +44,17 @@ public class Context(DbContextOptions<Context> options) : DbContext(options)
             .HasValue<Caravan>(VoertuigTypeEnum.Caravan);
         
         builder.Entity<Voertuig>()
-            .Property(e => e.VoertuigStatus)
-            .HasConversion(
-                v => v.ToString(),
-                v => (VoertuigStatusEnum)Enum.Parse(typeof(VoertuigStatusEnum), v)
-            );
-        
-        builder.Entity<Voertuig>()
             .Property(e => e.VoertuigType)
             .HasConversion(
                 v => v.ToString(),
                 v => (VoertuigTypeEnum)Enum.Parse(typeof(VoertuigTypeEnum), v)
+            );
+        
+        builder.Entity<Voertuig>()
+            .Property(e => e.VoertuigStatus)
+            .HasConversion(
+                v => v.ToString(),
+                v => (VoertuigStatusEnum)Enum.Parse(typeof(VoertuigStatusEnum), v)
             );
 
         builder.Entity<Abonnement>()

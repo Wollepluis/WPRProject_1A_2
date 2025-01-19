@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WPRRewrite.Dtos;
+using WPRRewrite.Enums;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.Modellen.Voertuigen;
@@ -43,5 +45,31 @@ public class Reservering
     public void UpdateHerinnering()
     {
         Herinnering = true;
+    }
+
+    public static Reservering MaakReservering(ReserveringDto reserveringDto, IVoertuig voertuig)
+    {
+        return new Reservering(
+            reserveringDto.Begindatum, 
+            reserveringDto.Einddatum, 
+            BerekenKosten(reserveringDto.Begindatum, reserveringDto.Einddatum, voertuig.VoertuigType), 
+            reserveringDto.VoertuigId, 
+            reserveringDto.AccountId
+            );
+    }
+
+    private static double BerekenKosten(DateOnly begindatum, DateOnly einddatum, VoertuigTypeEnum voertuigType)
+    {
+        var days = begindatum.DayNumber - einddatum.DayNumber;
+
+        var kosten = voertuigType switch
+        {
+            VoertuigTypeEnum.Auto => 100 + 100 * days,
+            VoertuigTypeEnum.Caravan => 200 + 200 * days,
+            VoertuigTypeEnum.Camper => 300 + 300 * days,
+            _ => 0
+        };
+        
+        return kosten;
     }
 }

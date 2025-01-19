@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.SysteemFuncties;
-using WPRRewrite2;
 
 namespace WPRRewrite;
 

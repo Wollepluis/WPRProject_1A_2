@@ -1,11 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Dtos;
 using WPRRewrite.Enums;
 using WPRRewrite.Interfaces;
-using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Modellen.Accounts;
 
@@ -36,28 +33,28 @@ public abstract class Account : IAccount
     {
         return gegevens.AccountType switch
         {
-            "Particulier" => new AccountParticulier(
+            AccountTypeEnum.Particulier => new AccountParticulier(
                 gegevens.Email, 
                 gegevens.Wachtwoord, 
                 gegevens.Naam,
                 gegevens.Nummer, 
                 gegevens.AdresId
             ),
-            "ZakelijkBeheerder" => new AccountZakelijkBeheerder(
+            AccountTypeEnum.ZakelijkBeheerder => new AccountZakelijkBeheerder(
                 gegevens.Email, 
                 gegevens.Wachtwoord, 
                 gegevens.Nummer
             ),
-            "ZakelijkHuurder" => new AccountZakelijkHuurder(
+            AccountTypeEnum.ZakelijkHuurder => new AccountZakelijkHuurder(
                 gegevens.Email, 
                 gegevens.Wachtwoord, 
                 gegevens.Nummer
             ),
-            "Frontoffice" => new AccountMedewerkerFrontoffice(
+            AccountTypeEnum.Frontoffice => new AccountMedewerkerFrontoffice(
                 gegevens.Email, 
                 gegevens.Wachtwoord
             ),
-            "Backoffice" => new AccountMedewerkerBackoffice(
+            AccountTypeEnum.Backoffice => new AccountMedewerkerBackoffice(
                 gegevens.Email, 
                 gegevens.Wachtwoord
             ),

@@ -1,8 +1,10 @@
-﻿namespace WPRRewrite.Dtos;
+﻿using WPRRewrite.Enums;
 
-public class AccountDto(string accountType, string email, string wachtwoord, string naam, int nummer, int adresId)
+namespace WPRRewrite.Dtos;
+
+public class AccountDto(AccountTypeEnum accountType, string email, string wachtwoord, string naam, int nummer, int adresId)
 {
-    public string AccountType { get; set; } = accountType;
+    public AccountTypeEnum AccountType { get; set; } = accountType;
     public string Email { get; set; } = email;
     public string Wachtwoord { get; set; } = wachtwoord;
     public string Naam { get; set; } = naam;

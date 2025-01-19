@@ -1,36 +1,16 @@
-﻿
-using WPRRewrite.Modellen.Voertuigen;
+﻿using WPRRewrite.Enums;
 
 namespace WPRRewrite.Dtos;
 
-public class VoertuigDto
+public class VoertuigDto(string kenteken, string merk, string model, string kleur, int aanschafjaar, int prijs,
+    VoertuigStatusEnum voertuigStatus, VoertuigTypeEnum voertuigType)
 {
-    public int VoertuigId { get; set; }
-    public string Kenteken { get; set; }
-    public string Merk { get; set; }
-    public string Model { get; set; }
-    public string Kleur { get; set; }
-    public int Aanschafjaar { get; set; }
-    public int Prijs { get; set; }
-    public string VoertuigStatus { get; set; }
-    public string VoertuigType { get; set; }
-    public string BrandstofType { get; set; }
-    public List<ReserveringDto> Reserveringen { get; set; }
-
-    public VoertuigDto()
-    {
-        
-    }
-    public VoertuigDto(string kenteken, string merk, string model, string kleur, int aanschafjaar, int prijs, string voertuigStatus, string voertuigType, string brandstofType)
-    {
-        Kenteken = kenteken;
-        Merk = merk;
-        Model = model;
-        Kleur = kleur;
-        Aanschafjaar = aanschafjaar;
-        Prijs = prijs;
-        VoertuigStatus = voertuigStatus;
-        VoertuigType = voertuigType;
-        BrandstofType = brandstofType;
-    }
+    public string Kenteken { get; set; } = kenteken;
+    public string Merk { get; set; } = merk;
+    public string Model { get; set; } = model;
+    public string Kleur { get; set; } = kleur;
+    public int Aanschafjaar { get; set; } = aanschafjaar;
+    public int Prijs { get; set; } = prijs;
+    public VoertuigStatusEnum VoertuigStatus { get; set; } = voertuigStatus;
+    public VoertuigTypeEnum VoertuigType { get; set; } = voertuigType;
 }

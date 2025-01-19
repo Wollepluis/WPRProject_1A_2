@@ -5,7 +5,7 @@ using WPRRewrite.Dtos;
 using WPRRewrite.Enums;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Accounts;
-using WPRRewrite2;
+using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Controllers;
 
@@ -16,22 +16,25 @@ public class AccountController(Context context) : ControllerBase
     private readonly Context _context = context ?? throw new ArgumentNullException(nameof(context));
 
     [HttpGet("GetAccounts")]
-    public async Task<ActionResult<IEnumerable<IAccount>>> GetAccounts([FromQuery] AccountTypeEnum? accountType, [FromQuery] int? accountId)
+    public async Task<ActionResult<IEnumerable<IAccount>>> GetAccounts([FromQuery] AccountTypeEnum? accountType, 
+        [FromQuery] int? accountId)
     {
-        if (accountType == null)
-            return BadRequest(new { Message = "Account type vereist als parameter" });
-        
         try
         {
-            IQueryable<IAccount> query = accountType switch
+            IQueryable<IAccount> query = _context.Accounts;
+
+            if (accountType.HasValue)
             {
-                AccountTypeEnum.Particulier => _context.Accounts.OfType<AccountParticulier>(),
-                AccountTypeEnum.ZakelijkBeheerder => _context.Accounts.OfType<AccountZakelijkBeheerder>(),
-                AccountTypeEnum.ZakelijkHuurder => _context.Accounts.OfType<AccountZakelijkHuurder>(),
-                AccountTypeEnum.Frontoffice => _context.Accounts.OfType<AccountMedewerkerFrontoffice>(),
-                AccountTypeEnum.Backoffice => _context.Accounts.OfType<AccountMedewerkerBackoffice>(),
-                _ => throw new ArgumentOutOfRangeException(nameof(accountType), accountType, "Onjuist account type")
-            };
+                query = accountType switch
+                {
+                    AccountTypeEnum.Particulier => query.OfType<AccountParticulier>(),
+                    AccountTypeEnum.ZakelijkBeheerder => query.OfType<AccountZakelijkBeheerder>(),
+                    AccountTypeEnum.ZakelijkHuurder => query.OfType<AccountZakelijkHuurder>(),
+                    AccountTypeEnum.Frontoffice => query.OfType<AccountMedewerkerFrontoffice>(),
+                    AccountTypeEnum.Backoffice => query.OfType<AccountMedewerkerBackoffice>(),
+                    _ => throw new ArgumentOutOfRangeException(nameof(accountType), accountType, "Onjuist account type")
+                };
+            }
 
             if (accountId.HasValue)
             {
@@ -44,7 +47,7 @@ public class AccountController(Context context) : ControllerBase
 
             var accounts = await query.ToListAsync();
             if (accounts.Count != 0)
-                return NotFound(new { Message = $"Geen accounts met type:{accountType} gevonden" });
+                return NotFound(new { Message = "Geen accounts met dit type gevonden" });
 
             return Ok(accounts);
         }
@@ -66,7 +69,8 @@ public class AccountController(Context context) : ControllerBase
             if (account.VerifieerWachtwoord(login.Wachtwoord) == PasswordVerificationResult.Failed) 
                 return Unauthorized(new { Message = "Incorrect wachtwoord" });
             
-            var reservering = await _context.Reserveringen.FirstOrDefaultAsync(r => r.AccountId == account.AccountId);
+            var reservering = await _context.Reserveringen
+                .FirstOrDefaultAsync(r => r.AccountId == account.AccountId);
             if (reservering == null) 
                 return Ok(account);
             
@@ -122,7 +126,7 @@ public class AccountController(Context context) : ControllerBase
             if (account == null)
                 return NotFound(new { Message = $"Account met ID {id} staat niet in de database" });
         
-            // Update Adres voor Particulier account
+            // Update Adres voor Particulier account????
             account.UpdateAccount(nieuweGegevens);
 
             return Ok(new { Message = "Account succesvol aangepast" }); 
@@ -157,7 +161,8 @@ public class AccountController(Context context) : ControllerBase
     
     //## Frontoffice Functies ##
     [HttpPut("UpdateVoertuigStatus")]
-    public async Task<IActionResult> PutVoertuigStatus([FromQuery] int id, [FromQuery] DateOnly begindatum, [FromQuery] DateOnly einddatum)
+    public async Task<IActionResult> PutVoertuigStatus([FromQuery] int id, [FromQuery] DateOnly begindatum, 
+        [FromQuery] DateOnly einddatum)
     {
         try {
             var voertuig = await _context.Voertuigen.FindAsync(id);
@@ -206,12 +211,14 @@ public class AccountController(Context context) : ControllerBase
             
             if (!reservering.IsGoedgekeurd)
             {
-                EmailSender.AanvraagAfgekeurd(account.Email, reservering.Begindatum, reservering.Einddatum, voertuig.Merk, voertuig.Model, voertuig.VoertuigType.ToString(), reservering.Comment);
+                EmailSender.AanvraagAfgekeurd(account.Email, reservering.Begindatum, reservering.Einddatum, 
+                    voertuig.Merk, voertuig.Model, voertuig.VoertuigType.ToString(), reservering.Comment);
                 _context.Reserveringen.Remove(reservering);
             }
             else
             {
-                EmailSender.AanvraagGoedgekeurd(account.Email, reservering.Begindatum, reservering.Einddatum, voertuig.Merk, voertuig.Model, voertuig.VoertuigType.ToString(), reservering.Comment);
+                EmailSender.AanvraagGoedgekeurd(account.Email, reservering.Begindatum, reservering.Einddatum, 
+                    voertuig.Merk, voertuig.Model, voertuig.VoertuigType.ToString(), reservering.Comment);
             }
 
             await _context.SaveChangesAsync();

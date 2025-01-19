@@ -1,257 +1,126 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Dtos;
+using WPRRewrite.Enums;
 using WPRRewrite.Interfaces;
-using WPRRewrite.Modellen;
-using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.Modellen.Voertuigen;
-using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Controllers;
 
 [ApiController]
-[Route("api/Voertuig")]
-public class VoertuigController : ControllerBase
+[Route("[Controller]")]
+public class VoertuigController(Context context) : ControllerBase
 {
-    private readonly Context _context;
-
-    public VoertuigController(Context context)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-    }
+    private readonly Context _context = context ?? throw new ArgumentNullException(nameof(context));
     
-    [HttpGet("krijgallevoertuigen")]
-    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen()
+    [HttpGet("GetVoertuigen")]
+    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetVoertuigen([FromQuery] VoertuigTypeEnum? voertuigType, 
+        [FromQuery] int? voertuigId, [FromQuery] DateOnly? begindatum, [FromQuery] DateOnly? einddatum)
     {
-        var Voertuigen = await _context.Voertuigen.ToListAsync();
-        return Ok(Voertuigen);
-    }
-    
-    [HttpGet("krijgallevoertuigenDatum")]
-    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen(DateTime begindatum, DateTime einddatum)
-    {
-        var Voertuigen = await _context.Voertuigen.Include(voertuig => voertuig.Reserveringen).ToListAsync();
-        List<Voertuig> beschikbareVoertuigen = new List<Voertuig>();
-        foreach (var voertuig in Voertuigen)
+        try
         {
-            var reserveringen = voertuig.Reserveringen;
-            if (reserveringen != null)
+            IQueryable<IVoertuig> query = _context.Voertuigen;
+
+            if (voertuigType.HasValue)
             {
-                    if (!reserveringen.Any(r => begindatum <= r.Einddatum && einddatum >= r.Begindatum))
-                    {
-                        //VoertuigDto voertuigDto = new VoertuigDto(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus, voertuig.VoertuigType, voertuig.BrandstofType);
-                        beschikbareVoertuigen.Add(voertuig);
-                    }
+                query = voertuigType switch
+                {
+                    VoertuigTypeEnum.Auto => query.OfType<Auto>(),
+                    VoertuigTypeEnum.Camper => query.OfType<Camper>(),
+                    VoertuigTypeEnum.Caravan => query.OfType<Caravan>(),
+                    _ => throw new ArgumentOutOfRangeException(nameof(voertuigType), voertuigType, "Onjuist voertuig type")
+                };
             }
-        }
-        return Ok(beschikbareVoertuigen);
-    }
 
-    [HttpGet("krijgallevoertuigenAccount")]
-    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen(int accountId)
-    {
-        // Haal alle reserveringen op voor het account
-        var reserveringen = await _context.Reserveringen
-            .Where(r => r.AccountId == accountId)
-            .ToListAsync();
-        
-        List<ReserveringVoertuigDto> alleReserveringen = new List<ReserveringVoertuigDto>();
-        foreach (var reservering in reserveringen)
-        {
-            var voertuig = await _context.Voertuigen.FindAsync(reservering.VoertuigId);
-            if (voertuig == null) return NotFound();
-            ReserveringVoertuigDto reserveringje = new ReserveringVoertuigDto(reservering.VoertuigId, reservering.ReserveringId, voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.VoertuigType, voertuig.BrandstofType, reservering.Begindatum, reservering.Einddatum, reservering.TotaalPrijs, reservering.IsBetaald, reservering.IsGoedgekeurd);
-            alleReserveringen.Add(reserveringje);
-        }
-
-        
-        
-        return Ok(alleReserveringen);
-    }
-    
-    
-    [HttpGet("KrijgGehuurdeBedrijfsvoertuigen")]
-    public async Task<ActionResult<Voertuig>> GetVoertuig(List<AccountZakelijk> medewerkers)
-    {
-        var reserveringen = new List<Reservering>();
-        foreach (var medewerker in medewerkers)
-        {
-            foreach (var reservering in medewerker.Reserveringen)
+            if (voertuigId.HasValue)
             {
-                reserveringen.Add(reservering);
+                var voertuig = await query.FirstOrDefaultAsync(v => v.VoertuigId == voertuigId);
+                if (voertuig == null)
+                    return NotFound(new { Message = $"Voertuig met ID {voertuigId} niet gevonden" });
+
+                return Ok(voertuig);
             }
+
+            if (begindatum.HasValue && einddatum.HasValue)
+            {
+                query = query.Where(v => !_context.Reserveringen
+                    .Any(r => r.VoertuigId == v.VoertuigId &&
+                              begindatum <= r.Einddatum &&
+                              einddatum >= r.Begindatum));
+            }
+
+            var voertuigen = await query.ToListAsync();
+            if (voertuigen.Count != 0)
+                return NotFound(new { Message = "Geen voertuigen met dit type gevonden" });
+
+            return Ok(voertuigen);
         }
-        return Ok(reserveringen);
-    }
-    
-//new
-    [HttpGet("GetAlleVoertuigenMetReserveringen")]
-    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigenMetReserveringen()
-    {
-        // Haal alle reserveringen op
-        var reserveringen = await _context.Reserveringen
-            .Where(r => r.IsGoedgekeurd == false)
-            .ToListAsync();
-        
-        // Controleer of er reserveringen zijn
-        if (reserveringen.Count == 0)
+        catch (Exception ex)
         {
-            return Ok(new { Message = "Er zijn geen reserveringen gevonden." });
+            return StatusCode(500, new { ex.Message });
         }
-
-        List<ReserveringVoertuigDto> alleReserveringen = new List<ReserveringVoertuigDto>();
-
-        foreach (var reservering in reserveringen)
-        {
-            // Zoek het voertuig op basis van de VoertuigId van de reservering
-            var voertuig = await _context.Voertuigen.FindAsync(reservering.VoertuigId);
-
-            // Als het voertuig niet gevonden kan worden, geef een foutmelding
-            if (voertuig == null) return NotFound();
-            ReserveringVoertuigDto reservering2 = new ReserveringVoertuigDto(reservering.VoertuigId, reservering.ReserveringId, voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.VoertuigType, voertuig.BrandstofType, reservering.Begindatum, reservering.Einddatum, reservering.TotaalPrijs, reservering.IsBetaald, reservering.IsGoedgekeurd);
-            alleReserveringen.Add(reservering2);
-        }
-
-        // Retourneer de lijst van reserveringen met voertuigen
-        return Ok(alleReserveringen);
     }
 
-
-
-    [HttpGet("krijgspecifiekvoertuig")]
-    public async Task<ActionResult<Voertuig>> GetVoertuig(int id)
+    [HttpPost("AddVoertuig")]
+    public async Task<ActionResult<IVoertuig>> Create([FromBody] VoertuigDto voertuigDto)
     {
-        var voertuig = await _context.Voertuigen.FindAsync(id);
-
-        if (voertuig == null)
+        try
         {
-            return NotFound();
+            var checkVoertuig =
+                _context.Voertuigen.Any(v => v.Merk == voertuigDto.Merk && v.Model == voertuigDto.Model);
+            if (checkVoertuig)
+                return BadRequest(new { Message = "Een voertuig met dit merk en model bestaat al" });
+
+            var nieuwVoertuig = Voertuig.MaakVoertuig(voertuigDto);
+            
+            _context.Voertuigen.Add(nieuwVoertuig);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Voertuig toegevoegd aan de database" });
         }
-        return Ok(voertuig);
-    }
-
-    [HttpGet("Filter voertuigen")]
-    public async Task<ActionResult<IEnumerable<IVoertuig>>> FilterVoertuigen(string voertuigType)
-    {
-        if (string.IsNullOrWhiteSpace(voertuigType))
+        catch (Exception ex)
         {
-            return BadRequest("VoertuigType is verplicht meegegeven te worden");
+            return StatusCode(500, new { ex.Message });
         }
-        
-        var voertuigen = await _context.Voertuigen
-            .Where(v => EF.Property<string>(v, "VoertuigType") == voertuigType)
-            .ToListAsync();
-
-        return Ok(voertuigen);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<Voertuig>> PostVoertuig([FromBody] Voertuig voertuig)
-    {
-        if (voertuig == null)
-        {
-            return BadRequest("Voertuig mag niet 'NULL' zijn");
-        }
-        
-        _context.Voertuigen.Add(voertuig);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetVoertuig), new { id = voertuig.VoertuigId }, voertuig);
-    }
-    
-    [HttpPost("reserveerVoertuig")]
-    public async Task<IActionResult> ReserveerVoertuig([FromBody] VoertuigReservering voertuigReservering)
-    {
-        // Zoek het voertuig in de database
-        var voertuig = await _context.Voertuigen.FindAsync(voertuigReservering.VoertuigId);
-
-        if (voertuig == null) return NotFound("Voertuig niet gevonden.");
-
-        // Haal bestaande reserveringen op
-        var reserveringen = voertuig.GetReserveringen() ?? new List<Reservering>();
-
-        // Controleer of er overlap is met bestaande reserveringen
-        if (reserveringen.Any(r => voertuigReservering.Begindatum < r.Einddatum && voertuigReservering.Einddatum > r.Begindatum))
-            return BadRequest("Dit voertuig is al gereserveerd in de opgegeven periode.");
-
-        var days = (voertuigReservering.Einddatum - voertuigReservering.Begindatum).Days;
-        var bijkomendeKosten = 0;
-        if (voertuig.VoertuigType == "Auto")
-        {
-            bijkomendeKosten = 100 + 100 * days; // Zorg ervoor dat `totaalPrijs` bestaat
-        } else if (voertuig.VoertuigType == "Caravan")
-        {
-            bijkomendeKosten = 200 + 200 * days; // Zorg ervoor dat `totaalPrijs` bestaat
-        } else if (voertuig.VoertuigType == "Camper")
-        {
-            bijkomendeKosten = 300 + 300 * days; // Zorg ervoor dat `totaalPrijs` bestaat
-        }
-        
-        // Maak een nieuwe reservering aan
-        var reserveringDto = new Reservering(
-            voertuigReservering.Begindatum,
-            voertuigReservering.Einddatum,
-            bijkomendeKosten,
-            voertuig.VoertuigId,
-            voertuigReservering.AccountId
-        );
-        
-        voertuig.updateVoertuigStatus(voertuigReservering.VoertuigStatus);
-
-        // Voeg de reservering toe
-        _context.Reserveringen.Add(reserveringDto);
-
-        // Sla wijzigingen op in de database
-        await _context.SaveChangesAsync();
-
-        return Ok($"Voertuig met ID {voertuigReservering.VoertuigId} is succesvol gereserveerd van {voertuigReservering.Begindatum:yyyy-MM-dd} tot {voertuigReservering.Einddatum:yyyy-MM-dd}. {reserveringDto.TotaalPrijs}");
     }
 
     
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutVoertuig(int id, [FromBody] Voertuig updatedVoertuig)
+    [HttpPut("Update")]
+    public async Task<IActionResult> Update([FromQuery] int accountId, [FromBody] VoertuigDto nieuweGegevens)
     {
-        if (id != updatedVoertuig.VoertuigId)
+        try
         {
-            return BadRequest("ID mismatch");
-        }
+            var voertuig = await _context.Voertuigen.FindAsync(accountId);
+            if (voertuig == null)
+                return NotFound(new { Message = $"Voertuig met ID {accountId} staat niet in de database" });
+            
+            voertuig.UpdateVoertuig(nieuweGegevens);
 
-        var existingVoertuig = await _context.Voertuigen.FindAsync(id);
-        if (existingVoertuig == null)
+            return Ok(new { Message = "Voertuig succesvol aangepast" });
+        }
+        catch (Exception ex)
         {
-            return NotFound();
+            return StatusCode(500, new { ex.Message });
         }
-
-        existingVoertuig.UpdateVoertuig(updatedVoertuig);
-
-        await _context.SaveChangesAsync();
-        return NoContent();
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteVoertuig(int id)
+    [HttpDelete("Delete")]
+    public async Task<IActionResult> Delete([FromQuery] int voertuigId)
     {
-        var voertuig = await _context.Voertuigen.FindAsync(id);
-        if (voertuig == null)
-        {
-            return NotFound();
+        try {
+            var voertuig = await _context.Voertuigen.FindAsync(voertuigId);
+            if (voertuig == null)
+                return NotFound(new { Message = $"Voertuig met ID {voertuigId} staat niet in de database" });
+
+            _context.Voertuigen.Remove(voertuig);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = $"Voertuig {voertuig.Merk} {voertuig.Model} succesvol verwijderd" });
         }
-
-        _context.Voertuigen.Remove(voertuig);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { ex.Message });
+        }
     }
-    
-    
-    [HttpPut("HuuraanvraagUpdaten")]
-    public async Task<IActionResult> HuuraanvraagUpdaten(int id ,string status)
-    {
-        var voertuig = await _context.Voertuigen.FindAsync(id);
-        if (voertuig == null) return NotFound();
-        voertuig.VoertuigStatus = status;
-        return NoContent();
-    }
-    
 }
 
