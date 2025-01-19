@@ -65,6 +65,21 @@ public class AccountController(Context context) : ControllerBase
         
             if (account.VerifieerWachtwoord(login.Wachtwoord) == PasswordVerificationResult.Failed) 
                 return Unauthorized(new { Message = "Incorrect wachtwoord" });
+            
+            var reservering = await _context.Reserveringen.FirstOrDefaultAsync(r => r.AccountId == account.AccountId);
+            if (reservering == null) 
+                return Ok(account);
+            
+            var reserveringDate = reservering.Begindatum;
+            var currentDate = DateOnly.FromDateTime(DateTime.Now);
+
+            if (reserveringDate != currentDate.AddDays(1) || reservering.Herinnering) 
+                return Ok(account);
+            
+            EmailSender.VerstuurHerinneringEmail(account.Email, reservering.VoertuigId, reservering.Begindatum);
+            
+            reservering.UpdateHerinnering();
+            await _context.SaveChangesAsync();
 
             return Ok(account);
         }
@@ -105,8 +120,9 @@ public class AccountController(Context context) : ControllerBase
         {
             var account = await _context.Accounts.FindAsync(id);
             if (account == null)
-                return NotFound(new { Message = $"Account met ID {id} staat niet in de database"});
+                return NotFound(new { Message = $"Account met ID {id} staat niet in de database" });
         
+            // Update Adres voor Particulier account
             account.UpdateAccount(nieuweGegevens);
 
             return Ok(new { Message = "Account succesvol aangepast" }); 
@@ -139,7 +155,37 @@ public class AccountController(Context context) : ControllerBase
         }
     }
     
-    //##Backoffice Functies##
+    //## Frontoffice Functies ##
+    [HttpPut("UpdateVoertuigStatus")]
+    public async Task<IActionResult> PutVoertuigStatus([FromQuery] int id, [FromQuery] DateOnly begindatum, [FromQuery] DateOnly einddatum)
+    {
+        try {
+            var voertuig = await _context.Voertuigen.FindAsync(id);
+            if (voertuig == null) return NotFound();
+
+            switch (voertuig.VoertuigStatus)
+            {
+                case VoertuigStatusEnum.Gereserveerd:
+                case VoertuigStatusEnum.Beschikbaar:
+                    voertuig.VoertuigStatus = VoertuigStatusEnum.Uitgegeven;
+                    break;
+                case VoertuigStatusEnum.Uitgegeven:
+                    voertuig.VoertuigStatus = VoertuigStatusEnum.Beschikbaar;
+                    break;
+                default:
+                    return BadRequest("Ongeldige VoertuigStatus");
+            }
+        
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { ex.Message });
+        }
+    }
+    
+    //## Backoffice Functies ##
     [HttpPut("HuuraanvraagKeuren")]
     public async Task<ActionResult> HuuraanvraagKeuren([FromBody] HuuraanvraagDto huuraanvraagDto)
     {
@@ -160,12 +206,12 @@ public class AccountController(Context context) : ControllerBase
             
             if (!reservering.IsGoedgekeurd)
             {
-                EmailSender.AanvraagAfgekeurd(account.Email, reservering.Begindatum, reservering.Einddatum, voertuig.Merk, voertuig.Model,voertuig.VoertuigType, reservering.Comment);
+                EmailSender.AanvraagAfgekeurd(account.Email, reservering.Begindatum, reservering.Einddatum, voertuig.Merk, voertuig.Model, voertuig.VoertuigType.ToString(), reservering.Comment);
                 _context.Reserveringen.Remove(reservering);
             }
             else
             {
-                EmailSender.AanvraagGoedgekeurd(account.Email, reservering.Begindatum, reservering.Einddatum, voertuig.Merk, voertuig.Model, voertuig.VoertuigType, reservering.Comment);
+                EmailSender.AanvraagGoedgekeurd(account.Email, reservering.Begindatum, reservering.Einddatum, voertuig.Merk, voertuig.Model, voertuig.VoertuigType.ToString(), reservering.Comment);
             }
 
             await _context.SaveChangesAsync();

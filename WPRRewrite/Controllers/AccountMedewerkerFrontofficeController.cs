@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Dtos;
@@ -127,4 +127,4 @@ public class AccountMedewerkerFrontofficeController : ControllerBase
 
         return NoContent();
     }
-}
+}*/

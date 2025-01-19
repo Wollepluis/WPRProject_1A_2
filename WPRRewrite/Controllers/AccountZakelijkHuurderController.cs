@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Dtos;
@@ -82,7 +82,7 @@ public class AccountZakelijkHuurderController : ControllerBase
             await _context.SaveChangesAsync();
 
             /*var bedrijf = await context.Bedrijven.FindAsync(accountZakelijkHuurder.BedrijfsId);
-            emailSender.SendEmail(bedrijf);*/
+            emailSender.SendEmail(bedrijf);#1#
             EmailSender.VerstuurBevestigingsEmail(account.Email, account.Bedrijf.Bedrijfsnaam);
             return CreatedAtAction(nameof(GetAccount), new { id = account.AccountId }, account);
         }
@@ -156,4 +156,4 @@ public class AccountZakelijkHuurderController : ControllerBase
 
         return NoContent();
     }
-}
+}*/

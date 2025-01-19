@@ -47,6 +47,13 @@ public class Context(DbContextOptions<Context> options) : DbContext(options)
             .Property(e => e.VoertuigStatus)
             .HasConversion(
                 v => v.ToString(),
+                v => (VoertuigStatusEnum)Enum.Parse(typeof(VoertuigStatusEnum), v)
+            );
+        
+        builder.Entity<Voertuig>()
+            .Property(e => e.VoertuigType)
+            .HasConversion(
+                v => v.ToString(),
                 v => (VoertuigTypeEnum)Enum.Parse(typeof(VoertuigTypeEnum), v)
             );
 
