@@ -167,7 +167,7 @@ public class AccountParticulierController : ControllerBase
             await _context.SaveChangesAsync();
         }
         var accounts = _context.Accounts.OfType<AccountParticulier>().Count(a => a.AdresId == existingAccount.AdresId);
-        var bedrijven = _context.Bedrijven.Count(a => a.BedrijfAdres == existingAccount.AdresId);
+        var bedrijven = _context.Bedrijven.Count(a => a.AdresId == existingAccount.AdresId);
         if ((accounts + bedrijven) == 1)
         {
             Adres? oudAdres = await _context.Adressen.FirstOrDefaultAsync();
