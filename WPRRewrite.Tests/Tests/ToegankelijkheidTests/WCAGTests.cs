@@ -1,4 +1,4 @@
-﻿// Tests/ToegankelijkheidTests/WCAGTests.cs
+﻿/*// Tests/ToegankelijkheidTests/WCAGTests.cs
 using NUnit.Framework;
 
 namespace WPRRewrite.Tests.Tests.ToegankelijkheidTests
@@ -13,4 +13,4 @@ namespace WPRRewrite.Tests.Tests.ToegankelijkheidTests
             Assert.Pass("Toegankelijkheidstests moeten worden geïmplementeerd met front-end testing tools");
         }
     }
-}
+}*/

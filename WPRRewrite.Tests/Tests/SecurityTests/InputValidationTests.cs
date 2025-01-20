@@ -1,8 +1,7 @@
 ﻿// Tests/SecurityTests/InputValidationTests.cs
-
 using System.Net.Http.Json;
-using NUnit.Framework;
-using WPRRewrite.DTOs;
+using WPRRewrite.Dtos;
+using WPRRewrite.Enums;
 using WPRRewrite.Modellen.Accounts;
 
 namespace WPRRewrite.Tests.Tests.SecurityTests
@@ -60,12 +59,11 @@ namespace WPRRewrite.Tests.Tests.SecurityTests
             // Arrange
             var xssPayload = "<script>alert('xss')</script>";
             var accountData = new AccountDto(
-                "Particulier",
+                AccountTypeEnum.Particulier,
                 xssPayload + "@test.nl",
                 "wachtwoord123",
                 xssPayload,
                 0612345678,
-                0,
                 1
             );
 

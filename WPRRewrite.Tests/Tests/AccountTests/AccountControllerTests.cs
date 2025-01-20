@@ -1,6 +1,7 @@
 ﻿// Tests/AccountTests/AccountControllerTests.cs
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WPRRewrite.Controllers;
 using WPRRewrite.Modellen.Accounts;
 
 namespace WPRRewrite.Tests.Tests.AccountTests
@@ -34,7 +35,7 @@ namespace WPRRewrite.Tests.Tests.AccountTests
             // Arrange: Geen accounts toevoegen aan de in-memory database
 
             // Act
-            var result = await _controller.GetAll(null, null);
+            var result = await _controller.GetAccounts(null, null);
 
             // Assert
             Assert.That(result.Result, Is.TypeOf<NotFoundObjectResult>());
@@ -48,7 +49,7 @@ namespace WPRRewrite.Tests.Tests.AccountTests
             await _mockContext.SaveChangesAsync();
 
             // Act
-            var result = await _controller.GetAll(null, null);
+            var result = await _controller.GetAccounts(null, null);
 
             // Assert
             Assert.That(result.Result, Is.TypeOf<OkObjectResult>());

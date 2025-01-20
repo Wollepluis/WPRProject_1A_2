@@ -34,7 +34,7 @@ namespace WPRRewrite.Tests.Tests.ReserveringTests
         public async Task GetAll_GeenReserveringen_RetourneertNotFound()
         {
             // Act
-            var result = await _controller.GetAll();
+            var result = await _controller.GetReserveringen(1);
 
             // Assert
             Assert.That(result.Result, Is.TypeOf<NotFoundObjectResult>());
@@ -58,7 +58,7 @@ namespace WPRRewrite.Tests.Tests.ReserveringTests
             await _mockContext.SaveChangesAsync();
 
             // Act
-            var result = await _controller.GetAll();
+            var result = await _controller.GetReserveringen(1);
 
             // Assert
             Assert.That(result.Result, Is.TypeOf<OkObjectResult>());
@@ -68,7 +68,7 @@ namespace WPRRewrite.Tests.Tests.ReserveringTests
         public async Task GetAccountReserveringen_GeenReserveringenVoorAccount_RetourneertNotFound()
         {
             // Act
-            var result = await _controller.GetAccountReserveringen(1);
+            var result = await _controller.GetReserveringen(1);
 
             // Assert
             Assert.That(result.Result, Is.TypeOf<NotFoundObjectResult>());
@@ -92,7 +92,7 @@ namespace WPRRewrite.Tests.Tests.ReserveringTests
             await _mockContext.SaveChangesAsync();
 
             // Act
-            var result = await _controller.GetAccountReserveringen(1);
+            var result = await _controller.GetReserveringen(1);
 
             // Assert
             Assert.That(result.Result, Is.TypeOf<OkObjectResult>());

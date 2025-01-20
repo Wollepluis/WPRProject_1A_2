@@ -2,9 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using NUnit.Framework;
 using WPRRewrite.Controllers;
-using WPRRewrite.Modellen.Kar;
+using WPRRewrite.Modellen.Voertuigen;
 
 namespace WPRRewrite.Tests.Tests.VoertuigTests
 {
@@ -32,7 +31,7 @@ namespace WPRRewrite.Tests.Tests.VoertuigTests
                 .ReturnsAsync(new List<Voertuig>());
 
             // Act
-            var resultaat = await _controller.GetAll(null, null);
+            var resultaat = await _controller.GetVoertuigen(null, null, null, null);
 
             // Assert
             Assert.That(resultaat.Result, Is.InstanceOf<NotFoundObjectResult>());

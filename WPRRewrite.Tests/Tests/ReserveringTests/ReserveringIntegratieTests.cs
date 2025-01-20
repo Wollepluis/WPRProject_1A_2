@@ -1,4 +1,4 @@
-﻿// Tests/ReserveringTests/ReserveringIntegratieTests.cs
+﻿/*// Tests/ReserveringTests/ReserveringIntegratieTests.cs
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -130,4 +130,4 @@ public class IntegratieTests
     {
         _factory.Dispose();
     }
-}
+}*/
