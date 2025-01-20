@@ -20,6 +20,15 @@ public class VoertuigController(Context context) : ControllerBase
         try
         {
             IQueryable<IVoertuig> query = _context.Voertuigen;
+            
+            if (voertuigId.HasValue)
+            {
+                var voertuig = await query.FirstOrDefaultAsync(v => v.VoertuigId == voertuigId);
+                if (voertuig == null)
+                    return NotFound(new { Message = $"Voertuig met ID {voertuigId} niet gevonden" });
+
+                return Ok(voertuig);
+            }
 
             if (voertuigType.HasValue)
             {
@@ -32,15 +41,6 @@ public class VoertuigController(Context context) : ControllerBase
                 };
             }
 
-            if (voertuigId.HasValue)
-            {
-                var voertuig = await query.FirstOrDefaultAsync(v => v.VoertuigId == voertuigId);
-                if (voertuig == null)
-                    return NotFound(new { Message = $"Voertuig met ID {voertuigId} niet gevonden" });
-
-                return Ok(voertuig);
-            }
-
             if (begindatum.HasValue && einddatum.HasValue)
             {
                 query = query.Where(v => !_context.Reserveringen
@@ -50,7 +50,7 @@ public class VoertuigController(Context context) : ControllerBase
             }
 
             var voertuigen = await query.ToListAsync();
-            if (voertuigen.Count != 0)
+            if (voertuigen.Count == 0)
                 return NotFound(new { Message = "Geen voertuigen met dit type gevonden" });
 
             return Ok(voertuigen);

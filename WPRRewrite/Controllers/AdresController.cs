@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
 using WPRRewrite.Modellen;
-using WPRRewrite.Modellen.Accounts;
 
 namespace WPRRewrite.Controllers;
 

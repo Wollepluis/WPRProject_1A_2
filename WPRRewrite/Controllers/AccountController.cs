@@ -22,6 +22,15 @@ public class AccountController(Context context) : ControllerBase
         try
         {
             IQueryable<IAccount> query = _context.Accounts;
+            
+            if (accountId.HasValue)
+            {
+                var account = await query.FirstOrDefaultAsync(a => a.AccountId == accountId);
+                if (account == null)
+                    return NotFound(new { Message = $"Account met ID {accountId} niet gevonden" });
+                
+                return Ok(account);
+            }
 
             if (accountType.HasValue)
             {
@@ -36,17 +45,8 @@ public class AccountController(Context context) : ControllerBase
                 };
             }
 
-            if (accountId.HasValue)
-            {
-                var account = await query.FirstOrDefaultAsync(a => a.AccountId == accountId);
-                if (account == null)
-                    return NotFound(new { Message = $"Account met ID {accountId} niet gevonden" });
-                
-                return Ok(account);
-            }
-
             var accounts = await query.ToListAsync();
-            if (accounts.Count != 0)
+            if (accounts.Count == 0)
                 return NotFound(new { Message = "Geen accounts met dit type gevonden" });
 
             return Ok(accounts);

@@ -62,7 +62,7 @@ public class ReserveringController(Context context) : ControllerBase
             });
 
             var reserveringen = await projectedQuery.ToListAsync();
-            if (reserveringen.Count != 0)
+            if (reserveringen.Count == 0)
                 return NotFound(new { Message = "Geen reserveringen met dit type gevonden" });
 
             return Ok(reserveringen);
@@ -101,37 +101,37 @@ public class ReserveringController(Context context) : ControllerBase
     }
     
     // Kijk of deze klopt (UpdateReservering + berekening)
-    [HttpPut("Update")]
-    public async Task<IActionResult> Update([FromQuery] int id, [FromBody] ReserveringDto reserveringDto)
-    {
-        try
-        { 
-            var reservering = await _context.Reserveringen.FindAsync(id);
-            if (reservering == null)
-                return NotFound(new { Message = $"Reservering met ID {id} staat niet in de database" });
-            
-            var voertuig = await _context.Voertuigen.FindAsync(reserveringDto.VoertuigId);
-            if (voertuig == null)
-                return NotFound(new { Message = $"Voertuig met ID {reserveringDto.VoertuigId} niet gevonden in de database" });
+     [HttpPut("Update")]
+     public async Task<IActionResult> Update([FromQuery] int id, [FromBody] ReserveringDto reserveringDto)
+     {
+         try
+         { 
+             var reservering = await _context.Reserveringen.FindAsync(id);
+             if (reservering == null)
+                 return NotFound(new { Message = $"Reservering met ID {id} staat niet in de database" });
+             
+             var voertuig = await _context.Voertuigen.FindAsync(reserveringDto.VoertuigId);
+             if (voertuig == null)
+                 return NotFound(new { Message = $"Voertuig met ID {reserveringDto.VoertuigId} niet gevonden in de database" });
 
-            var kosten = reservering.UpdateReservering(voertuig);
-            if (kosten < 1)
-                return BadRequest(new { Message = "Geen bijkomende kosten" });
-            
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountId == reservering.AccountId);
-            if (account == null) 
-                return BadRequest(new { Message = $"Account met ID {reservering.AccountId} staat niet in database" });
-            
-            await _context.SaveChangesAsync();
-            EmailSender.VerstuurWijzigReserveringEmail(account.Email);
-            
-            return Ok(kosten);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { ex.Message });
-        }
-    }
+             var kosten = reservering.UpdateReservering(reserveringDto, voertuig);
+             if (kosten < 1)
+                 return BadRequest(new { Message = "Geen bijkomende kosten" });
+             
+             var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccountId == reservering.AccountId);
+             if (account == null) 
+                 return BadRequest(new { Message = $"Account met ID {reservering.AccountId} staat niet in database" });
+             
+             await _context.SaveChangesAsync();
+             EmailSender.VerstuurWijzigReserveringEmail(account.Email);
+             
+             return Ok(kosten);
+         }
+         catch (Exception ex)
+         {
+             return StatusCode(500, new { ex.Message });
+         }
+     }
     
     [HttpDelete("Delete")]
     public async Task<IActionResult> Delete([FromQuery] int reserveringId)
@@ -219,7 +219,7 @@ public class ReserveringController(Context context) : ControllerBase
         return Ok(voertuig);
     }*/
     
-    [HttpGet("KrijgGehuurdeBedrijfsvoertuigen")]
+    /*[HttpGet("KrijgGehuurdeBedrijfsvoertuigen")]
     public async Task<ActionResult<Voertuig>> GetVoertuig(List<AccountZakelijk> medewerkers)
     {
         var reserveringen = new List<Reservering>();
@@ -246,5 +246,5 @@ public class ReserveringController(Context context) : ControllerBase
         }
         var gesorteerdeReserveringen = reserveringen.OrderBy(a => a.Begindatum);
         return Ok(gesorteerdeReserveringen);
-    }
+    }*/
 }

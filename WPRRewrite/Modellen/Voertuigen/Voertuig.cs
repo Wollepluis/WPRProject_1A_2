@@ -19,7 +19,7 @@ public abstract class Voertuig : IVoertuig
     public VoertuigTypeEnum VoertuigType { get; set; }
     
     public int? SchadeclaimId { get; set; }
-    [ForeignKey(nameof(Schadeclaim))] public Schadeclaim Schadeclaim { get; set; }
+    [ForeignKey(nameof(SchadeclaimId))] public Schadeclaim Schadeclaim { get; set; }
     
     protected Voertuig() { }
     protected Voertuig(string kenteken, string merk, string model, string kleur, int aanschafjaar, int prijs,

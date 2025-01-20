@@ -46,6 +46,17 @@ public class Reservering
     {
         Herinnering = true;
     }
+    
+    public double UpdateReservering(ReserveringDto reserveringDto, IVoertuig voertuig)
+    {
+        Begindatum = reserveringDto.Begindatum;
+        Einddatum = reserveringDto.Einddatum;
+        TotaalPrijs = BerekenKosten(reserveringDto.Begindatum, reserveringDto.Einddatum, voertuig.VoertuigType);
+        VoertuigId = reserveringDto.VoertuigId;
+        AccountId = reserveringDto.AccountId;
+
+        return TotaalPrijs;
+    }
 
     public static Reservering MaakReservering(ReserveringDto reserveringDto, IVoertuig voertuig)
     {

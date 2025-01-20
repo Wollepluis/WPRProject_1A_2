@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Abonnementen;
@@ -9,14 +10,9 @@ namespace WPRRewrite.Controllers;
 
 [ApiController]
 [Route("api/[Controller]")]
-public class AbonnementController : ControllerBase
+public class AbonnementController(Context context) : ControllerBase
 {
-    private readonly Context _context;
-
-    public AbonnementController(Context context)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-    }
+    private readonly Context _context = context ?? throw new ArgumentNullException(nameof(context));
 
     [HttpGet("GetAll")]
     public async Task<ActionResult<IEnumerable<Abonnement>>> GetAllAbonnementen()
@@ -221,3 +217,4 @@ public async Task<IActionResult> UpdateAbonnement(int abonnementId, int accountI
     }
 
 }
+*/
