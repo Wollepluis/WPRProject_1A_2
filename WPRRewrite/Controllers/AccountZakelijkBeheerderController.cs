@@ -99,7 +99,7 @@ public class AccountZakelijkBeheerderController : ControllerBase
         if (result == PasswordVerificationResult.Failed) return Unauthorized(new { message = "Verkeerd wachtwoord"});
         
         var reservering = await _context.Reserveringen.FirstOrDefaultAsync(r => r.AccountId == account.AccountId);
-        if (reservering != null)
+        /*if (reservering != null)
         {
             // Get only the date part (no time)
             var reserveringDate = reservering.Begindatum.Date;
@@ -112,7 +112,7 @@ public class AccountZakelijkBeheerderController : ControllerBase
                 reservering.UpdateHerinnering();
                 await _context.SaveChangesAsync();
             }
-        }
+        }*/
         
         return Ok(new {account.AccountId});
     }

@@ -10,17 +10,17 @@ public class Bedrijf
     public int BedrijfId { get; set; }
     public int KvkNummer { get; set; }
     public string Bedrijfsnaam { get; set; }
-    public int BedrijfAdres { get; set; }
-    [ForeignKey("BedrijfAdres")]
+    public int AdresId { get; set; }
+    [ForeignKey("AdresId")]
     public Adres Adres { get; set; }
     public string Domeinnaam { get; set; }
     public int AbonnementId { get; set; }
     [ForeignKey("AbonnementId")]
     public Abonnement Abonnement { get; set; }
 
-    public int? ToekomstigAbonnement {get; set;}
-    [ForeignKey("ToekomstigAbonnement")]
-    public Abonnement ToekomstigAbonnementje { get; set; }
+    public int? ToekomstigAbonnementId {get; set;}
+    [ForeignKey("ToekomstigAbonnementId")]
+    public Abonnement ToekomstigAbonnement { get; set; }
 
     public List<AccountZakelijk> BevoegdeMedewerkers { get; set; }
     
@@ -34,7 +34,7 @@ public class Bedrijf
     {
         KvkNummer = kvkNummer;
         Bedrijfsnaam = bedrijfsnaam;
-        BedrijfAdres = bedrijfAdres;
+        AdresId = bedrijfAdres;
         AbonnementId = abonnementId;
         Domeinnaam = domeinnaam;
         BevoegdeMedewerkers= new List<AccountZakelijk>();

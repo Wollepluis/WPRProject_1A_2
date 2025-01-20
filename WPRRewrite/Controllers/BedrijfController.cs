@@ -50,7 +50,7 @@ public class BedrijfController : ControllerBase
         if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
 
         var abonnement = await _context.Abonnementen.FindAsync(bedrijf.AbonnementId);
-        var adres = await _context.Adressen.FindAsync(bedrijf.BedrijfAdres);
+        var adres = await _context.Adressen.FindAsync(bedrijf.AdresId);
         
         //BedrijfDto bedrijfDto = new BedrijfDto(bedrijf.KvkNummer, bedrijf.Bedrijfsnaam, bedrijf.Domeinnaam, adres.Postcode, adres.Huisnummer);
         return Ok(bedrijf);
@@ -224,7 +224,7 @@ public async Task<ActionResult<Bedrijf>> PostBedrijf([FromBody] BedrijfEnBeheerd
         if (abonnementType == null) abonnementType = "Geen";
         var hoeveelheidGehuurdeAutos = await _context.Reserveringen.Include(a => a.Account).Select(a => a.Account).OfType<AccountZakelijk>().Where(a => a.BedrijfId == bedrijfsId).CountAsync();
         int aantalMedewerkers = bedrijf.BevoegdeMedewerkers.Count;
-        BedrijfstatistiekenDto statistieken = new BedrijfstatistiekenDto(kosten, hoeveelheidGehuurdeAutos, aantalMedewerkers, abonnementType, bedrijf.Bedrijfsnaam, bedrijf.Adres);
+        BedrijfstatistiekenDto statistieken = new BedrijfstatistiekenDto(kosten, hoeveelheidGehuurdeAutos, aantalMedewerkers, bedrijf.Bedrijfsnaam, bedrijf.Adres);
         return Ok(new { Statistieken = statistieken, Abonnement = bedrijf.Abonnement });
     }
 
