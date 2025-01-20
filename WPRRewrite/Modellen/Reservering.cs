@@ -23,8 +23,7 @@ public class Reservering
     [ForeignKey("VoertuigId")]
     public Voertuig Voertuig { get; set; }
     public int AccountId { get; set; }
-    [ForeignKey("AccountId")]
-    public Account Account { get; set; }
+    [ForeignKey(nameof(AccountId))] public Account Account { get; set; }
 
     public bool Herinnering { get; set; }
     

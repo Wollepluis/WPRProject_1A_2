@@ -76,10 +76,11 @@ public class VoertuigController : ControllerBase
         var reserveringen = new List<Reservering>();
         foreach (var medewerker in medewerkers)
         {
-            foreach (var reservering in medewerker.Reserveringen)
+            //Linq query toevoegen
+            /*foreach (var reservering in medewerker.Reserveringen)
             {
                 reserveringen.Add(reservering);
-            }
+            }*/
         }
         return Ok(reserveringen);
     }

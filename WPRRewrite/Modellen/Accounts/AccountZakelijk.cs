@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen;
 
@@ -6,7 +7,7 @@ namespace WPRRewrite.Modellen.Accounts;
 
 public abstract class AccountZakelijk : Account, IAccountZakelijk
 {
-    public int BedrijfId { get; set; }
+    
     protected AccountZakelijk(IPasswordHasher<Account> passwordHasher, CarAndAllContext context)
         : base(passwordHasher, context)
     {
@@ -17,9 +18,9 @@ public abstract class AccountZakelijk : Account, IAccountZakelijk
     {
         
     }
-    
+    public int BedrijfId { get; set; }
+    [ForeignKey(nameof(BedrijfId))]
     public Bedrijf Bedrijf { get; set; }
-    public List<Reservering> Reserveringen { get; set; }
 
     public override void UpdateAccount(IAccount updatedAccount)
     {
@@ -27,12 +28,5 @@ public abstract class AccountZakelijk : Account, IAccountZakelijk
         
         Email = updatedAccount.Email;
         Wachtwoord = updatedAccount.Wachtwoord;
-    }
-
-    public void AddReservering(Reservering reservering)
-    {
-        if (reservering == null) throw new ArgumentNullException(nameof(reservering));
-        
-        Reserveringen.Add(reservering);
     }
 }

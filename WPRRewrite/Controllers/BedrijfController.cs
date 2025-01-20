@@ -45,14 +45,14 @@ public class BedrijfController : ControllerBase
     [HttpGet("KrijgBedrijf")]
     public async Task<ActionResult<BedrijfDto>> GetBedrijf(int id)
     {
-        Bedrijf bedrijf = await _context.Bedrijven.Include(a => a.BevoegdeMedewerkers).ThenInclude(b => b.Reserveringen).FirstOrDefaultAsync(b => b.BedrijfId == id);
+        Bedrijf bedrijf = await _context.Bedrijven.Include(a => a.BevoegdeMedewerkers).FirstOrDefaultAsync(b => b.BedrijfId == id);
 
         if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
 
         var abonnement = await _context.Abonnementen.FindAsync(bedrijf.AbonnementId);
         var adres = await _context.Adressen.FindAsync(bedrijf.AdresId);
         
-        //BedrijfDto bedrijfDto = new BedrijfDto(bedrijf.KvkNummer, bedrijf.Bedrijfsnaam, bedrijf.Domeinnaam, adres.Postcode, adres.Huisnummer);
+        
         return Ok(bedrijf);
     }
 
@@ -209,7 +209,7 @@ public async Task<ActionResult<Bedrijf>> PostBedrijf([FromBody] BedrijfEnBeheerd
     {
         var bedrijf = await _context.Bedrijven.Include(a => a.BevoegdeMedewerkers).Include(a => a.Adres).Include(bedrijf => bedrijf.Abonnement).FirstOrDefaultAsync(b => b.BedrijfId == bedrijfsId);
         if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
-        var accounts = await _context.Accounts.OfType<AccountZakelijk>().Where(a => a.BedrijfId == bedrijfsId).Include(a => a.Reserveringen).ToListAsync();
+        var accounts = await _context.Accounts.OfType<AccountZakelijk>().Where(a => a.BedrijfId == bedrijfsId)./*Include(a => a.Reserveringen).*/ToListAsync();
         double kosten = 0;
         foreach (var account in accounts)
         {
