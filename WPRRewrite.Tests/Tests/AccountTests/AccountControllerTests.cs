@@ -23,12 +23,6 @@ namespace WPRRewrite.Tests.Tests.AccountTests
             _controller = new AccountController(_mockContext);
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            _mockContext.Dispose();
-        }
-
         [Test]
         public async Task GetAll_GeenAccounts_RetourneertNotFound()
         {
@@ -53,6 +47,12 @@ namespace WPRRewrite.Tests.Tests.AccountTests
 
             // Assert
             Assert.That(result.Result, Is.TypeOf<OkObjectResult>());
+        }
+        
+        [TearDown]
+        public void TearDown()
+        {
+            _mockContext.Dispose();
         }
     }
 }
