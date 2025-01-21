@@ -1,5 +1,4 @@
 ﻿using WPRRewrite.Dtos;
-using WPRRewrite.Enums;
 
 namespace WPRRewrite.Interfaces;
 
@@ -13,8 +12,11 @@ public interface IVoertuig
     public int Aanschafjaar { get; set; }
     public int Prijs { get; set; }
     
-    public VoertuigStatusEnum VoertuigStatus { get; set; }
-    public VoertuigTypeEnum VoertuigType { get; set; }
+    public string VoertuigStatus { get; set; }
+    public string VoertuigType { get; set; }
+    
+    public string BrandstofType { get; set; }
+    public string AantalZitplaatsen { get; set; }
     
     public void UpdateVoertuig(VoertuigDto updatedVoertuig);
 }

@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using WPRRewrite.Dtos;
-using WPRRewrite.Enums;
 using WPRRewrite.Interfaces;
 
 namespace WPRRewrite.Modellen.Voertuigen;
@@ -15,15 +14,17 @@ public abstract class Voertuig : IVoertuig
     [MaxLength(255)] public string Kleur { get; set; }
     public int Aanschafjaar { get; set; }
     public int Prijs { get; set; }
-    public VoertuigStatusEnum VoertuigStatus { get; set; }
-    public VoertuigTypeEnum VoertuigType { get; set; }
+    public string VoertuigStatus { get; set; }
+    public string VoertuigType { get; set; }
+    public string BrandstofType { get; set; }
+    public string AantalZitplaatsen { get; set; }
     
     public int? SchadeclaimId { get; set; }
     [ForeignKey(nameof(SchadeclaimId))] public Schadeclaim Schadeclaim { get; set; }
     
     protected Voertuig() { }
     protected Voertuig(string kenteken, string merk, string model, string kleur, int aanschafjaar, int prijs,
-        VoertuigStatusEnum voertuigStatus, VoertuigTypeEnum voertuigType)
+        string voertuigStatus, string voertuigType, string brandstofType, string aantalZitplaatsen)
     {
         Kenteken = kenteken;
         Merk = merk;
@@ -33,6 +34,8 @@ public abstract class Voertuig : IVoertuig
         Prijs = prijs;
         VoertuigStatus = voertuigStatus;
         VoertuigType = voertuigType;
+        BrandstofType = brandstofType;
+        AantalZitplaatsen = aantalZitplaatsen;
     }
     
     public void UpdateVoertuig(VoertuigDto updatedVoertuig)
@@ -45,7 +48,7 @@ public abstract class Voertuig : IVoertuig
         Prijs = updatedVoertuig.Prijs;
     }
 
-    public void UpdateVoertuigStatus(VoertuigStatusEnum status)
+    public void UpdateVoertuigStatus(string status)
     {
         VoertuigStatus = status;
     }
@@ -54,35 +57,41 @@ public abstract class Voertuig : IVoertuig
     {
         return gegevens.VoertuigType switch
         {
-            VoertuigTypeEnum.Auto => new Auto(
+            "Auto" => new Auto(
                 gegevens.Kenteken, 
                 gegevens.Merk, 
                 gegevens.Model,
                 gegevens.Kleur, 
                 gegevens.Aanschafjaar,
                 gegevens.Prijs,
-                VoertuigStatusEnum.Beschikbaar,
-                gegevens.VoertuigType
+                "Beschikbaar",
+                gegevens.VoertuigType,
+                gegevens.BrandstofType,
+                gegevens.AantalZitplaatsen
             ),
-            VoertuigTypeEnum.Camper => new Camper(
+            "Camper" => new Camper(
                 gegevens.Kenteken, 
                 gegevens.Merk, 
                 gegevens.Model,
                 gegevens.Kleur, 
                 gegevens.Aanschafjaar,
                 gegevens.Prijs,
-                VoertuigStatusEnum.Beschikbaar,
-                gegevens.VoertuigType
+                "Beschikbaar",
+                gegevens.VoertuigType,
+                gegevens.BrandstofType,
+                gegevens.AantalZitplaatsen
             ),
-            VoertuigTypeEnum.Caravan => new Caravan(
+            "Caravan" => new Caravan(
                 gegevens.Kenteken, 
                 gegevens.Merk, 
                 gegevens.Model,
                 gegevens.Kleur, 
                 gegevens.Aanschafjaar,
                 gegevens.Prijs,
-                VoertuigStatusEnum.Beschikbaar,
-                gegevens.VoertuigType
+                "Beschikbaar",
+                gegevens.VoertuigType,
+                gegevens.BrandstofType,
+                gegevens.AantalZitplaatsen
             ),
             _ => throw new ArgumentException($"Onbekend account type: {gegevens.VoertuigType}")
         };

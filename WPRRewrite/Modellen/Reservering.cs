@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using WPRRewrite.Dtos;
-using WPRRewrite.Enums;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.Modellen.Voertuigen;
@@ -69,15 +68,15 @@ public class Reservering
             );
     }
 
-    private static double BerekenKosten(DateOnly begindatum, DateOnly einddatum, VoertuigTypeEnum voertuigType)
+    private static double BerekenKosten(DateOnly begindatum, DateOnly einddatum, string voertuigType)
     {
         var days = begindatum.DayNumber - einddatum.DayNumber;
 
         var kosten = voertuigType switch
         {
-            VoertuigTypeEnum.Auto => 100 + 100 * days,
-            VoertuigTypeEnum.Caravan => 200 + 200 * days,
-            VoertuigTypeEnum.Camper => 300 + 300 * days,
+            "Auto" => 100 + 100 * days,
+            "Caravan" => 200 + 200 * days,
+            "Camper" => 300 + 300 * days,
             _ => 0
         };
         

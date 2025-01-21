@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 using WPRRewrite.Dtos;
-using WPRRewrite.Enums;
 using WPRRewrite.Interfaces;
+using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Modellen.Accounts;
 
@@ -13,7 +13,7 @@ public abstract class Account : IAccount
     public int AccountId { get; set; }
     [MaxLength(255)] public string Email { get; set; }
     [MaxLength(255)] public string Wachtwoord { get; set; }
-    public AccountTypeEnum AccountType { get; set; }
+    public string AccountType { get; set; }
     
     protected Account() { }
     protected Account(string email, string wachtwoord)
@@ -33,28 +33,28 @@ public abstract class Account : IAccount
     {
         return gegevens.AccountType switch
         {
-            AccountTypeEnum.Particulier => new AccountParticulier(
+            "Particulier" => new AccountParticulier(
                 gegevens.Email, 
                 gegevens.Wachtwoord, 
                 gegevens.Naam,
                 gegevens.Nummer, 
                 gegevens.AdresId
             ),
-            AccountTypeEnum.ZakelijkBeheerder => new AccountZakelijkBeheerder(
+            "ZakelijkBeheerder" => new AccountZakelijkBeheerder(
                 gegevens.Email, 
                 gegevens.Wachtwoord, 
                 gegevens.Nummer
             ),
-            AccountTypeEnum.ZakelijkHuurder => new AccountZakelijkHuurder(
+            "ZakelijkHuurder" => new AccountZakelijkHuurder(
                 gegevens.Email, 
                 gegevens.Wachtwoord, 
                 gegevens.Nummer
             ),
-            AccountTypeEnum.Frontoffice => new AccountMedewerkerFrontoffice(
+            "Frontoffice" => new AccountMedewerkerFrontoffice(
                 gegevens.Email, 
                 gegevens.Wachtwoord
             ),
-            AccountTypeEnum.Backoffice => new AccountMedewerkerBackoffice(
+            "Backoffice" => new AccountMedewerkerBackoffice(
                 gegevens.Email, 
                 gegevens.Wachtwoord
             ),

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using WPRRewrite.Dtos;
-using WPRRewrite.Enums;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Voertuigen;
 
@@ -14,7 +14,7 @@ public class VoertuigController(Context context) : ControllerBase
     private readonly Context _context = context ?? throw new ArgumentNullException(nameof(context));
     
     [HttpGet("GetVoertuigen")]
-    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetVoertuigen([FromQuery] VoertuigTypeEnum? voertuigType, 
+    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetVoertuigen([FromQuery] string? voertuigType, 
         [FromQuery] int? voertuigId, [FromQuery] DateOnly? begindatum, [FromQuery] DateOnly? einddatum)
     {
         try
@@ -30,13 +30,13 @@ public class VoertuigController(Context context) : ControllerBase
                 return Ok(voertuig);
             }
 
-            if (voertuigType.HasValue)
+            if (voertuigType.IsNullOrEmpty())
             {
                 query = voertuigType switch
                 {
-                    VoertuigTypeEnum.Auto => query.OfType<Auto>(),
-                    VoertuigTypeEnum.Camper => query.OfType<Camper>(),
-                    VoertuigTypeEnum.Caravan => query.OfType<Caravan>(),
+                    "Auto" => query.OfType<Auto>(),
+                    "Camper" => query.OfType<Camper>(),
+                    "Caravan" => query.OfType<Caravan>(),
                     _ => throw new ArgumentOutOfRangeException(nameof(voertuigType), voertuigType, "Onjuist voertuig type")
                 };
             }

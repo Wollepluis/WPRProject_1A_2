@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Dtos;
-using WPRRewrite.Enums;
 using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.Modellen.Voertuigen;
@@ -50,7 +49,7 @@ public class ReserveringController(Context context) : ControllerBase
 
             if (bedrijfId.HasValue)
             {
-                query = query.Where(r => r.Account.AccountType == AccountTypeEnum.Zakelijk &&
+                query = query.Where(r => r.Account.AccountType == "ZakelijkAccount" &&
                                  ((AccountZakelijk)r.Account).BedrijfId == bedrijfId);
             }
             
@@ -104,7 +103,7 @@ public class ReserveringController(Context context) : ControllerBase
                 return BadRequest(new { Message = "Dit voertuig is al gereserveerd in de opgegeven periode." });
             
             var nieuweReservering = Reservering.MaakReservering(reserveringDto, voertuig);
-            voertuig.UpdateVoertuigStatus(VoertuigStatusEnum.Gereserveerd);
+            voertuig.UpdateVoertuigStatus("Gereserveerd");
         
             _context.Reserveringen.Add(nieuweReservering);
             await _context.SaveChangesAsync();

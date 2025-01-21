@@ -5,7 +5,7 @@ namespace WPRRewrite.SysteemFuncties;
 
 public class AdresService
 {
-    public async Task<Adres?> ZoekAdresAsync(string postcode, int huisnummer)
+    public static async Task<Adres?> ZoekAdresAsync(string postcode, int huisnummer)
     {
         if (string.IsNullOrWhiteSpace(postcode) || huisnummer <= 0)
         {

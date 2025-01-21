@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using WPRRewrite.Dtos;
-using WPRRewrite.Enums;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.SysteemFuncties;
@@ -16,7 +16,7 @@ public class AccountController(Context context) : ControllerBase
     private readonly Context _context = context ?? throw new ArgumentNullException(nameof(context));
 
     [HttpGet("GetAccounts")]
-    public async Task<ActionResult<IEnumerable<IAccount>>> GetAccounts([FromQuery] AccountTypeEnum? accountType, 
+    public async Task<ActionResult<IEnumerable<IAccount>>> GetAccounts([FromQuery] string? accountType, 
         [FromQuery] int? accountId)
     {
         try
@@ -32,15 +32,15 @@ public class AccountController(Context context) : ControllerBase
                 return Ok(account);
             }
 
-            if (accountType.HasValue)
+            if (accountType.IsNullOrEmpty())
             {
                 query = accountType switch
                 {
-                    AccountTypeEnum.Particulier => query.OfType<AccountParticulier>(),
-                    AccountTypeEnum.ZakelijkBeheerder => query.OfType<AccountZakelijkBeheerder>(),
-                    AccountTypeEnum.ZakelijkHuurder => query.OfType<AccountZakelijkHuurder>(),
-                    AccountTypeEnum.Frontoffice => query.OfType<AccountMedewerkerFrontoffice>(),
-                    AccountTypeEnum.Backoffice => query.OfType<AccountMedewerkerBackoffice>(),
+                    "Particulier" => query.OfType<AccountParticulier>(),
+                    "ZakelijkBeheerder" => query.OfType<AccountZakelijkBeheerder>(),
+                    "ZakelijkHuurder" => query.OfType<AccountZakelijkHuurder>(),
+                    "Frontoffice" => query.OfType<AccountMedewerkerFrontoffice>(),
+                    "Backoffice" => query.OfType<AccountMedewerkerBackoffice>(),
                     _ => throw new ArgumentOutOfRangeException(nameof(accountType), accountType, "Onjuist account type")
                 };
             }
@@ -94,22 +94,22 @@ public class AccountController(Context context) : ControllerBase
     }
     
     [HttpPost("Registreer")]
-    public async Task<ActionResult<IAccount>> Create([FromBody] AccountDto gegevens)
+    public async Task<ActionResult<IAccount>> Create([FromBody] AccountDto accountDto)
     {
         try
         {
-            var checkEmail = _context.Accounts.Any(a => a.Email == gegevens.Email);
+            var checkEmail = _context.Accounts.Any(a => a.Email == accountDto.Email);
             if (checkEmail) 
                 return BadRequest(new { Message = "Een gebruiker met deze Email bestaat al" });
         
-            var nieuwAccount = Account.MaakAccount(gegevens);
+            var nieuwAccount = Account.MaakAccount(accountDto);
     
             _context.Accounts.Add(nieuwAccount);
             await _context.SaveChangesAsync();
         
             EmailSender.VerstuurBevestigingEmail(nieuwAccount.Email);
         
-            return Ok(new { nieuwAccount.Email });
+            return Ok(nieuwAccount);
         }
         catch (Exception ex)
         {
@@ -170,12 +170,12 @@ public class AccountController(Context context) : ControllerBase
 
             switch (voertuig.VoertuigStatus)
             {
-                case VoertuigStatusEnum.Gereserveerd:
-                case VoertuigStatusEnum.Beschikbaar:
-                    voertuig.VoertuigStatus = VoertuigStatusEnum.Uitgegeven;
+                case "Gereserveerd":
+                case "Beschikbaar":
+                    voertuig.VoertuigStatus = "Uitgegeven";
                     break;
-                case VoertuigStatusEnum.Uitgegeven:
-                    voertuig.VoertuigStatus = VoertuigStatusEnum.Beschikbaar;
+                case "Uitgegeven":
+                    voertuig.VoertuigStatus = "Beschikbaar";
                     break;
                 default:
                     return BadRequest("Ongeldige VoertuigStatus");

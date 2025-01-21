@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Mail;
+using WPRRewrite.Modellen.Abonnementen;
 
 namespace WPRRewrite.SysteemFuncties;
 
@@ -186,4 +187,5 @@ public class EmailSender
             var mailBericht = MaakMailBericht(ontvangerEmail, "Aanvraagafgekeurd", htmlInhoud);
             VerstuurEmail(mailBericht);
         }
+
 }

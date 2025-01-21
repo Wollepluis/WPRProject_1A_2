@@ -36,8 +36,12 @@ public class AbonnementController(Context context) : ControllerBase
     [HttpGet("getSpecifiekAbonnement")]
     public async Task<ActionResult<Abonnement>> GetAbonnementById([FromQuery]int id)
     {
+        var account = await _context.Accounts.OfType<AccountZakelijk>().FirstOrDefaultAsync(a => a.AccountId == id);
+        if (account == null) 
+            return Unauthorized(new { message = "Account is niet gevonden" });
+        
         var bedrijf = await _context.Bedrijven
-            .Include(b => b.ToekomstigAbonnementje)
+            .Include(b => b.ToekomstigAbonnement)
             .FirstOrDefaultAsync(b => b.BedrijfId == account.BedrijfId);
         if (bedrijf == null) return NotFound("Bedrijf niet gevonden");
 
@@ -54,12 +58,12 @@ public class AbonnementController(Context context) : ControllerBase
                 if (oudAbonnement == null) return NotFound("Abonnement niet gevonden");
 
                 toekomstigAbonnement.Begindatum = null;
-                bedrijf.AbonnementId = (int)bedrijf.ToekomstigAbonnement;
+                bedrijf.AbonnementId = (int)bedrijf.ToekomstigAbonnementId;
                 bedrijf.ToekomstigAbonnement = null;
                 
                 await _context.SaveChangesAsync();
 
-                var boolean = _context.Bedrijven.Any(w => w.AbonnementId == oudAbonnement.AbonnementId || w.ToekomstigAbonnement == oudAbonnement.AbonnementId);
+                var boolean = _context.Bedrijven.Any(w => w.AbonnementId == oudAbonnement.AbonnementId || w.ToekomstigAbonnementId == oudAbonnement.AbonnementId);
                 // Oud abonnement verwijderen als het is aangepast
                 if (!boolean)
                 {
@@ -154,7 +158,7 @@ public async Task<IActionResult> UpdateAbonnement(int abonnementId, int accountI
     if (bestaandToekomstigAbonnement != null)
     {
         bestaandToekomstigAbonnement.Begindatum = toekomstigAbonnement.Begindatum;
-        bedrijf.ToekomstigAbonnement = bestaandToekomstigAbonnement.AbonnementId;
+        bedrijf.ToekomstigAbonnementId = bestaandToekomstigAbonnement.AbonnementId;
         
     }
     else
@@ -164,7 +168,7 @@ public async Task<IActionResult> UpdateAbonnement(int abonnementId, int accountI
         await _context.SaveChangesAsync();
 
         // Koppel het nieuwe toekomstigAbonnement aan het bedrijf
-        bedrijf.ToekomstigAbonnement = toekomstigAbonnement.AbonnementId;
+        bedrijf.ToekomstigAbonnementId = toekomstigAbonnement.AbonnementId;
     }
 
     // Sla de wijzigingen van het bedrijf op
@@ -182,7 +186,7 @@ public async Task<IActionResult> UpdateAbonnement(int abonnementId, int accountI
     }
 
     // Verstuur de bevestiging via e-mail
-    EmailSender.BevestigingAbonnementWijzigen(account.Email, bestaandAbonnement, toekomstigAbonnement);
+    //EmailSender.BevestigingAbonnementWijzigen(account.Email, bestaandAbonnement, toekomstigAbonnement);
 
     return Ok(toekomstigAbonnement);
 }

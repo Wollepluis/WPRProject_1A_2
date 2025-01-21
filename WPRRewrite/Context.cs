@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WPRRewrite.Enums;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Abonnementen;
@@ -23,40 +22,19 @@ public class Context(DbContextOptions<Context> options) : DbContext(options)
         base.OnModelCreating(builder);
 
         builder.Entity<Account>()
-            .HasDiscriminator<AccountTypeEnum>("AccountType")
-            .HasValue<AccountParticulier>(AccountTypeEnum.Particulier)
-            .HasValue<AccountMedewerkerFrontoffice>(AccountTypeEnum.Frontoffice)
-            .HasValue<AccountMedewerkerBackoffice>(AccountTypeEnum.Backoffice)
-            .HasValue<AccountZakelijk>(AccountTypeEnum.Zakelijk)
-            .HasValue<AccountZakelijkBeheerder>(AccountTypeEnum.ZakelijkBeheerder)
-            .HasValue<AccountZakelijkHuurder>(AccountTypeEnum.ZakelijkHuurder);
-        
-        builder.Entity<Account>()
-            .Property(e => e.AccountType)
-            .HasConversion(
-                v => v.ToString(),
-                v => (AccountTypeEnum)Enum.Parse(typeof(AccountTypeEnum), v)
-            );
+            .HasDiscriminator<string>("AccountType")
+            .HasValue<AccountParticulier>("ParticulierAccount")
+            .HasValue<AccountMedewerkerFrontoffice>("FrontofficeAccount")
+            .HasValue<AccountMedewerkerBackoffice>("BackofficeAccount")
+            .HasValue<AccountZakelijk>("ZakelijkAccount")
+            .HasValue<AccountZakelijkBeheerder>("ZakelijkBeheerder")
+            .HasValue<AccountZakelijkHuurder>("ZakelijkHuurder");
         
         builder.Entity<Voertuig>()
-            .HasDiscriminator<VoertuigTypeEnum>("VoertuigType")
-            .HasValue<Auto>(VoertuigTypeEnum.Auto)
-            .HasValue<Camper>(VoertuigTypeEnum.Camper)
-            .HasValue<Caravan>(VoertuigTypeEnum.Caravan);
-        
-        builder.Entity<Voertuig>()
-            .Property(e => e.VoertuigType)
-            .HasConversion(
-                v => v.ToString(),
-                v => (VoertuigTypeEnum)Enum.Parse(typeof(VoertuigTypeEnum), v)
-            );
-        
-        builder.Entity<Voertuig>()
-            .Property(e => e.VoertuigStatus)
-            .HasConversion(
-                v => v.ToString(),
-                v => (VoertuigStatusEnum)Enum.Parse(typeof(VoertuigStatusEnum), v)
-            );
+            .HasDiscriminator<string>("VoertuigType")
+            .HasValue<Auto>("Auto")
+            .HasValue<Camper>("Camper")
+            .HasValue<Caravan>("Caravan");
 
         builder.Entity<Abonnement>()
             .HasDiscriminator<string>("AbonnementType")

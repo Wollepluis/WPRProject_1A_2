@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WPRRewrite.Dtos;
 using WPRRewrite.Modellen;
+using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Controllers;
 
 [ApiController]
-[Route("api/[Controller]")]
+[Route("[Controller]")]
 public class AdresController(Context context) : ControllerBase
 {
     private readonly Context _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -25,19 +27,25 @@ public class AdresController(Context context) : ControllerBase
         return Ok(adres);
     }
     
-    [HttpPost]
-    public async Task<ActionResult<Adres>> PostAdres([FromBody] Adres adres)
+    [HttpPost("MaakAdres")]
+    public async Task<ActionResult<Adres>> PostAdres([FromBody] AdresDto adresDto)
     {
-        
-        if (adres == null)
-        {
-            return BadRequest("Adres moet ingevuld zijn");
-        }
+        var adres = await _context.Adressen.Where(a => a.Postcode == adresDto.Postcode && a.Huisnummer == adresDto.Huisnummer)
+            .FirstOrDefaultAsync();
 
+        if (adres != null)
+        {
+            return Ok(adres);
+        }
+        
+        adres = await AdresService.ZoekAdresAsync(adresDto.Postcode, adresDto.Huisnummer);
+        if (adres == null)
+            return NotFound(new { Message = "Adres bestaat niet" });
+        
         _context.Adressen.Add(adres);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetAdres), new { id = adres.AdresId }, adres);
+        return Ok(adres);
     }
 
     [HttpPut("{id}")]
