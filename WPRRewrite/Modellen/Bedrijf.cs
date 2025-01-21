@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using WPRRewrite.Modellen.Abonnementen;
+using WPRRewrite.Modellen.Accounts;
 
 namespace WPRRewrite.Modellen;
 
-public class Bedrijf
+public sealed class Bedrijf
 {
     public int BedrijfId { get; set; }
     public int KvkNummer { get; set; }
@@ -19,6 +20,8 @@ public class Bedrijf
 
     public int? ToekomstigAbonnementId {get; set;}
     [ForeignKey(nameof(ToekomstigAbonnementId))] public Abonnement ToekomstigAbonnement { get; set; }
+
+    public ICollection<AccountZakelijk> BevoegdeMedewerkers { get; set; } = new List<AccountZakelijk>();
     
     public Bedrijf() { }
     public Bedrijf(int kvkNummer, string bedrijfsnaam, string domeinnaam, int adresId, int abonnementId)
@@ -28,6 +31,7 @@ public class Bedrijf
         Domeinnaam = domeinnaam;
         AdresId = adresId;
         AbonnementId = abonnementId;
+        BevoegdeMedewerkers = new List<AccountZakelijk>();
     }
     
     public void UpdateBedrijf(Bedrijf updatedBedrijf)
