@@ -6,15 +6,10 @@ namespace WPRRewrite.Controllers;
 
 [ApiController]
 [Route("api/[Controller]")]
-public class ReparatieController : ControllerBase
+public class ReparatieController(Context context) : ControllerBase
 {
-    private readonly Context _context;
+    private readonly Context _context = context ?? throw new ArgumentNullException(nameof(context));
 
-    public ReparatieController(Context context)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-    }
-    
     [HttpGet("Krijg alle reparaties")]
     public async Task<ActionResult<IEnumerable<Reparatie>>> GetAllReparaties()
     {

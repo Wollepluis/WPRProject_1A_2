@@ -27,6 +27,7 @@ public class Context(DbContextOptions<Context> options) : DbContext(options)
             .HasValue<AccountParticulier>(AccountTypeEnum.Particulier)
             .HasValue<AccountMedewerkerFrontoffice>(AccountTypeEnum.Frontoffice)
             .HasValue<AccountMedewerkerBackoffice>(AccountTypeEnum.Backoffice)
+            .HasValue<AccountZakelijk>(AccountTypeEnum.Zakelijk)
             .HasValue<AccountZakelijkBeheerder>(AccountTypeEnum.ZakelijkBeheerder)
             .HasValue<AccountZakelijkHuurder>(AccountTypeEnum.ZakelijkHuurder);
         

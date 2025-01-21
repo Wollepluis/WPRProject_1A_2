@@ -1,5 +1,4 @@
-﻿/*
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Abonnementen;
@@ -9,26 +8,34 @@ using WPRRewrite.SysteemFuncties;
 namespace WPRRewrite.Controllers;
 
 [ApiController]
-[Route("api/[Controller]")]
+[Route("[Controller]")]
 public class AbonnementController(Context context) : ControllerBase
 {
     private readonly Context _context = context ?? throw new ArgumentNullException(nameof(context));
-
+    
     [HttpGet("GetAll")]
-    public async Task<ActionResult<IEnumerable<Abonnement>>> GetAllAbonnementen()
+    public async Task<ActionResult<IEnumerable<Abonnement>>> GetAbonnementen()
     {
-        var abonnementen = await _context.Abonnementen.ToListAsync();
-        return Ok(abonnementen);
+        try
+        {
+            IQueryable<Abonnement> query = _context.Abonnementen;
+            
+            var abonnementen = await query.ToListAsync();
+            if (abonnementen.Count == 0)
+                return NotFound(new { Message = "Geen abonnementen gevonden" });
+
+            return Ok(abonnementen);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { ex.Message });
+        }
     }
     
-    
-//nieweu
+    //nieweu
     [HttpGet("getSpecifiekAbonnement")]
     public async Task<ActionResult<Abonnement>> GetAbonnementById([FromQuery]int id)
     {
-        var account = await _context.Accounts.OfType<AccountZakelijk>().FirstOrDefaultAsync(a => a.AccountId == id);
-        if (account == null) return Unauthorized(new { message = "Account is niet gevonden" });
-
         var bedrijf = await _context.Bedrijven
             .Include(b => b.ToekomstigAbonnementje)
             .FirstOrDefaultAsync(b => b.BedrijfId == account.BedrijfId);
@@ -217,4 +224,3 @@ public async Task<IActionResult> UpdateAbonnement(int abonnementId, int accountI
     }
 
 }
-*/
