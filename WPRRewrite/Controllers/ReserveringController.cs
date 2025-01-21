@@ -20,7 +20,7 @@ public class ReserveringController(Context context) : ControllerBase
     {
         try
         {
-            IQueryable<Reservering> query = _context.Reserveringen;
+            IQueryable<Reservering> query = _context.Reserveringen.Include(r => r.Voertuig);
 
             if (reserveringId.HasValue)
             {
@@ -52,32 +52,8 @@ public class ReserveringController(Context context) : ControllerBase
                 query = query.Where(r => r.Account.AccountType == "ZakelijkAccount" &&
                                  ((AccountZakelijk)r.Account).BedrijfId == bedrijfId);
             }
-            
-            var projectedQuery = query.Select(r => new
-            {
-                r.ReserveringId,
-                r.Begindatum,
-                r.Einddatum,
-                r.TotaalPrijs,
-                r.IsBetaald,
-                r.IsGoedgekeurd,
-                r.VoertuigId,
-                r.AccountId,
 
-                Voertuig = new
-                { 
-                    r.Voertuig.Kenteken,
-                    r.Voertuig.Merk,
-                    r.Voertuig.Model,
-                    r.Voertuig.Kleur,
-                    r.Voertuig.Aanschafjaar,
-                    r.Voertuig.Prijs,
-                    r.Voertuig.VoertuigStatus,
-                    r.Voertuig.VoertuigType
-                }
-            });
-
-            var reserveringen = await projectedQuery.ToListAsync();
+            var reserveringen = await query.ToListAsync();
             if (reserveringen.Count == 0)
                 return NotFound(new { Message = "Geen reserveringen gevonden" });
 
@@ -108,7 +84,7 @@ public class ReserveringController(Context context) : ControllerBase
             _context.Reserveringen.Add(nieuweReservering);
             await _context.SaveChangesAsync();
         
-            return Ok($"Voertuig met ID {reserveringDto.VoertuigId} is succesvol gereserveerd van {reserveringDto.Begindatum:yyyy-MM-dd} tot {reserveringDto.Einddatum:yyyy-MM-dd}. {reserveringDto.TotaalPrijs}");
+            return Ok($"Voertuig met ID {reserveringDto.VoertuigId} is succesvol gereserveerd van {reserveringDto.Begindatum:yyyy-MM-dd} tot {reserveringDto.Einddatum:yyyy-MM-dd}.");
         }
         catch (Exception ex)
         {
@@ -117,13 +93,13 @@ public class ReserveringController(Context context) : ControllerBase
     }
     
      [HttpPut("Update")]
-     public async Task<IActionResult> Update([FromQuery] int id, [FromBody] ReserveringDto reserveringDto)
+     public async Task<IActionResult> Update([FromQuery] int reserveringId, [FromBody] ReserveringDto reserveringDto)
      {
          try
          { 
-             var reservering = await _context.Reserveringen.FindAsync(id);
+             var reservering = await _context.Reserveringen.FindAsync(reserveringId);
              if (reservering == null)
-                 return NotFound(new { Message = $"Reservering met ID {id} staat niet in de database" });
+                 return NotFound(new { Message = $"Reservering met ID {reserveringId} staat niet in de database" });
              
              var voertuig = await _context.Voertuigen.FindAsync(reserveringDto.VoertuigId);
              if (voertuig == null)

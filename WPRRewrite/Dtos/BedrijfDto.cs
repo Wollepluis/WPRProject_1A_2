@@ -2,16 +2,16 @@
 
 public class BedrijfDto
 {
-    public int Kvknummer { get; set; }
+    public int KvkNummer { get; set; }
     public string Bedrijfsnaam { get; set; }
     public string Domeinnaam { get; set; }
     public string Postcode { get; set; }
     public int Huisnummer { get; set; }
     
     public BedrijfDto() { }
-    public BedrijfDto(int kvknummer, string bedrijfsnaam, string domeinnaam, string postcode, int huisnummer)
+    public BedrijfDto(int kvkNummer, string bedrijfsnaam, string domeinnaam, string postcode, int huisnummer)
     {
-        Kvknummer = kvknummer;
+        KvkNummer = kvkNummer;
         Bedrijfsnaam = bedrijfsnaam;
         Domeinnaam = domeinnaam;
         Postcode = postcode;

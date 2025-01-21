@@ -62,7 +62,12 @@ public class AccountController(Context context) : ControllerBase
     {
         try
         {
-            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.Email == login.Email);
+            var account = await _context.Accounts
+                .OfType<AccountParticulier>()
+                .Include(a => a.Adres)
+                .FirstOrDefaultAsync(a => a.Email == login.Email) ?? await _context.Accounts
+                .FirstOrDefaultAsync(a => a.Email == login.Email);
+
             if (account == null) 
                 return Unauthorized(new { Message = $"Account {login.Email} niet gevonden" });
         
@@ -102,7 +107,8 @@ public class AccountController(Context context) : ControllerBase
             if (checkEmail) 
                 return BadRequest(new { Message = "Een gebruiker met deze Email bestaat al" });
         
-            var nieuwAccount = Account.MaakAccount(accountDto);
+            var nieuwAccount = Account.MaakAccount(accountDto.AccountType, accountDto.Email, accountDto.Wachtwoord,
+                accountDto.Nummer, accountDto.Naam, accountDto.AdresId);
     
             _context.Accounts.Add(nieuwAccount);
             await _context.SaveChangesAsync();

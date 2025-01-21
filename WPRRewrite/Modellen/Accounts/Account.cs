@@ -29,36 +29,36 @@ public abstract class Account : IAccount
         return PasswordHasher.VerifyHashedPassword(this, Wachtwoord, wachtwoord);
     }
 
-    public static Account MaakAccount(AccountDto gegevens)
+    public static Account MaakAccount(string accountType, string email, string wachtwoord,  int nummer, string? naam, int? adresId)
     {
-        return gegevens.AccountType switch
+        return accountType switch
         {
             "Particulier" => new AccountParticulier(
-                gegevens.Email, 
-                gegevens.Wachtwoord, 
-                gegevens.Naam,
-                gegevens.Nummer, 
-                gegevens.AdresId
+                email,
+                wachtwoord,
+                naam,
+                nummer,
+                (int) adresId
             ),
             "ZakelijkBeheerder" => new AccountZakelijkBeheerder(
-                gegevens.Email, 
-                gegevens.Wachtwoord, 
-                gegevens.Nummer
+                email,
+                wachtwoord,
+                nummer
             ),
             "ZakelijkHuurder" => new AccountZakelijkHuurder(
-                gegevens.Email, 
-                gegevens.Wachtwoord, 
-                gegevens.Nummer
+                email,
+                wachtwoord,
+                nummer
             ),
             "Frontoffice" => new AccountMedewerkerFrontoffice(
-                gegevens.Email, 
-                gegevens.Wachtwoord
+                email,
+                wachtwoord
             ),
             "Backoffice" => new AccountMedewerkerBackoffice(
-                gegevens.Email, 
-                gegevens.Wachtwoord
+                email,
+                wachtwoord
             ),
-            _ => throw new ArgumentException($"Onbekend account type: {gegevens.AccountType}")
+            _ => throw new ArgumentException($"Onbekend account type: {accountType}")
         };
     }
 }

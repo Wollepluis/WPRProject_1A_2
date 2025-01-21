@@ -16,7 +16,7 @@ public interface IVoertuig
     public string VoertuigType { get; set; }
     
     public string BrandstofType { get; set; }
-    public string AantalZitplaatsen { get; set; }
+    public int AantalZitplaatsen { get; set; }
     
     public void UpdateVoertuig(VoertuigDto updatedVoertuig);
 }

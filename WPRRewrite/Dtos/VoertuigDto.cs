@@ -12,7 +12,7 @@ public class VoertuigDto
     string voertuigStatus, 
     string voertuigType, 
     string brandstofType, 
-    string aantalZitplaatsen
+    int aantalZitplaatsen
     )
 {
     public string Kenteken { get; set; } = kenteken;
@@ -24,5 +24,5 @@ public class VoertuigDto
     public string VoertuigStatus { get; set; } = voertuigStatus;
     public string VoertuigType { get; set; } = voertuigType;
     public string BrandstofType { get; set; } = brandstofType;
-    public string AantalZitplaatsen { get; set; } = aantalZitplaatsen;
+    public int AantalZitplaatsen { get; set; } = aantalZitplaatsen;
 }

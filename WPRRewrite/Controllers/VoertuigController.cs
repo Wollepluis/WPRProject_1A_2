@@ -37,7 +37,7 @@ public class VoertuigController(Context context) : ControllerBase
                     "Auto" => query.OfType<Auto>(),
                     "Camper" => query.OfType<Camper>(),
                     "Caravan" => query.OfType<Caravan>(),
-                    _ => throw new ArgumentOutOfRangeException(nameof(voertuigType), voertuigType, "Onjuist voertuig type")
+                    _ => query
                 };
             }
 

@@ -17,14 +17,14 @@ public abstract class Voertuig : IVoertuig
     public string VoertuigStatus { get; set; }
     public string VoertuigType { get; set; }
     public string BrandstofType { get; set; }
-    public string AantalZitplaatsen { get; set; }
+    public int AantalZitplaatsen { get; set; }
     
     public int? SchadeclaimId { get; set; }
     [ForeignKey(nameof(SchadeclaimId))] public Schadeclaim Schadeclaim { get; set; }
     
     protected Voertuig() { }
     protected Voertuig(string kenteken, string merk, string model, string kleur, int aanschafjaar, int prijs,
-        string voertuigStatus, string voertuigType, string brandstofType, string aantalZitplaatsen)
+        string voertuigStatus, string voertuigType, string brandstofType, int aantalZitplaatsen)
     {
         Kenteken = kenteken;
         Merk = merk;

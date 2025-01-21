@@ -24,6 +24,11 @@ public sealed class Bedrijf
     public ICollection<AccountZakelijk> BevoegdeMedewerkers { get; set; } = new List<AccountZakelijk>();
     
     public Bedrijf() { }
+    public Bedrijf(string bedrijfsnaam, string domeinnaam)
+    {
+        Bedrijfsnaam = bedrijfsnaam;
+        Domeinnaam = domeinnaam;
+    }
     public Bedrijf(int kvkNummer, string bedrijfsnaam, string domeinnaam, int adresId, int abonnementId)
     {
         KvkNummer = kvkNummer;

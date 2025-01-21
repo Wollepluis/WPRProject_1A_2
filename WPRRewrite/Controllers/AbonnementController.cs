@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Abonnementen;
 using WPRRewrite.Modellen.Accounts;
-using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Controllers;
 
@@ -49,15 +47,14 @@ public class AbonnementController(Context context) : ControllerBase
         if (bedrijf.ToekomstigAbonnement != null)
         {
             var toekomstigAbonnement = await _context.Abonnementen.FindAsync(bedrijf.ToekomstigAbonnement);
-            if (toekomstigAbonnement != null && (toekomstigAbonnement.Begindatum <= DateTime.Now.Date || toekomstigAbonnement.Begindatum == null))
+            if (toekomstigAbonnement != null && (toekomstigAbonnement.Begindatum <= DateOnly.FromDateTime(DateTime.Now) || toekomstigAbonnement.Begindatum == null))
             {
                 Console.WriteLine("Begindatum is vandaag of later, abonnement wordt aangepast.");
                 
                 // Ophalen van oud abonnement
                 var oudAbonnement = await _context.Abonnementen.FindAsync(bedrijf.AbonnementId);
                 if (oudAbonnement == null) return NotFound("Abonnement niet gevonden");
-
-                toekomstigAbonnement.Begindatum = null;
+                
                 bedrijf.AbonnementId = (int)bedrijf.ToekomstigAbonnementId;
                 bedrijf.ToekomstigAbonnement = null;
                 
