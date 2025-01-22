@@ -30,14 +30,28 @@ public class AccountZakelijkHuurderController : ControllerBase
         return await _context.Accounts.OfType<AccountZakelijkHuurder>().ToListAsync();
     }
 
-    [HttpGet("Krijg specifiek account")]
+    [HttpGet("KrijgSpecifiekAccount")]
     public async Task<ActionResult<AccountZakelijkHuurder>> GetAccount(int id)
     {
-        var account = await _context.Accounts.OfType<AccountZakelijkHuurder>().FirstOrDefaultAsync(a => a.AccountId == id);
+        try
+        {
+            var account = await _context.Accounts.OfType<AccountZakelijkHuurder>().FirstOrDefaultAsync(a => a.AccountId == id);
 
-        if (account == null) return NotFound();
-        return Ok(account);
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(account);
+        }
+        catch (Exception ex)
+        {
+            // Log de fout voor debugging
+            Console.WriteLine($"Fout bij het ophalen van account: {ex.Message}");
+            return StatusCode(500, "Er is een fout opgetreden bij het ophalen van het account." + ex.Message);
+        }
     }
+
     
     [HttpGet("krijgalleautos")]
     public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAutos()

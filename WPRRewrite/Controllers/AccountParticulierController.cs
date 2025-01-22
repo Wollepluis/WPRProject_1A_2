@@ -48,7 +48,7 @@ public class AccountParticulierController : ControllerBase
     public async Task<ActionResult<AccountParticulier>> GetAccount(int id)
     {
         var account = await _context.Accounts.OfType<AccountParticulier>().Include(a => a.Adres).Where(a => a.AccountId == id).FirstOrDefaultAsync();
-
+        account.AccountType = "Particulier";
         if (account == null)
         {
             return NotFound();
