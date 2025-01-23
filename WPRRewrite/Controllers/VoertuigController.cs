@@ -28,20 +28,25 @@ public class VoertuigController : ControllerBase
     }
     
     [HttpGet("krijgallevoertuigenDatum")]
-    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen(DateTime begindatum, DateTime einddatum)
+    public async Task<ActionResult<IEnumerable<VoertuigDto>>> GetAlleVoertuigen(DateTime begindatum, DateTime einddatum, string? accountType)
     {
-        var Voertuigen = await _context.Voertuigen.Include(voertuig => voertuig.Reserveringen).ToListAsync();
+        // Fetch voertuigen based on account type
+        IQueryable<Voertuig> Voertuigen = _context.Voertuigen.Include(voertuig => voertuig.Reserveringen);
+    
+        if (accountType == "Huurder")
+        {
+            Voertuigen = Voertuigen.OfType<Auto>();
+        }
+        var AlleVoertuigen = await Voertuigen.Include(a => a.Reserveringen).ToListAsync();
+        
+
         List<Voertuig> beschikbareVoertuigen = new List<Voertuig>();
-        foreach (var voertuig in Voertuigen)
+        foreach (var voertuig in AlleVoertuigen)
         {
             var reserveringen = voertuig.Reserveringen;
-            if (reserveringen != null)
+            if (!reserveringen.Any(r => begindatum <= r.Einddatum && einddatum >= r.Begindatum))
             {
-                    if (!reserveringen.Any(r => begindatum <= r.Einddatum && einddatum >= r.Begindatum))
-                    {
-                        //VoertuigDto voertuigDto = new VoertuigDto(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus, voertuig.VoertuigType, voertuig.BrandstofType);
-                        beschikbareVoertuigen.Add(voertuig);
-                    }
+                beschikbareVoertuigen.Add(voertuig);
             }
         }
         return Ok(beschikbareVoertuigen);
@@ -131,7 +136,7 @@ public class VoertuigController : ControllerBase
         return Ok(voertuig);
     }
 
-    [HttpGet("Filter voertuigen")]
+    [HttpGet("FilterVoertuigen")]
     public async Task<ActionResult<IEnumerable<IVoertuig>>> FilterVoertuigen(string voertuigType)
     {
         if (string.IsNullOrWhiteSpace(voertuigType))
