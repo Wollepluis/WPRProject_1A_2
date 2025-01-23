@@ -50,7 +50,7 @@ public class CarAndAllContext : DbContext
     public DbSet<Bedrijf> Bedrijven { get; set; }
     public DbSet<Abonnement> Abonnementen { get; set; }
     public DbSet<Account> Accounts { get; set; }
-   
+    public DbSet<Schadeclaim> Schadeclaim { get; set; }
     public DbSet<Reservering> Reserveringen { get; set; }
     public DbSet<Reparatie> Reparaties { get; set; }
 }
