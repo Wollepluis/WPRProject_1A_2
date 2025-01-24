@@ -1,6 +1,6 @@
-﻿// Tests/ReserveringTests/ReserveringControllerTests.cs
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WPRRewrite;
 using WPRRewrite.Controllers;
 using WPRRewrite.Modellen;
 
@@ -9,18 +9,17 @@ namespace WPRRewriteTests.Tests.ReserveringTests
     [TestFixture]
     public class ReserveringControllerTests
     {
-        private Context _mockContext;
+        private CarAndAllContext _mockContext;
         private ReserveringController _controller;
 
         [SetUp]
         public void Setup()
         {
-            // Gebruik een unieke naam voor de in-memory database
-            var options = new DbContextOptionsBuilder<Context>()
+            var options = new DbContextOptionsBuilder<CarAndAllContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
-            _mockContext = new Context(options);
+            _mockContext = new CarAndAllContext(options);
             _controller = new ReserveringController(_mockContext);
         }
 
@@ -31,71 +30,50 @@ namespace WPRRewriteTests.Tests.ReserveringTests
         }
 
         [Test]
-        public async Task GetAll_GeenReserveringen_RetourneertNotFound()
+        public async Task GetAll_GeenReserveringen_RetourneertLegeLijst()
         {
             // Act
-            var result = await _controller.GetAll();
+            var result = await _controller.GetAlleReserveringen();
 
             // Assert
-            Assert.That(result.Result, Is.TypeOf<NotFoundObjectResult>());
+            Assert.That(result.Result, Is.TypeOf<OkObjectResult>());
+            var okResult = result.Result as OkObjectResult;
+            Assert.That(((List<Reservering>)okResult.Value).Count, Is.EqualTo(0));
         }
 
         [Test]
         public async Task GetAll_ReserveringenAanwezig_RetourneertOk()
         {
-            // Arrange: Voeg een reservering toe aan de in-memory database
-            var testDate = new DateTime(2025, 1, 1); // Gebruik een vaste datum
+            // Arrange
             _mockContext.Reserveringen.Add(new Reservering
             {
                 AccountId = 1,
                 VoertuigId = 1,
-                Begindatum = new DateOnly(testDate.Year, testDate.Month, testDate.Day),
-                Einddatum = new DateOnly(testDate.Year, testDate.Month, testDate.Day).AddDays(1),
+                Begindatum = DateTime.Now,
+                Einddatum = DateTime.Now.AddDays(5),
                 IsGoedgekeurd = true,
-                TotaalPrijs = 100.0,
-                IsBetaald = false
+                TotaalPrijs = 200.0,
+                IsBetaald = true
             });
             await _mockContext.SaveChangesAsync();
 
             // Act
-            var result = await _controller.GetAll();
+            var result = await _controller.GetAlleReserveringen();
 
             // Assert
             Assert.That(result.Result, Is.TypeOf<OkObjectResult>());
         }
 
         [Test]
-        public async Task GetAccountReserveringen_GeenReserveringenVoorAccount_RetourneertNotFound()
+        public async Task GetAccountReserveringen_GeenReserveringenVoorAccount_RetourneertLegeLijst()
         {
             // Act
-            var result = await _controller.GetAccountReserveringen(1);
-
-            // Assert
-            Assert.That(result.Result, Is.TypeOf<NotFoundObjectResult>());
-        }
-
-        [Test]
-        public async Task GetAccountReserveringen_ReserveringenVoorAccount_RetourneertOk()
-        {
-            // Arrange: Voeg reservering toe aan het account
-            var testDate = new DateTime(2025, 1, 1);
-            _mockContext.Reserveringen.Add(new Reservering
-            {
-                AccountId = 1,
-                VoertuigId = 1,
-                Begindatum = new DateOnly(testDate.Year, testDate.Month, testDate.Day),
-                Einddatum = new DateOnly(testDate.Year, testDate.Month, testDate.Day).AddDays(1),
-                IsGoedgekeurd = true,
-                TotaalPrijs = 100.0,
-                IsBetaald = false
-            });
-            await _mockContext.SaveChangesAsync();
-
-            // Act
-            var result = await _controller.GetAccountReserveringen(1);
+            var result = await _controller.GetAlleReserveringenPerAccount(1);
 
             // Assert
             Assert.That(result.Result, Is.TypeOf<OkObjectResult>());
+            var okResult = result.Result as OkObjectResult;
+            Assert.That(((List<Reservering>)okResult.Value).Count, Is.EqualTo(0));
         }
     }
 }

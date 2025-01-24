@@ -1,7 +1,7 @@
-﻿// Tests/SecurityTests/InputValidationTests.cs
-
-using System.Net.Http.Json;
-using NUnit.Framework;
+﻿using System.Net.Http.Json;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using WPRRewrite;
 using WPRRewrite.Dtos;
 using WPRRewrite.Modellen.Accounts;
 
@@ -12,11 +12,26 @@ namespace WPRRewriteTests.Tests.SecurityTests
     {
         private HttpClient _client;
         private string _baseUrl = "https://localhost:5001/api/";
+        private IPasswordHasher<Account> _mockPasswordHasher;
+        private CarAndAllContext _mockContext;
 
         [SetUp]
         public void Setup()
         {
             _client = new HttpClient();
+            _mockPasswordHasher = new PasswordHasher<Account>();
+
+            var options = new DbContextOptionsBuilder<CarAndAllContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+            _mockContext = new CarAndAllContext(options);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _client.Dispose();
+            _mockContext.Dispose();
         }
 
         [Test]
@@ -27,30 +42,31 @@ namespace WPRRewriteTests.Tests.SecurityTests
             var loginData = new LoginDto(maliciousEmail, "wachtwoord");
 
             // Act
-            var response = await _client.PostAsJsonAsync(_baseUrl + "Accounts/Login", loginData);
+            var response = await _client.PostAsJsonAsync(_baseUrl + "Backoffice/Login", loginData);
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.Unauthorized));
         }
-        
+
         [Test]
         public void TestWachtwoordHash()
         {
             // Arrange
             var password = "TestPassword123";
-            var account = new AccountParticulier("test@test.com", password, "Test User", 123456789, 1);
+            var account = new AccountParticulier("test@test.com", password, "Test User", 123456789, 1, _mockPasswordHasher, _mockContext);
 
             // Act & Assert
-            Assert.That(account.Wachtwoord, Is.Not.EqualTo(password));
+            Assert.That(account.Wachtwoord, Is.Not.EqualTo(password), "Het wachtwoord moet gehasht zijn.");
         }
 
         [TestCase("test@test.com", "kort")] // Te kort wachtwoord
         [TestCase("nietvalide", "password123")] // Ongeldig email
-        public void TestInputValidatie(string email, string password)
+        public void TestInputValidatie_MetOngeldigeData_GooitException(string email, string password)
         {
             // Act & Assert
             var exception = Assert.Throws<ArgumentException>(() => 
-                new AccountParticulier(email, password, "Test", 123456789, 1));
+                new AccountParticulier(email, password, "Test", 123456789, 1, _mockPasswordHasher, _mockContext));
+            
             Assert.That(exception, Is.Not.Null);
         }
 
@@ -59,27 +75,13 @@ namespace WPRRewriteTests.Tests.SecurityTests
         {
             // Arrange
             var xssPayload = "<script>alert('xss')</script>";
-            var accountData = new AccountDto(
-                "Particulier",
-                xssPayload + "@test.nl",
-                "wachtwoord123",
-                xssPayload,
-                0612345678,
-                0,
-                1
-            );
+            var accountData = new ParticulierDto(xssPayload + "@test.nl", "wachtwoord123", xssPayload, 123456789, "1234AB", 12);
 
             // Act
-            var response = await _client.PostAsJsonAsync(_baseUrl + "Accounts/Registreer", accountData);
+            var response = await _client.PostAsJsonAsync(_baseUrl + "Particulier/MaakAccount", accountData);
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.BadRequest));
-        }
-        
-        [TearDown]
-        public void TearDown()
-        {
-            _client.Dispose(); 
         }
     }
 }

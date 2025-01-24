@@ -1,26 +1,26 @@
-﻿// Tests/AccountTests/AccountControllerTests.cs
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WPRRewrite.Controllers;
+using WPRRewrite;
 using WPRRewrite.Modellen.Accounts;
+using WPRRewrite.Controllers;
 
 namespace WPRRewriteTests.Tests.AccountTests
 {
     [TestFixture]
     public class AccountControllerTests
     {
-        private Context _mockContext;
-        private AccountParticulierController _controller;
+        private CarAndAllContext _mockContext;
+        private AccountMedewerkerBackofficeController _controller;
 
         [SetUp]
         public void Setup()
         {
-            var options = new DbContextOptionsBuilder<Context>()
+            var options = new DbContextOptionsBuilder<CarAndAllContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
-            _mockContext = new Context(options);
-            _controller = new AccountParticulierController(_mockContext);
+            _mockContext = new CarAndAllContext(options);
+            _controller = new AccountMedewerkerBackofficeController(_mockContext);
         }
 
         [TearDown]
@@ -32,27 +32,27 @@ namespace WPRRewriteTests.Tests.AccountTests
         [Test]
         public async Task GetAll_GeenAccounts_RetourneertNotFound()
         {
-            // Arrange: Geen accounts toevoegen aan de in-memory database
-
             // Act
-            var result = await _controller.GetAll(null, null);
+            var result = await _controller.GetAllAccounts();
 
             // Assert
-            Assert.That(result.Result, Is.TypeOf<NotFoundObjectResult>());
+            Assert.That(result.Result, Is.TypeOf<OkObjectResult>());  // Geen NotFound meer, lege lijst verwacht
         }
 
         [Test]
         public async Task GetAll_AccountsAanwezig_RetourneertOk()
         {
             // Arrange
-            _mockContext.Accounts.Add(new AccountParticulier("test@test.com", "test123", "Test Naam", 1234567890, 1));
+            _mockContext.Accounts.Add(new AccountMedewerkerBackoffice { Email = "test@test.com", Wachtwoord = "test123" });
             await _mockContext.SaveChangesAsync();
 
             // Act
-            var result = await _controller.GetAll(null, null);
+            var result = await _controller.GetAllAccounts();
 
             // Assert
             Assert.That(result.Result, Is.TypeOf<OkObjectResult>());
+            var okResult = result.Result as OkObjectResult;
+            Assert.That(okResult.Value, Is.Not.Null);
         }
     }
 }

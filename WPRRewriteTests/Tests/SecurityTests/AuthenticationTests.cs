@@ -1,5 +1,4 @@
-﻿// Tests/SecurityTests/AuthenticationTests.cs
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using NUnit.Framework;
 using WPRRewrite.Dtos;
 
@@ -18,22 +17,22 @@ namespace WPRRewriteTests.Tests.SecurityTests
         }
 
         [Test]
-        public async Task Login_MetInvalidCredentials_RetourneertUnauthorized()
+        public async Task Login_MetOngeldigeGegevens_RetourneertUnauthorized()
         {
             // Arrange
             var loginData = new LoginDto("nietbestaand@test.nl", "foutWachtwoord");
 
             // Act
-            var response = await _client.PostAsJsonAsync(_baseUrl + "Accounts/Login", loginData);
+            var response = await _client.PostAsJsonAsync(_baseUrl + "Backoffice/Login", loginData);
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.Unauthorized));
         }
-        
+
         [TearDown]
         public void TearDown()
         {
-            _client.Dispose(); 
+            _client.Dispose();
         }
     }
 }
