@@ -1,5 +1,6 @@
 ﻿// Tests/SecurityTests/AuthenticationTests.cs
 using System.Net.Http.Json;
+using NUnit.Framework;
 using WPRRewrite.Dtos;
 
 namespace WPRRewriteTests.Tests.SecurityTests

@@ -10,7 +10,7 @@ namespace WPRRewriteTests.Tests.AccountTests
     public class AccountControllerTests
     {
         private Context _mockContext;
-        private AccountController _controller;
+        private AccountParticulierController _controller;
 
         [SetUp]
         public void Setup()
@@ -20,7 +20,13 @@ namespace WPRRewriteTests.Tests.AccountTests
                 .Options;
 
             _mockContext = new Context(options);
-            _controller = new AccountController(_mockContext);
+            _controller = new AccountParticulierController(_mockContext);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _mockContext.Dispose();
         }
 
         [Test]
@@ -29,7 +35,7 @@ namespace WPRRewriteTests.Tests.AccountTests
             // Arrange: Geen accounts toevoegen aan de in-memory database
 
             // Act
-            var result = await _controller.GetAccounts(null, null);
+            var result = await _controller.GetAll(null, null);
 
             // Assert
             Assert.That(result.Result, Is.TypeOf<NotFoundObjectResult>());
@@ -43,25 +49,10 @@ namespace WPRRewriteTests.Tests.AccountTests
             await _mockContext.SaveChangesAsync();
 
             // Act
-            var result = await _controller.GetAccounts(null, null);
+            var result = await _controller.GetAll(null, null);
 
             // Assert
             Assert.That(result.Result, Is.TypeOf<OkObjectResult>());
         }
-        
-        [TearDown]
-        public void TearDown()
-        {
-            _mockContext.Dispose();
-        }
     }
 }
-
-
-
-
-
-
-
-
-

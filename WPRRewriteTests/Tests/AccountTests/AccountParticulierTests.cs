@@ -1,6 +1,6 @@
 ﻿// Tests/AccountTests/AccountParticulierTests.cs
+using NUnit.Framework;
 using WPRRewrite.Dtos;
-using WPRRewrite.Enums;
 using WPRRewrite.Modellen.Accounts;
 
 namespace WPRRewriteTests.Tests.AccountTests
@@ -14,11 +14,12 @@ namespace WPRRewriteTests.Tests.AccountTests
             // Arrange
             var account = new AccountParticulier("test@test.nl", "wachtwoord123", "Test Gebruiker", 0612345678, 1);
             var nieuweGegevens = new AccountDto(
-                AccountTypeEnum.Particulier,
+                "Particulier",
                 "nieuw@test.nl",
                 "nieuwWachtwoord",
                 "Nieuwe Naam",
                 0687654321,
+                0,
                 1
             );
 
