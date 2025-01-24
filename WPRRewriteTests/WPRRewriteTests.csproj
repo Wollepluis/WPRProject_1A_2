@@ -38,4 +38,8 @@
       <ProjectReference Include="..\WPRRewrite\WPRRewrite.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Tests\" />
+    </ItemGroup>
+
 </Project>
