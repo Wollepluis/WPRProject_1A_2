@@ -62,6 +62,20 @@ public class ReserveringController : ControllerBase
         return Ok(reserveringenDto);
     }
 
+    [HttpGet("KrijgAlleReserveringenGoedgekeurd")]
+    public async Task<ActionResult<IEnumerable<Reservering>>> GetAlleGoedgekeurdeReserveringen()
+    {
+        var reserveringen = await _context.Reserveringen
+            .Include(r => r.Voertuig)
+            .Where(r => r.IsGoedgekeurd == true && r.Einddatum != DateTime.Today && r.Voertuig.VoertuigStatus == "Uitgegeven")
+            .ToListAsync();
+
+        if (reserveringen == null)
+            return Ok(new { Message = "Geen voertuigen gevonden" });
+
+        return Ok(reserveringen);
+    }
+
     [HttpGet("KrijgAlleReserveringenPerAccount")]
     public async Task<ActionResult<IEnumerable<Reservering>>> GetAlleReserveringenPerAccount(int accountId)
     {

@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using WPRRewrite.Dtos;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.Modellen.Voertuigen;
-using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Controllers;
 
@@ -26,7 +26,7 @@ public class VoertuigController : ControllerBase
         var Voertuigen = await _context.Voertuigen.Where(a => a.VoertuigStatus != "Geblokkeerd").ToListAsync();
         return Ok(Voertuigen);
     }
-    
+
     [HttpGet("krijgallevoertuigenDatum")]
     public async Task<ActionResult<IEnumerable<VoertuigDto>>> GetAlleVoertuigen(DateTime begindatum, DateTime einddatum, string? accountType)
     {
