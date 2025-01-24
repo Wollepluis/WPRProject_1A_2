@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPRRewrite", "WPRRewrite\WPRRewrite.csproj", "{57A5E4EF-1034-48E1-AFC1-C6E93031FBF6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPRRewriteTests", "WPRRewriteTests\WPRRewriteTests.csproj", "{B51FC9DD-2334-44E0-B32B-A493E26FA543}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{57A5E4EF-1034-48E1-AFC1-C6E93031FBF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57A5E4EF-1034-48E1-AFC1-C6E93031FBF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57A5E4EF-1034-48E1-AFC1-C6E93031FBF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B51FC9DD-2334-44E0-B32B-A493E26FA543}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B51FC9DD-2334-44E0-B32B-A493E26FA543}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B51FC9DD-2334-44E0-B32B-A493E26FA543}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B51FC9DD-2334-44E0-B32B-A493E26FA543}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
