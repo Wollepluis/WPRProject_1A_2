@@ -101,7 +101,7 @@ public class AccountParticulierController : ControllerBase
         
         _context.Accounts.Add(account);
         await _context.SaveChangesAsync();
-        EmailSender.VerstuurBevestigingsEmail(account.Email);
+        try { EmailSender.VerstuurBevestigingsEmail(account.Email); } catch {  }
         return Ok(new { AccountId = account.AccountId});
     }
     

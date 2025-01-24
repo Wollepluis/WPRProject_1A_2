@@ -34,16 +34,23 @@ public class ReparatieController : ControllerBase
     }
 
     [HttpPost("Maak reparatie aan")]
-    public async Task<ActionResult<Reparatie>> PostReparatie([FromBody] Reparatie reparatie)
+    public async Task<ActionResult<Reparatie>> PostReparatie([FromBody] Reparatie reparatie, int schadeclaimId)
     {
         if (reparatie == null)
         {
             return BadRequest("Reparatie mag niet 'NULL' zijn");
         }
-
+        
         _context.Reparaties.Add(reparatie);
         await _context.SaveChangesAsync();
-
+        
+        var schadeclaim = await _context.Schadeclaim.FindAsync(schadeclaimId);
+        if (schadeclaim == null) return BadRequest("Schadeclaim niet gevonden");
+        
+        schadeclaim.ReparatieId = reparatie.ReparatieId;
+        
+        await _context.SaveChangesAsync();
+        
         return CreatedAtAction(nameof(GetReparatie), new { id = reparatie.ReparatieId }, reparatie);
     }
 }

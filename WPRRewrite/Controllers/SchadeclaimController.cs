@@ -22,14 +22,26 @@ public class SchadeclaimController : ControllerBase
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
         
+        [HttpGet("krijgalleSchadeclaims")]
+        public async Task<ActionResult<IEnumerable<Schadeclaim>>> GetAlleSchadeclaims()
+        {
+            var schadeclaims = await _context.Schadeclaim.ToListAsync();
+            return Ok(schadeclaims);
+        }
+        
         [HttpPost("PostSchadeclaim")]
-        public async Task<ActionResult<IEnumerable<Reservering>>> PostReservering(SchadeclaimDto schadeclaimDto)
+        public async Task<ActionResult<IEnumerable<Schadeclaim>>> PostSchadeclaim(SchadeclaimDto schadeclaimDto)
         {
             if (schadeclaimDto == null) return BadRequest();
             
             if (!(_context.Voertuigen.Any(a => a.VoertuigId == schadeclaimDto.VoertuigId)))
                 return BadRequest("Geen voertuig gevonden");
+            
+            var voertuig = await _context.Voertuigen.FindAsync(schadeclaimDto.VoertuigId);
+            if (voertuig == null) return BadRequest("Voertuig niet gevonden");
 
+            voertuig.VoertuigStatus = "Geblokkeerd";
+            
             Schadeclaim schadeclaim = new Schadeclaim(schadeclaimDto.Beschrijving, schadeclaimDto.VoertuigId, schadeclaimDto.Datum);
         
                 _context.Schadeclaim.Add(schadeclaim);

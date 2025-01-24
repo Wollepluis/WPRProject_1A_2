@@ -22,7 +22,7 @@ public class VoertuigController : ControllerBase
     [HttpGet("krijgallevoertuigen")]
     public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen()
     {
-        var Voertuigen = await _context.Voertuigen.ToListAsync();
+        var Voertuigen = await _context.Voertuigen.Where(a => a.VoertuigStatus != "Geblokkeerd").ToListAsync();
         return Ok(Voertuigen);
     }
     
@@ -30,7 +30,7 @@ public class VoertuigController : ControllerBase
     public async Task<ActionResult<IEnumerable<VoertuigDto>>> GetAlleVoertuigen(DateTime begindatum, DateTime einddatum, string? accountType)
     {
         // Fetch voertuigen based on account type
-        IQueryable<Voertuig> Voertuigen = _context.Voertuigen.Include(voertuig => voertuig.Reserveringen);
+        IQueryable<Voertuig> Voertuigen = _context.Voertuigen.Where(a => a.VoertuigStatus != "Geblokkeerd").Include(voertuig => voertuig.Reserveringen);
     
         if (accountType == "Huurder")
         {
