@@ -33,7 +33,7 @@ public class ReparatieController : ControllerBase
         return Ok(reparatie);
     }
 
-    [HttpPost("Maak reparatie aan")]
+    [HttpPost("MaakReparatieAan")]
     public async Task<ActionResult<Reparatie>> PostReparatie([FromBody] Reparatie reparatie, int schadeclaimId)
     {
         if (reparatie == null)

@@ -214,7 +214,7 @@ public class VoertuigController : ControllerBase
     }
 
     
-    [HttpPut("{id}")]
+    [HttpPut("UpdateVoertuig")]
     public async Task<IActionResult> PutVoertuig(int id, [FromBody] Voertuig updatedVoertuig)
     {
         if (id != updatedVoertuig.VoertuigId)

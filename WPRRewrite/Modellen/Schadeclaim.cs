@@ -10,7 +10,8 @@ public class Schadeclaim
         Beschrijving = beschrijving;
         Datum = datum;
         VoertuigId = voertuigId;
-        
+        Schadeclaimstatus = "In afwachting";
+
     }
 
     public int SchadeclaimId { get; set; }
@@ -22,4 +23,6 @@ public class Schadeclaim
     public int VoertuigId { get; set; }
     [ForeignKey(nameof(VoertuigId))]
     public Voertuig Voertuig { get; set; }
+
+    public string Schadeclaimstatus { get; set; }
 }

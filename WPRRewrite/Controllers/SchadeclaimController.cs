@@ -35,7 +35,7 @@ public class SchadeclaimController : ControllerBase
             if (schadeclaimDto == null) return BadRequest();
             
             if (!(_context.Voertuigen.Any(a => a.VoertuigId == schadeclaimDto.VoertuigId)))
-                return BadRequest("Geen voertuig gevonden");
+                return NotFound("Geen voertuig gevonden");
             
             var voertuig = await _context.Voertuigen.FindAsync(schadeclaimDto.VoertuigId);
             if (voertuig == null) return BadRequest("Voertuig niet gevonden");
