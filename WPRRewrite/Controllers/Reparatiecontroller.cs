@@ -21,7 +21,7 @@ public class ReparatieController : ControllerBase
         return await _context.Reparaties.OfType<Reparatie>().ToListAsync();
     }
 
-    [HttpGet("Krijg specifieke reparatie")]
+    [HttpGet("KrijgSpecifiekeReparatie")]
     public async Task<ActionResult<Reparatie>> GetReparatie(int id)
     {
         var reparatie = await _context.Reparaties.FindAsync(id);
@@ -34,7 +34,7 @@ public class ReparatieController : ControllerBase
     }
 
     [HttpPost("MaakReparatieAan")]
-    public async Task<ActionResult<Reparatie>> PostReparatie([FromBody] Reparatie reparatie, int schadeclaimId)
+    public async Task<ActionResult<Reparatie>> PostReparatie(int schadeclaimId, [FromBody] Reparatie reparatie)
     {
         if (reparatie == null)
         {
