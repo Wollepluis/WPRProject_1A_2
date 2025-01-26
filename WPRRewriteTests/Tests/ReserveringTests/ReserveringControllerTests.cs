@@ -43,7 +43,7 @@ namespace WPRRewriteTests.Tests.ReserveringTests
                 TotaalPrijs = 200,
                 IsBetaald = true,
                 Comment = "N",
-                Herinnering = false
+                //Herinnering = false
             });
             await _mockContext.SaveChangesAsync();
 

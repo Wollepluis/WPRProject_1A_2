@@ -164,11 +164,11 @@ public class VoertuigController : ControllerBase
 
         switch (voertuigType)
         {
-            case "Auto": voertuigje = new Auto(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus, voertuig.BrandstofType);
+            case "Auto": voertuigje = new Auto(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus, 4, voertuig.BrandstofType);
                 break;
-            case "Camper": voertuigje = new Camper(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus, voertuig.BrandstofType);
+            case "Camper": voertuigje = new Camper(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus, 4, voertuig.BrandstofType);
                 break;
-            case "Carvan": voertuigje = new Caravan(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus, voertuig.BrandstofType);
+            case "Carvan": voertuigje = new Caravan(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus, 4, voertuig.BrandstofType);
                 break;
             default: return BadRequest("Voertuig heeft geen gelig voertuigtype");
         }
@@ -176,7 +176,7 @@ public class VoertuigController : ControllerBase
         _context.Voertuigen.Add(voertuigje);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetVoertuig), new { id = voertuig.VoertuigId }, voertuig);
+        return Ok();
     }
     
     [HttpPost("reserveerVoertuig")]

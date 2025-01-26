@@ -46,7 +46,7 @@ public class AutoController : ControllerBase, IVoertuigController
         {
             return BadRequest("Voertuig mag niet 'NULL' zijn");
         }
-        Auto auto = new Auto(autoDto.Kenteken, autoDto.Merk, autoDto.Model, autoDto.Kleur, autoDto.Aanschafjaar, autoDto.Prijs, "Beschikbaar", autoDto.BrandstofType);
+        Auto auto = new Auto(autoDto.Kenteken, autoDto.Merk, autoDto.Model, autoDto.Kleur, autoDto.Aanschafjaar, autoDto.Prijs, "Beschikbaar", 4, autoDto.BrandstofType);
         _context.Voertuigen.Add(auto);
         await _context.SaveChangesAsync();
 
@@ -60,7 +60,7 @@ public class AutoController : ControllerBase, IVoertuigController
         
         if (bestaandeAuto == null) return NotFound();
 
-        Auto updatedAuto = new Auto(updatedAutoDto.Kenteken, updatedAutoDto.Merk, updatedAutoDto.Model, updatedAutoDto.Kleur, updatedAutoDto.Aanschafjaar, updatedAutoDto.Prijs, updatedAutoDto.VoertuigStatus, updatedAutoDto.BrandstofType);
+        Auto updatedAuto = new Auto(updatedAutoDto.Kenteken, updatedAutoDto.Merk, updatedAutoDto.Model, updatedAutoDto.Kleur, updatedAutoDto.Aanschafjaar, updatedAutoDto.Prijs, updatedAutoDto.VoertuigStatus, 4, updatedAutoDto.BrandstofType);
         
         bestaandeAuto.UpdateVoertuig(updatedAuto);
         await _context.SaveChangesAsync();
