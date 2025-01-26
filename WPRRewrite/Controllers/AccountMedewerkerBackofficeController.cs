@@ -23,8 +23,14 @@ public class AccountMedewerkerBackofficeController : ControllerBase
     [HttpGet("Krijg alle accounts")]
     public async Task<ActionResult<IEnumerable<AccountMedewerkerBackoffice>>> GetAllAccounts()
     {
-        return await _context.Accounts.OfType<AccountMedewerkerBackoffice>().ToListAsync();
+        var accounts = await _context.Accounts.ToListAsync();
+        if (accounts == null || !accounts.Any())
+        {
+            return NotFound("No accounts found.");
+        }
+        return Ok(accounts);
     }
+
 
     [HttpGet("Krijg specifiek account")]
     public async Task<ActionResult<AccountMedewerkerBackoffice>> GetAccount(int id)

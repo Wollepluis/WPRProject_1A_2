@@ -9,6 +9,11 @@ public class AccountParticulier : Account
     public AccountParticulier(string email, string wachtwoord, string naam, int adresId, int telefoonnummer, IPasswordHasher<Account> passwordHasher, CarAndAllContext context)
         : base(passwordHasher, context)
     {
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(wachtwoord))
+        {
+            throw new ArgumentException("Email en wachtwoord mogen niet leeg zijn.");
+        }
+
         Email = email;
         Wachtwoord = wachtwoord;
         Naam = naam;
@@ -21,7 +26,7 @@ public class AccountParticulier : Account
     {
     }
 
-    //Tijdelijk
+    
     public string? AccountType { get; set; } = "Particulier";
     public string Naam { get; set; }
     public int AdresId { get; set; }

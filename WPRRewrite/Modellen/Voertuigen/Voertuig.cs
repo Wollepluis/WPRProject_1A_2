@@ -14,6 +14,7 @@ public abstract class Voertuig : IVoertuig
     public int Prijs { get; set; }
     public string VoertuigStatus { get; set; }
     public string VoertuigType { get; set; }
+    public int AantalZitPlaatsen { get; set; }
     public string BrandstofType{ get; set; }
     
     public int? Schadeclaim { get; set; }
