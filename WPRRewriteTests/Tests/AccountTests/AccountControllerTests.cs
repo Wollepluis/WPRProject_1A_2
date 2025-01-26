@@ -15,35 +15,45 @@ namespace WPRRewriteTests.Tests.AccountTests
         [SetUp]
         public void Setup()
         {
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
+
             var options = new DbContextOptionsBuilder<CarAndAllContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .UseSqlite("DataSource=:memory:")  // Gebruik SQLite als in-memory database
                 .Options;
 
             _mockContext = new CarAndAllContext(options);
+            _mockContext.Database.OpenConnection();
+            _mockContext.Database.EnsureCreated();
+
             _controller = new AccountMedewerkerBackofficeController(_mockContext);
         }
 
         [TearDown]
         public void TearDown()
         {
+            _mockContext.Database.CloseConnection();
             _mockContext.Dispose();
         }
 
         [Test]
-        public async Task GetAll_GeenAccounts_RetourneertNotFound()
+        public async Task GetAll_GeenAccounts_RetourneertLegeLijst()
         {
             // Act
             var result = await _controller.GetAllAccounts();
 
             // Assert
-            Assert.That(result.Result, Is.TypeOf<OkObjectResult>());  // Geen NotFound meer, lege lijst verwacht
+            Assert.That(result.Result, Is.TypeOf<OkObjectResult>());  
         }
 
         [Test]
         public async Task GetAll_AccountsAanwezig_RetourneertOk()
         {
             // Arrange
-            _mockContext.Accounts.Add(new AccountMedewerkerBackoffice { Email = "test@test.com", Wachtwoord = "test123" });
+            _mockContext.Accounts.Add(new AccountMedewerkerBackoffice 
+            { 
+                Email = "test@test.com", 
+                Wachtwoord = "test123" 
+            });
             await _mockContext.SaveChangesAsync();
 
             // Act
