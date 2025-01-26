@@ -119,7 +119,7 @@ public class EmailSender
             VerstuurEmail(mailBericht);
         }
         
-        public static void VerstuurHerinneringsEmail(string ontvangerEmail, int id, DateTime date)
+        public static void VerstuurHerinneringEmail(string ontvangerEmail, int id, DateTime date)
         {
             string htmlInhoud = $@"
             <html>
@@ -135,6 +135,36 @@ public class EmailSender
             <body>
                 <h1>Uw Reservering staat klaar!</h1>
                 <p>Uw auto met reserverings ID: {id} staat klaar om morgen ({date}) opgehaald te worden.</p>
+                <p>U wordt geacht naar ons pand in verweggistan te komen en daar uw auto op te halen.</p>
+                <p>Neem gerust contact met ons op via <a href='mailto:{{EmailAdres}}'>{{EmailAdres}}</a> als u vragen heeft.</p>
+                <p><a href='http://www.example.com/feedback' class='button'>Deel uw feedback</a></p>
+                <div class='footer'>
+                    <p>Met vriendelijke groet,<br>Het Team</p>
+                    <p>&copy; 2024 Bedrijf. Alle rechten voorbehouden.</p>
+                </div>
+            </body>
+            </html>";
+            var mailBericht = MaakMailBericht(ontvangerEmail, "Uw reservering staat klaar", htmlInhoud);
+            VerstuurEmail(mailBericht);
+        }
+        
+        public static void VerstuurHerinneringEmail2(string ontvangerEmail, int id, DateTime date)
+        {
+            string htmlInhoud = $@"
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: Arial, sans-serif; background-color: #f4f4f9; color: #333333; line-height: 1.6; margin: 0; padding: 20px; }}
+                    h1 {{ color: #d9534f; text-align: center; }}
+                    p {{ margin: 10px 0; }}
+                    .button {{ display: inline-block; background-color: #0275d8; color: white; padding: 10px 20px; text-align: center; text-decoration: none; border-radius: 5px; margin-top: 20px; font-size: 16px; }}
+                    .footer {{ margin-top: 30px; font-size: 12px; text-align: center; color: #aaaaaa; }}
+                </style>
+            </head>
+            <body>
+                <h1>Uw Reservering verloopt!</h1>
+                <p>Uw auto met reserverings ID: {id} wordt geacht morgen ({date}) ingeleverd te worden.</p>
+                <p>U wordt geacht naar ons pand in verweggistan te rijden en daar uw auto achter te laten.</p>
                 <p>Neem gerust contact met ons op via <a href='mailto:{{EmailAdres}}'>{{EmailAdres}}</a> als u vragen heeft.</p>
                 <p><a href='http://www.example.com/feedback' class='button'>Deel uw feedback</a></p>
                 <div class='footer'>
