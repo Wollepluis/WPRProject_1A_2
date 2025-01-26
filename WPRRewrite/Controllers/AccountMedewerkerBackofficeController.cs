@@ -77,13 +77,15 @@ public class AccountMedewerkerBackofficeController : ControllerBase
         }
 
         var existingAccount = await _context.Accounts.FindAsync(id);
-        if (existingAccount == null)
+        
+        
+        AccountMedewerkerBackoffice account = new AccountMedewerkerBackoffice(updatedAccount.Email, existingAccount.Wachtwoord, _passwordHasher, _context);
+        if (account == null)
         {
             return NotFound();
         }
-
-        existingAccount.UpdateAccount(updatedAccount);
-
+        
+        _context.Accounts.Remove(existingAccount);
         await _context.SaveChangesAsync();
         return NoContent();
     }

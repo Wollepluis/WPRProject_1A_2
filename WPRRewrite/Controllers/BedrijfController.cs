@@ -36,7 +36,7 @@ public class BedrijfController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Bedrijf>>> GetAlleBedrijven()
     {
-        var bedrijf = await _context.Bedrijven.Include(b => b.BevoegdeMedewerkers)
+        var bedrijf = await _context.Bedrijven.Include(b => b.BevoegdeMedewerkers).Include(a => a.Abonnement)
             .ToListAsync();
 
         return Ok(bedrijf);
@@ -49,7 +49,7 @@ public class BedrijfController : ControllerBase
 
         if (bedrijf == null) return NotFound("Er is geen bedrijf gevonden...");
 
-        var abonnement = await _context.Abonnementen.FindAsync(bedrijf.AbonnementId);
+        var abonnement = bedrijf.Abonnement;
         var adres = await _context.Adressen.FindAsync(bedrijf.AdresId);
         
         

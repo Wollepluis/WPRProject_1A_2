@@ -16,6 +16,8 @@ public abstract class Voertuig : IVoertuig
     public string VoertuigType { get; set; }
     public string BrandstofType{ get; set; }
     
+    public int? Schadeclaim { get; set; }
+    
     
 
     public List<Reservering> Reserveringen { get; set; }

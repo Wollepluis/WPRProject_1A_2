@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using WPRRewrite.Dtos;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.Modellen.Voertuigen;
+using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Controllers;
 
@@ -151,15 +151,29 @@ public class VoertuigController : ControllerBase
         return Ok(voertuigen);
     }
 
-    [HttpPost]
-    public async Task<ActionResult<Voertuig>> PostVoertuig([FromBody] Voertuig voertuig)
+    [HttpPost("MaakVoertuig")]
+    public async Task<ActionResult<IVoertuig>> PostVoertuig([FromBody] VoertuigDto voertuig, string voertuigType)
     {
         if (voertuig == null)
         {
             return BadRequest("Voertuig mag niet 'NULL' zijn");
         }
+
+        Voertuig voertuigje;
         
-        _context.Voertuigen.Add(voertuig);
+
+        switch (voertuigType)
+        {
+            case "Auto": voertuigje = new Auto(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus, voertuig.BrandstofType);
+                break;
+            case "Camper": voertuigje = new Camper(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus, voertuig.BrandstofType);
+                break;
+            case "Carvan": voertuigje = new Caravan(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus, voertuig.BrandstofType);
+                break;
+            default: return BadRequest("Voertuig heeft geen gelig voertuigtype");
+        }
+        
+        _context.Voertuigen.Add(voertuigje);
         await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetVoertuig), new { id = voertuig.VoertuigId }, voertuig);
@@ -214,7 +228,7 @@ public class VoertuigController : ControllerBase
     }
 
     
-    [HttpPut("UpdateVoertuig")]
+    [HttpPut("{id}")]
     public async Task<IActionResult> PutVoertuig(int id, [FromBody] Voertuig updatedVoertuig)
     {
         if (id != updatedVoertuig.VoertuigId)
