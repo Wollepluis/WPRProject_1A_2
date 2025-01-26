@@ -25,7 +25,11 @@ public class SchadeclaimController : ControllerBase
         [HttpGet("krijgalleSchadeclaims")]
         public async Task<ActionResult<IEnumerable<Schadeclaim>>> GetAlleSchadeclaims()
         {
-            var schadeclaims = await _context.Schadeclaim.ToListAsync();
+            var schadeclaims = await _context.Schadeclaim
+                .OrderBy(a => a.Schadeclaimstatus == "Afgehandeld") // Eerst niet-afgehandeld, dan afgehandeld
+               
+                .ToListAsync();
+
             return Ok(schadeclaims);
         }
         
