@@ -50,4 +50,15 @@ public class SchadeclaimController : ControllerBase
         
             return Ok(schadeclaim);
         }
+
+        [HttpPut("UpdateStatus")]
+        public async Task<ActionResult<Schadeclaim>> UpdateStatus(int schadeclaimId, string status)
+        {
+            var schadeclaim = await _context.Schadeclaim.FindAsync(schadeclaimId);
+            if (schadeclaim == null) return NotFound("Schadeclaim niet gevonden");
+            
+            schadeclaim.Schadeclaimstatus = status;
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
 }
