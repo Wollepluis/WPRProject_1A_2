@@ -42,7 +42,7 @@ public class CarAndAllContext : DbContext
     
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
-        builder.UseSqlServer(@"Server=tcp:wprproject.database.windows.net,1433;Initial Catalog=CarAndAll;Persist Security Info=False;User ID=BoterhamZakje;Password=Banaan123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+        builder.UseSqlServer(@"Server=tcp:carandalla.database.windows.net,1433;Initial Catalog=CarAndAllA;Persist Security Info=False;User ID=CarAndAll;Password=MelleWessels1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
     }
 
     public DbSet<Voertuig> Voertuigen { get; set; }

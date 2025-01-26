@@ -38,7 +38,7 @@ public class AccountMedewerkerFrontofficeController : ControllerBase
         return Ok(account);
     }
 
-    [HttpPost("Maak account aan")]
+    [HttpPost("MaakAccount")]
     public async Task<ActionResult<AccountMedewerkerFrontoffice>> PostAccount([FromBody] FrontofficeDto accountDto)
     {
         var anyEmail = _context.Accounts.Any(a => a.Email == accountDto.Email);
@@ -68,7 +68,7 @@ public class AccountMedewerkerFrontofficeController : ControllerBase
         return Ok(new {account.AccountId});
     }
 
-    [HttpPut("Update Account")]
+    [HttpPut("UpdateAccount")]
     public async Task<IActionResult> PutAccount(int id, [FromBody]AccountMedewerkerFrontoffice updatedAccount)
     {
         if (id != updatedAccount.AccountId)
@@ -77,13 +77,17 @@ public class AccountMedewerkerFrontofficeController : ControllerBase
         }
 
         var existingAccount = await _context.Accounts.FindAsync(id);
-        if (existingAccount == null)
+        
+        
+        AccountMedewerkerFrontoffice account = new AccountMedewerkerFrontoffice(updatedAccount.Email, existingAccount.Wachtwoord, _passwordHasher, _context);
+        if (account == null)
         {
             return NotFound();
         }
-
-        existingAccount.UpdateAccount(updatedAccount);
-
+        
+        
+        _context.Accounts.Remove(existingAccount);
+        _context.Accounts.Add(account);
         await _context.SaveChangesAsync();
         return NoContent();
     }

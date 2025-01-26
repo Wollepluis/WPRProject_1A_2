@@ -53,10 +53,10 @@ public class AutoController : ControllerBase, IVoertuigController
         return CreatedAtAction(nameof(GetVoertuig), new { id = auto.VoertuigId }, auto);
     }
 
-    [HttpPut("Update Auto / {id}")]
+    [HttpPut("UpdateAuto/{id}")]
     public async Task<IActionResult> PutVoertuig(int id, VoertuigDto updatedAutoDto)
     {
-        IVoertuig? bestaandeAuto = await _context.Voertuigen.FindAsync(id);
+        Voertuig? bestaandeAuto = await _context.Voertuigen.FindAsync(id);
         
         if (bestaandeAuto == null) return NotFound();
 

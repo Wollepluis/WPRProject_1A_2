@@ -16,7 +16,7 @@ public abstract class Voertuig : IVoertuig
     public string VoertuigType { get; set; }
     public string BrandstofType{ get; set; }
     
-    public int? Schadeclaim { get; set; }
+    //public int? SchadeclaimId { get; set; }
     
     
 
@@ -31,7 +31,6 @@ public abstract class Voertuig : IVoertuig
         this.Kenteken = updatedVoertuig.Kenteken;
         this.Merk = updatedVoertuig.Merk;
         this.Model = updatedVoertuig.Model;
-        this.VoertuigType = updatedVoertuig.VoertuigType;
         this.Kleur = updatedVoertuig.Kleur;
         this.Aanschafjaar = updatedVoertuig.Aanschafjaar;
         this.BrandstofType = updatedVoertuig.BrandstofType;
