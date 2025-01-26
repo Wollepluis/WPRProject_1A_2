@@ -17,7 +17,7 @@ namespace WPRRewriteTests.Tests.AccountTests
             _mockPasswordHasher = new PasswordHasher<Account>();
 
             var options = new DbContextOptionsBuilder<CarAndAllContext>()
-                .UseSqlite("DataSource=:memory:")
+                .UseSqlServer(@"Server=LaptopMorris\SQLEXPRESS;Database=CarandallTest;Trusted_Connection=True;TrustServerCertificate=True")
                 .Options;
             _mockContext = new CarAndAllContext(options);
         }

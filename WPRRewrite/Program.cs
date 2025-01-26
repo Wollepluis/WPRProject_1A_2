@@ -14,18 +14,8 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-        if (string.IsNullOrEmpty(connectionString))
-        {
-            builder.Services.AddDbContext<CarAndAllContext>(options =>
-                options.UseSqlite("TestDatabase"));
-        }
-        else
-        {
-            builder.Services.AddDbContext<CarAndAllContext>(options =>
-                options.UseSqlServer(connectionString));
-        }
+        builder.Services.AddDbContext<CarAndAllContext>(options =>
+            options.UseSqlServer(@"Server=tcp:carandalla.database.windows.net,1433;Initial Catalog=CarAndAllA;Persist Security Info=False;User ID=CarAndAll;Password=MelleWessels1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
 
         builder.Services.AddCors(options =>
         {

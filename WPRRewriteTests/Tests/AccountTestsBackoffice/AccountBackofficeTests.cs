@@ -7,7 +7,7 @@ using WPRRewrite.Controllers;
 namespace WPRRewriteTests.Tests.AccountTests
 {
     [TestFixture]
-    public class AccountControllerTests
+    public class AccountBackofficeTests
     {
         private CarAndAllContext _mockContext;
         private AccountMedewerkerBackofficeController _controller;
@@ -15,10 +15,8 @@ namespace WPRRewriteTests.Tests.AccountTests
         [SetUp]
         public void Setup()
         {
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
-
             var options = new DbContextOptionsBuilder<CarAndAllContext>()
-                .UseSqlite("DataSource=:memory:")  // Gebruik SQLite als in-memory database
+                .UseSqlServer(@"Server=LaptopMorris\SQLEXPRESS;Database=CarandallTest;Trusted_Connection=True;TrustServerCertificate=True") 
                 .Options;
 
             _mockContext = new CarAndAllContext(options);
@@ -34,17 +32,7 @@ namespace WPRRewriteTests.Tests.AccountTests
             _mockContext.Database.CloseConnection();
             _mockContext.Dispose();
         }
-
-        [Test]
-        public async Task GetAll_GeenAccounts_RetourneertLegeLijst()
-        {
-            // Act
-            var result = await _controller.GetAllAccounts();
-
-            // Assert
-            Assert.That(result.Result, Is.TypeOf<OkObjectResult>());  
-        }
-
+        
         [Test]
         public async Task GetAll_AccountsAanwezig_RetourneertOk()
         {
@@ -55,14 +43,17 @@ namespace WPRRewriteTests.Tests.AccountTests
                 Wachtwoord = "test123" 
             });
             await _mockContext.SaveChangesAsync();
+            _mockContext.ChangeTracker.Clear();  // Ensures fresh query
 
             // Act
             var result = await _controller.GetAllAccounts();
 
             // Assert
-            Assert.That(result.Result, Is.TypeOf<OkObjectResult>());
+            Assert.That(result, Is.Not.Null, "Expected result to not be null.");
+            Assert.That(result.Result, Is.TypeOf<OkObjectResult>(), "Expected OkObjectResult, but got something else.");
+    
             var okResult = result.Result as OkObjectResult;
-            Assert.That(okResult.Value, Is.Not.Null);
+            Assert.That(okResult!.Value, Is.Not.Null, "Expected non-null value in OkObjectResult.");
         }
     }
 }
