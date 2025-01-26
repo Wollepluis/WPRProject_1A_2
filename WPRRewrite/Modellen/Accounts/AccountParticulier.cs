@@ -21,6 +21,8 @@ public class AccountParticulier : Account
     {
     }
 
+    //Tijdelijk
+    public string? AccountType { get; set; } = "Particulier";
     public string Naam { get; set; }
     public int AdresId { get; set; }
     [ForeignKey("AdresId")]

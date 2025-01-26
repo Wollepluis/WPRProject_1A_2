@@ -219,5 +219,4 @@ public async Task<IActionResult> UpdateAbonnement(int abonnementId, int accountI
             return StatusCode(500, "Er is een interne serverfout opgetreden.");
         }
     }
-
 }

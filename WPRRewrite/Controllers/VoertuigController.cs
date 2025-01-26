@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using WPRRewrite.Dtos;
 using WPRRewrite.Interfaces;
 using WPRRewrite.Modellen;
 using WPRRewrite.Modellen.Accounts;
 using WPRRewrite.Modellen.Voertuigen;
-using WPRRewrite.SysteemFuncties;
 
 namespace WPRRewrite.Controllers;
 
@@ -23,25 +23,30 @@ public class VoertuigController : ControllerBase
     [HttpGet("krijgallevoertuigen")]
     public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen()
     {
-        var Voertuigen = await _context.Voertuigen.ToListAsync();
+        var Voertuigen = await _context.Voertuigen.Where(a => a.VoertuigStatus != "Geblokkeerd").ToListAsync();
         return Ok(Voertuigen);
     }
-    
+
     [HttpGet("krijgallevoertuigenDatum")]
-    public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAlleVoertuigen(DateTime begindatum, DateTime einddatum)
+    public async Task<ActionResult<IEnumerable<VoertuigDto>>> GetAlleVoertuigen(DateTime begindatum, DateTime einddatum, string? accountType)
     {
-        var Voertuigen = await _context.Voertuigen.Include(voertuig => voertuig.Reserveringen).ToListAsync();
+        // Fetch voertuigen based on account type
+        IQueryable<Voertuig> Voertuigen = _context.Voertuigen.Where(a => a.VoertuigStatus != "Geblokkeerd").Include(voertuig => voertuig.Reserveringen);
+    
+        if (accountType == "Huurder")
+        {
+            Voertuigen = Voertuigen.OfType<Auto>();
+        }
+        var AlleVoertuigen = await Voertuigen.Include(a => a.Reserveringen).ToListAsync();
+        
+
         List<Voertuig> beschikbareVoertuigen = new List<Voertuig>();
-        foreach (var voertuig in Voertuigen)
+        foreach (var voertuig in AlleVoertuigen)
         {
             var reserveringen = voertuig.Reserveringen;
-            if (reserveringen != null)
+            if (!reserveringen.Any(r => begindatum <= r.Einddatum && einddatum >= r.Begindatum))
             {
-                    if (!reserveringen.Any(r => begindatum <= r.Einddatum && einddatum >= r.Begindatum))
-                    {
-                        //VoertuigDto voertuigDto = new VoertuigDto(voertuig.Kenteken, voertuig.Merk, voertuig.Model, voertuig.Kleur, voertuig.Aanschafjaar, voertuig.Prijs, voertuig.VoertuigStatus, voertuig.VoertuigType, voertuig.BrandstofType);
-                        beschikbareVoertuigen.Add(voertuig);
-                    }
+                beschikbareVoertuigen.Add(voertuig);
             }
         }
         return Ok(beschikbareVoertuigen);
@@ -76,10 +81,11 @@ public class VoertuigController : ControllerBase
         var reserveringen = new List<Reservering>();
         foreach (var medewerker in medewerkers)
         {
-            foreach (var reservering in medewerker.Reserveringen)
+            //Linq query toevoegen
+            /*foreach (var reservering in medewerker.Reserveringen)
             {
                 reserveringen.Add(reservering);
-            }
+            }*/
         }
         return Ok(reserveringen);
     }
@@ -130,7 +136,7 @@ public class VoertuigController : ControllerBase
         return Ok(voertuig);
     }
 
-    [HttpGet("Filter voertuigen")]
+    [HttpGet("FilterVoertuigen")]
     public async Task<ActionResult<IEnumerable<IVoertuig>>> FilterVoertuigen(string voertuigType)
     {
         if (string.IsNullOrWhiteSpace(voertuigType))
@@ -208,7 +214,7 @@ public class VoertuigController : ControllerBase
     }
 
     
-    [HttpPut("{id}")]
+    [HttpPut("UpdateVoertuig")]
     public async Task<IActionResult> PutVoertuig(int id, [FromBody] Voertuig updatedVoertuig)
     {
         if (id != updatedVoertuig.VoertuigId)

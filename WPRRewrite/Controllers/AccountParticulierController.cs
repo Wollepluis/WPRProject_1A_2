@@ -48,7 +48,7 @@ public class AccountParticulierController : ControllerBase
     public async Task<ActionResult<AccountParticulier>> GetAccount(int id)
     {
         var account = await _context.Accounts.OfType<AccountParticulier>().Include(a => a.Adres).Where(a => a.AccountId == id).FirstOrDefaultAsync();
-
+        account.AccountType = "Particulier";
         if (account == null)
         {
             return NotFound();
@@ -101,7 +101,7 @@ public class AccountParticulierController : ControllerBase
         
         _context.Accounts.Add(account);
         await _context.SaveChangesAsync();
-        EmailSender.VerstuurBevestigingsEmail(account.Email);
+        try { EmailSender.VerstuurBevestigingsEmail(account.Email); } catch {  }
         return Ok(new { AccountId = account.AccountId});
     }
     
@@ -121,17 +121,21 @@ public class AccountParticulierController : ControllerBase
              if (result == PasswordVerificationResult.Failed) return Unauthorized(new { message = "Verkeerd wachtwoord"});
 
              var reservering = await _context.Reserveringen.FirstOrDefaultAsync(r => r.AccountId == account.AccountId);
+             
              if (reservering != null)
              {
-                 // Get only the date part (no time)
-                 var reserveringDate = reservering.Begindatum.Date;
                  var currentDate = DateTime.Now.Date;
-
-                 // Check if the reservation is tomorrow
-                 if (reserveringDate == currentDate.AddDays(1) && reservering.Herinnering == false)
+            
+                 if (reservering.Begindatum.Date == currentDate.AddDays(1))
                  {
-                     EmailSender.VerstuurHerinneringsEmail(account.Email, reservering.VoertuigId, reservering.Begindatum);
-                     reservering.UpdateHerinnering();
+                     EmailSender.VerstuurHerinneringEmail(account.Email, reservering.VoertuigId, reservering.Begindatum);
+                     //reservering.UpdateHerinnering();
+                     await _context.SaveChangesAsync();
+                 }
+                 else if (reservering.Einddatum.Date == currentDate.AddDays(-1))
+                 {
+                     EmailSender.VerstuurHerinneringEmail2(account.Email, reservering.VoertuigId, reservering.Einddatum);
+                     //reservering.UpdateHerinnering();
                      await _context.SaveChangesAsync();
                  }
              }

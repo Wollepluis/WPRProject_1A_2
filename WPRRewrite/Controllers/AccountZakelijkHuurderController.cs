@@ -30,14 +30,28 @@ public class AccountZakelijkHuurderController : ControllerBase
         return await _context.Accounts.OfType<AccountZakelijkHuurder>().ToListAsync();
     }
 
-    [HttpGet("Krijg specifiek account")]
+    [HttpGet("KrijgSpecifiekAccount")]
     public async Task<ActionResult<AccountZakelijkHuurder>> GetAccount(int id)
     {
-        var account = await _context.Accounts.OfType<AccountZakelijkHuurder>().Include(a => a.Reserveringen).FirstOrDefaultAsync(a => a.AccountId == id);
+        try
+        {
+            var account = await _context.Accounts.OfType<AccountZakelijkHuurder>().FirstOrDefaultAsync(a => a.AccountId == id);
 
-        if (account == null) return NotFound();
-        return Ok(account);
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(account);
+        }
+        catch (Exception ex)
+        {
+            // Log de fout voor debugging
+            Console.WriteLine($"Fout bij het ophalen van account: {ex.Message}");
+            return StatusCode(500, "Er is een fout opgetreden bij het ophalen van het account." + ex.Message);
+        }
     }
+
     
     [HttpGet("krijgalleautos")]
     public async Task<ActionResult<IEnumerable<IVoertuig>>> GetAutos()
@@ -104,20 +118,24 @@ public class AccountZakelijkHuurderController : ControllerBase
         if (result == PasswordVerificationResult.Failed) return Unauthorized(new { message = "Verkeerd wachtwoord"});
         
         var reservering = await _context.Reserveringen.FirstOrDefaultAsync(r => r.AccountId == account.AccountId);
-        /*if (reservering != null)
+        
+        if (reservering != null)
         {
-            // Get only the date part (no time)
-            var reserveringDate = reservering.Begindatum.Date;
             var currentDate = DateTime.Now.Date;
-
-            // Check if the reservation is tomorrow
-            if (reserveringDate == currentDate.AddDays(1) && reservering.Herinnering == false)
+            
+            if (reservering.Begindatum.Date == currentDate.AddDays(1))
             {
-                EmailSender.VerstuurHerinneringsEmail(account.Email, reservering.VoertuigId, reservering.Begindatum);
-                reservering.UpdateHerinnering();
+                EmailSender.VerstuurHerinneringEmail(account.Email, reservering.VoertuigId, reservering.Begindatum);
+                //reservering.UpdateHerinnering();
                 await _context.SaveChangesAsync();
             }
-        }*/
+            else if (reservering.Einddatum.Date == currentDate.AddDays(-1))
+            {
+                EmailSender.VerstuurHerinneringEmail2(account.Email, reservering.VoertuigId, reservering.Einddatum);
+                //reservering.UpdateHerinnering();
+                await _context.SaveChangesAsync();
+            }
+        }
         
         return Ok(new {account.AccountId});
     }
