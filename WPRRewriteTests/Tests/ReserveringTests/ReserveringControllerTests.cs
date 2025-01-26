@@ -69,6 +69,5 @@ namespace WPRRewriteTests.Tests.ReserveringTests
             Assert.That(notFoundResult!.Value, Is.EqualTo("Geen reserveringen gevonden voor accountId: 15"),
                 "Expected a specific error message.");
         }
-
     }
 }

@@ -13,10 +13,19 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
-        builder.Services.AddDbContext<CarAndAllContext>(options =>
-            options.UseSqlServer(@"Server=tcp:carandalla.database.windows.net,1433;Initial Catalog=CarAndAllA;Persist Security Info=False;User ID=CarAndAll;Password=MelleWessels1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
-
+        var environment = builder.Environment.EnvironmentName;
+        
+        if(environment == "Development")
+        {
+            builder.Services.AddDbContext<CarAndAllContext>(options =>
+                options.UseSqlServer(@"Server=tcp:carandalla.database.windows.net,1433;Initial Catalog=CarAndAllA;Persist Security Info=False;User ID=CarAndAll;Password=MelleWessels1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
+        }
+        else
+        {
+            builder.Services.AddDbContext<CarAndAllContext>(options =>
+                options.UseSqlServer(@"Server=LaptopMorris\SQLEXPRESS;Database=CarandallTest;Trusted_Connection=True;TrustServerCertificate=True"));
+        }
+        
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowAll", policy =>

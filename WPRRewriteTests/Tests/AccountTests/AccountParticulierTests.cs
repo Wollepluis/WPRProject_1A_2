@@ -32,9 +32,9 @@ namespace WPRRewriteTests.Tests.AccountTests
         public void UpdateAccount_WijzigtGegevensCorrect()
         {
             // Arrange
-            var account = new AccountParticulier("test@test.nl", "wachtwoord123", "Test Gebruiker", 123456789, 1, _mockPasswordHasher, _mockContext);
+            var account = new AccountParticulier("test@test.nl", "wachtwoord123", "Test Gebruiker", 1, 123456789, _mockPasswordHasher, _mockContext);
     
-            var nieuwAccount = new AccountParticulier("nieuw@test.nl", "nieuwWachtwoord", "Nieuwe Naam", 987654321, 12, _mockPasswordHasher, _mockContext);
+            var nieuwAccount = new AccountParticulier("nieuw@test.nl", "nieuwWachtwoord", "Nieuwe Naam", 12, 987654321, _mockPasswordHasher, _mockContext);
 
             // Act
             account.UpdateAccount(nieuwAccount);
